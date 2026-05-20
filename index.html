@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4동물 유형검사 — 나는 어떤 동물일까?</title>
+<style>
+  :root {
+    --ka: #1B6CA8; --ka-light: #EBF5FB; --ka-mid: #AED6F1;
+    --sa: #C00000; --sa-light: #FFF0F0; --sa-mid: #FDDEDE;
+    --yang: #2E8B2E; --yang-light: #F0FFF4; --yang-mid: #A9DFBF;
+    --bu: #E07B20; --bu-light: #FFF8F0; --bu-mid: #FAD7A0;
+    --primary: #1F3864;
+    --radius: 14px;
+    --shadow: 0 4px 20px rgba(0,0,0,0.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+    background: #F4F7FB;
+    color: #333;
+    min-height: 100vh;
+  }
+  /* ── 공통 컨테이너 ── */
+  .screen { display: none; max-width: 720px; margin: 0 auto; padding: 24px 16px 40px; }
+  .screen.active { display: block; }
+
+  /* ── 인트로 ── */
+  .intro-card {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .intro-banner {
+    background: linear-gradient(135deg, #1F3864 0%, #2E75B6 100%);
+    padding: 48px 32px 40px;
+    text-align: center;
+  }
+  .intro-banner .animals { font-size: 2.6rem; margin-bottom: 12px; }
+  .intro-banner h1 { color: white; font-size: 1.7rem; font-weight: 700; line-height: 1.4; }
+  .intro-banner p  { color: #BED4F0; font-size: 0.95rem; margin-top: 8px; }
+  .intro-body { padding: 32px; }
+  .intro-body .desc {
+    background: #F0F4FB;
+    border-left: 4px solid var(--primary);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 18px;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: #555;
+    margin-bottom: 24px;
+  }
+  .name-row {
+    display: flex; gap: 12px; align-items: center; margin-bottom: 20px;
+  }
+  .name-row label { font-weight: 600; white-space: nowrap; color: var(--primary); }
+  .name-row input {
+    flex: 1; border: 2px solid #D0DCF0; border-radius: 8px;
+    padding: 10px 14px; font-size: 1rem; font-family: inherit;
+    transition: border-color .2s;
+  }
+  .name-row input:focus { outline: none; border-color: var(--primary); }
+  .animal-pills {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px;
+  }
+  .pill {
+    padding: 6px 14px; border-radius: 20px; font-size: 0.85rem;
+    font-weight: 600; color: white;
+  }
+  .pill.ka   { background: var(--ka); }
+  .pill.sa   { background: var(--sa); }
+  .pill.yang { background: var(--yang); }
+  .pill.bu   { background: var(--bu); }
+  .btn-start {
+    width: 100%; padding: 16px; border: none; border-radius: 10px;
+    background: linear-gradient(135deg, var(--primary), #2E75B6);
+    color: white; font-size: 1.1rem; font-weight: 700;
+    cursor: pointer; transition: transform .15s, box-shadow .15s;
+    font-family: inherit;
+  }
+  .btn-start:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(31,56,100,.3); }
+
+  /* ── 질문 ── */
+  .q-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .q-counter { font-size: 0.9rem; color: #888; font-weight: 500; }
+  .progress-bar {
+    background: #E0E7F0; border-radius: 8px; height: 8px; margin-bottom: 24px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; background: linear-gradient(90deg, var(--primary), #2E75B6);
+    border-radius: 8px; transition: width .4s ease;
+  }
+  .q-card {
+    background: white; border-radius: var(--radius);
+    box-shadow: var(--shadow); overflow: hidden;
+  }
+  .q-num-bar {
+    background: var(--primary); color: white;
+    padding: 12px 24px; font-size: 0.95rem; font-weight: 700;
+  }
+  .q-text {
+    padding: 22px 24px 18px; font-size: 1.05rem; font-weight: 600;
+    line-height: 1.5; color: #1F3864;
+  }
+  .options { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 10px; }
+  .option-btn {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 18px; border: 2px solid #E0E7F0; border-radius: 10px;
+    background: white; cursor: pointer; font-family: inherit;
+    font-size: 0.97rem; color: #333; text-align: left;
+    transition: all .18s; width: 100%;
+  }
+  .option-btn:hover { border-color: var(--primary); background: #F0F4FB; }
+  .option-btn.selected { border-color: var(--primary); background: #EBF3FB; }
+  .option-label {
+    min-width: 30px; height: 30px; border-radius: 50%;
+    background: var(--primary); color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.9rem; flex-shrink: 0;
+  }
+  .option-btn.selected .option-label { background: #1F3864; }
+  .q-nav {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 20px; gap: 12px;
+  }
+  .btn-prev, .btn-next {
+    padding: 12px 28px; border-radius: 8px; border: none;
+    font-family: inherit; font-size: 0.97rem; font-weight: 600;
+    cursor: pointer; transition: all .15s;
+  }
+  .btn-prev {
+    background: #F0F4FB; color: var(--primary);
+    border: 2px solid #D0DCF0;
+  }
+  .btn-prev:hover { background: #E0E7F0; }
+  .btn-next {
+    background: var(--primary); color: white; flex: 1; max-width: 220px;
+  }
+  .btn-next:hover { background: #2E75B6; }
+  .btn-next:disabled { background: #B0B8C8; cursor: not-allowed; }
+  .btn-submit {
+    width: 100%; padding: 15px; border: none; border-radius: 10px;
+    background: linear-gradient(135deg, #2E8B2E, #1A5C1A);
+    color: white; font-size: 1.1rem; font-weight: 700;
+    cursor: pointer; font-family: inherit; margin-top: 20px;
+    transition: transform .15s;
+  }
+  .btn-submit:hover { transform: translateY(-2px); }
+  .btn-submit:disabled { background: #B0B8C8; cursor: not-allowed; transform: none; }
+
+  /* ── 결과 ── */
+  .result-card {
+    background: white; border-radius: var(--radius);
+    box-shadow: var(--shadow); overflow: hidden;
+  }
+  .result-banner {
+    padding: 40px 28px 32px; text-align: center;
+  }
+  .result-emoji { font-size: 4rem; margin-bottom: 8px; }
+  .result-banner h2 { font-size: 1.6rem; font-weight: 700; margin-bottom: 6px; }
+  .result-banner .result-sub { font-size: 1rem; opacity: .85; }
+  .result-banner .name-tag { font-size: 1.1rem; margin-bottom: 14px; opacity: .9; }
+  .result-body { padding: 28px; }
+  .score-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 10px; margin-bottom: 24px;
+  }
+  .score-item {
+    border-radius: 10px; padding: 12px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .score-item .s-label { font-weight: 600; font-size: 0.95rem; }
+  .score-item .s-bar-wrap { flex: 1; margin: 0 10px; }
+  .score-bar { height: 8px; border-radius: 4px; background: rgba(255,255,255,.5); overflow: hidden; }
+  .score-bar-fill { height: 100%; border-radius: 4px; background: rgba(255,255,255,.9); }
+  .score-item .s-num { font-weight: 700; font-size: 1.1rem; min-width: 28px; text-align: right; }
+  .desc-box {
+    background: #F8F9FF; border-radius: 10px; padding: 18px 20px;
+    margin-bottom: 20px; line-height: 1.75; font-size: 0.97rem; color: #444;
+  }
+  .detail-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px;
+  }
+  .detail-box { border-radius: 10px; padding: 16px; }
+  .detail-box h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 8px; }
+  .detail-box ul { padding-left: 18px; }
+  .detail-box ul li { font-size: 0.88rem; line-height: 1.65; color: #444; margin-bottom: 2px; }
+  .tip-box {
+    background: #FFFDF0; border: 1.5px solid #F0D060;
+    border-radius: 10px; padding: 14px 18px;
+    font-size: 0.93rem; color: #664400; line-height: 1.65; margin-bottom: 24px;
+  }
+  .tip-box strong { color: #AA6600; }
+  .btn-retry {
+    width: 100%; padding: 14px; border: 2px solid var(--primary);
+    border-radius: 10px; background: white; color: var(--primary);
+    font-family: inherit; font-size: 1rem; font-weight: 700;
+    cursor: pointer; transition: all .15s;
+  }
+  .btn-retry:hover { background: #EBF3FB; }
+
+  /* ── 반응형 ── */
+  @media (max-width: 500px) {
+    .score-grid, .detail-grid { grid-template-columns: 1fr; }
+    .intro-banner { padding: 36px 20px 28px; }
+    .intro-banner h1 { font-size: 1.4rem; }
+    .q-text { padding: 18px 18px 14px; font-size: 1rem; }
+    .options { padding: 0 10px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════ 인트로 ══════════ -->
+<div id="screen-intro" class="screen active">
+  <div class="intro-card">
+    <div class="intro-banner">
+      <div class="animals">🦎🦁🐑🦉</div>
+      <h1>나는 어떤 동물 유형일까?</h1>
+      <p>4동물 유형 성격검사</p>
+    </div>
+    <div class="intro-body">
+      <div class="desc">
+        20개의 질문에 솔직하게 답해주세요.<br>
+        정답은 없습니다 — 가장 나다운 보기를 고르는 것이 가장 정확합니다.<br>
+        소요 시간: 약 <strong>3~5분</strong>
+      </div>
+      <div class="name-row">
+        <label>이름</label>
+        <input type="text" id="user-name" placeholder="이름 또는 닉네임을 입력하세요" />
+      </div>
+      <div class="animal-pills">
+        <span class="pill ka">🦎 카멜레온형</span>
+        <span class="pill sa">🦁 사자형</span>
+        <span class="pill yang">🐑 양형</span>
+        <span class="pill bu">🦉 부엉이형</span>
+      </div>
+      <button class="btn-start" onclick="startTest()">검사 시작하기 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ 질문 ══════════ -->
+<div id="screen-question" class="screen">
+  <div class="q-header">
+    <span class="q-counter" id="q-counter">1 / 20</span>
+    <span style="font-size:.85rem;color:#888">🦎🦁🐑🦉</span>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progress-fill" style="width:5%"></div>
+  </div>
+  <div class="q-card">
+    <div class="q-num-bar" id="q-num-bar">Q01</div>
+    <div class="q-text" id="q-text"></div>
+    <div class="options" id="options"></div>
+  </div>
+  <div class="q-nav">
+    <button class="btn-prev" id="btn-prev" onclick="prevQ()">← 이전</button>
+    <button class="btn-next" id="btn-next" onclick="nextQ()">다음 →</button>
+  </div>
+  <button class="btn-submit" id="btn-submit" onclick="submitTest()" style="display:none">
+    🎯 결과 확인하기
+  </button>
+</div>
+
+<!-- ══════════ 결과 ══════════ -->
+<div id="screen-result" class="screen">
+  <div class="result-card" id="result-card">
+    <div class="result-banner" id="result-banner">
+      <div class="name-tag" id="result-name"></div>
+      <div class="result-emoji" id="result-emoji"></div>
+      <h2 id="result-type"></h2>
+      <div class="result-sub" id="result-sub"></div>
+    </div>
+    <div class="result-body">
+      <div class="score-grid" id="score-grid"></div>
+      <div class="desc-box" id="result-desc"></div>
+      <div class="detail-grid" id="detail-grid"></div>
+      <div class="tip-box" id="tip-box"></div>
+      <button class="btn-retry" onclick="retryTest()">↩ 다시 검사하기</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── 질문 데이터 ────────────────────────────────────
+const questions = [
+  { q: "새로운 프로젝트가 주어졌을 때 나는?", opts: [
+    "목표와 마감부터 정하고 바로 실행한다",
+    "계획서를 먼저 꼼꼼히 작성하고 검토한 후 시작한다",
+    "팀원들과 충분히 이야기하고 함께 진행한다",
+    "일단 시작하고 진행하면서 맞춰간다"
+  ]},
+  { q: "친구와 갈등이 생겼을 때 나는?", opts: [
+    "혼자 충분히 생각한 후 감정이 가라앉으면 이야기한다",
+    "내가 조금 양보하더라도 관계를 유지하는 게 먼저다",
+    "직접 말로 해결하고 빠르게 결론을 낸다",
+    "유머로 분위기를 풀거나 화제를 돌린다"
+  ]},
+  { q: "모르는 사람들과의 모임에서 나는?", opts: [
+    "금방 친해져서 대화를 주도하고 분위기를 만든다",
+    "주요 인물을 파악하고 목적에 맞는 사람과 대화한다",
+    "먼저 다가오는 사람과 편하게 이야기하며 천천히 섞인다",
+    "전체 분위기를 관찰하며 조용히 있다가 필요할 때 말한다"
+  ]},
+  { q: "중요한 결정을 내릴 때 나는?", opts: [
+    "빠르게 판단하고 결정한 후 밀어붙인다",
+    "여러 가능성을 열어두고 유연하게 결정한다",
+    "관련 자료를 최대한 수집하고 분석한 후 결정한다",
+    "주변 사람들 의견을 충분히 듣고 신중하게 결정한다"
+  ]},
+  { q: "스트레스를 받을 때 나는?", opts: [
+    "사람들과 어울리거나 새로운 활동으로 기분 전환한다",
+    "운동이나 일에 집중하며 혼자 해결한다",
+    "믿을 수 있는 사람에게 털어놓고 공감받는다",
+    "혼자만의 시간을 갖고 조용히 정리한다"
+  ]},
+  { q: "누군가 나에게 부탁할 때 나는?", opts: [
+    "가능 여부를 따지고 명확한 기준으로 수락 또는 거절한다",
+    "흔쾌히 받아들이고 내 방식으로 창의적으로 해결한다",
+    "거절하기 어려워서 일단 받아들이는 편이다",
+    "내가 제대로 할 수 있는지 꼼꼼히 따진 후 결정한다"
+  ]},
+  { q: "회의에서 나는?", opts: [
+    "충분히 검토된 의견만 말하고 발언 횟수는 적다",
+    "아이디어를 자유롭게 쏟아내고 토론을 즐긴다",
+    "결론과 실행 방안 위주로 짧고 굵게 발언한다",
+    "다른 사람 의견을 잘 듣고 분위기를 맞춰준다"
+  ]},
+  { q: "여행 계획을 세울 때 나는?", opts: [
+    "함께 가는 사람이 좋으면 어디든 상관없다",
+    "교통·숙소·동선까지 꼼꼼하게 미리 준비한다",
+    "큰 틀만 잡고 현지에서 즉흥적으로 움직인다",
+    "핵심 일정만 빠르게 정하고 효율적으로 움직인다"
+  ]},
+  { q: "칭찬받을 때 가장 기분 좋은 말은?", opts: [
+    "\"네가 없었으면 이 프로젝트 못 끝냈어, 결과가 대단해\"",
+    "\"항상 옆에서 챙겨줘서 고마워, 네 덕분에 버텼어\"",
+    "\"이렇게 꼼꼼하게 준비한 사람은 처음 봤어, 믿음직해\"",
+    "\"역시 너는 아이디어가 넘쳐, 함께하면 즐거워\""
+  ]},
+  { q: "상대방이 약속을 어겼을 때 나는?", opts: [
+    "그 자리에서 말하기보다 분위기 봐서 나중에 언급한다",
+    "말은 안 하지만 신뢰도가 내려가고 오래 기억한다",
+    "속상하지만 관계가 상할까봐 그냥 넘기는 편이다",
+    "즉시 짚고 넘어가고 다음엔 어떻게 할지 명확히 한다"
+  ]},
+  { q: "나는 어떤 환경에서 일이 가장 잘 되나?", opts: [
+    "조용하고 방해받지 않는 환경, 충분한 시간이 있을 때",
+    "명확한 목표와 권한이 주어진 환경",
+    "자유롭고 변화가 있는 환경, 다양한 사람들과 함께",
+    "팀원들과 사이가 좋고 분위기가 따뜻한 환경"
+  ]},
+  { q: "나를 가장 힘들게 하는 상황은?", opts: [
+    "주변 사람들과 사이가 나쁘거나 갈등이 생길 때",
+    "똑같은 일을 반복하거나 변화 없이 틀에 갇힐 때",
+    "근거 없이 결정되거나 준비 없이 일이 진행될 때",
+    "내 의견이 무시되거나 결정권이 없을 때"
+  ]},
+  { q: "처음 만난 사람에게 호감을 표현하는 방식은?", opts: [
+    "따뜻하게 공감하고 상대 이야기를 잘 들어준다",
+    "내가 아는 유용한 정보를 제공하며 신뢰를 쌓는다",
+    "핵심을 짚는 질문으로 관심을 직접적으로 표현한다",
+    "유머와 재치 있는 말로 웃기고 분위기를 띄운다"
+  ]},
+  { q: "팀 프로젝트에서 내가 자연스럽게 맡는 역할은?", opts: [
+    "아이디어 제안, 분위기 메이커, 대외 소통",
+    "팀원 간 조율, 갈등 중재, 꼼꼼한 실행",
+    "자료 조사, 리스크 검토, 품질 관리",
+    "전체 방향 결정, 일정 관리, 최종 의사결정"
+  ]},
+  { q: "누군가 내 의견을 반박할 때 나는?", opts: [
+    "상대 말도 맞다고 느끼며 입장이 흔들린다",
+    "논리적으로 맞서거나 단호하게 내 입장을 고수한다",
+    "다양한 각도로 반론을 제시하며 토론을 즐긴다",
+    "반박의 근거를 분석하고 충분히 검토한 후 답한다"
+  ]},
+  { q: "연인과 싸웠을 때 나는?", opts: [
+    "바로 해결하고 싶어서 즉시 대화를 요구한다",
+    "감정이 가라앉을 때까지 혼자 있다가 이성적으로 대화한다",
+    "속상해도 먼저 사과하거나 맞춰주는 편이다",
+    "분위기가 풀릴 때를 기다리다가 먼저 화해를 시도한다"
+  ]},
+  { q: "내가 가장 듣기 싫은 말은?", opts: [
+    "\"왜 이렇게 산만해, 집중 좀 해\"",
+    "\"왜 그냥 참아, 좀 더 강하게 나가야지\"",
+    "\"왜 이렇게 독단적이야, 다른 사람 생각도 들어봐\"",
+    "\"왜 이렇게 꼼꼼해, 대충 해도 돼\""
+  ]},
+  { q: "SNS를 사용하는 방식은?", opts: [
+    "필요한 정보 위주로 활용하고 감정 노출은 최소화한다",
+    "친한 사람들 소식을 챙기고 공감 댓글을 잘 단다",
+    "일상·감정을 자주 올리고 댓글·반응을 즐긴다",
+    "거의 올리지 않고 필요한 정보를 찾는 용도로만 쓴다"
+  ]},
+  { q: "내가 가장 중요하게 생각하는 가치는?", opts: [
+    "관계와 화합, 안정과 신뢰",
+    "자유와 즐거움, 새로운 경험",
+    "성취와 목표, 효율과 결과",
+    "정확성과 원칙, 완성도와 품질"
+  ]},
+  { q: "10년 후 내 모습을 상상할 때?", opts: [
+    "다양한 분야에서 활발하게 활동하며 많은 사람과 연결된 삶",
+    "명확한 목표를 이루고 영향력 있는 위치에 있는 삶",
+    "소중한 사람들과 따뜻하고 안정적인 관계를 맺는 삶",
+    "한 분야를 깊이 파고들어 진정한 전문가가 된 삶"
+  ]}
+];
+
+// ── 채점표 [사,부,양,카 순서로] ──────────────────────
+const SCORE_MAP = [
+  ['사','부','양','카'], ['부','양','사','카'], ['카','사','양','부'], ['사','카','부','양'],
+  ['카','사','양','부'], ['사','카','양','부'], ['부','카','사','양'], ['양','부','카','사'],
+  ['사','양','부','카'], ['카','부','양','사'], ['부','사','카','양'], ['양','카','부','사'],
+  ['양','부','사','카'], ['카','양','부','사'], ['양','사','카','부'], ['사','부','양','카'],
+  ['카','양','사','부'], ['사','양','카','부'], ['양','카','사','부'], ['카','사','양','부'],
+];
+
+// ── 결과 데이터 ──────────────────────────────────────
+const RESULTS = {
+  '카': {
+    emoji: '🦎', name: '카멜레온형', sub: '변화를 즐기는 적응의 달인',
+    color: '#1B6CA8', light: '#EBF5FB', mid: '#AED6F1',
+    desc: '어떤 상황에서도 유연하게 적응하며 사람들과 쉽게 어울립니다. 창의적이고 표현력이 풍부하며 분위기 메이커 역할을 자처합니다. 다양한 관점으로 문제를 바라보는 능력이 탁월합니다.',
+    pros: ['풍부한 공감 능력과 사교성', '창의적 아이디어와 표현력', '유연한 적응력과 융통성', '사람들과 쉽게 친해지는 능력'],
+    cons: ['일관성이 다소 부족한 편', '시작은 잘 하지만 마무리 약함', '한 가지에 깊이 집중하기 어려움', '감정 기복이 주변에 영향을 줄 수 있음'],
+    tip: '💡 일관성과 마무리 능력을 키우면 더욱 빛납니다. 아이디어를 끝까지 완성하는 습관이 큰 강점이 됩니다.'
+  },
+  '사': {
+    emoji: '🦁', name: '사자형', sub: '목표를 향해 돌진하는 리더',
+    color: '#C00000', light: '#FFF0F0', mid: '#FDDEDE',
+    desc: '강한 추진력과 결단력으로 목표를 향해 나아갑니다. 도전을 즐기고 결과 중심으로 움직이며 팀을 이끄는 힘이 있습니다. 어려운 상황에서도 흔들리지 않는 용기가 매력입니다.',
+    pros: ['강한 리더십과 추진력', '명확한 결단력과 도전 정신', '목표 지향적인 효율적 사고', '어려운 상황에서도 흔들리지 않는 용기'],
+    cons: ['상대방 감정 배려가 부족한 편', '자기 확신이 강해 독단적일 수 있음', '직설적 표현이 상처가 되기도 함', '패배·실수를 인정하기 어려워하는 편'],
+    tip: '💡 상대방의 속도와 감정을 배려하면 더 강력한 리더가 됩니다. 결과만큼 과정도 중요합니다.'
+  },
+  '양': {
+    emoji: '🐑', name: '양형', sub: '관계를 소중히 여기는 따뜻한 동반자',
+    color: '#2E8B2E', light: '#F0FFF4', mid: '#A9DFBF',
+    desc: '진심 어린 배려와 따뜻한 공감으로 주변 사람들을 하나로 묶습니다. 안정적이고 신뢰할 수 있으며 갈등 상황에서 완충 역할을 잘합니다. 오랫동안 깊은 관계를 유지하는 능력이 뛰어납니다.',
+    pros: ['진심 어린 배려와 공감 능력', '팀을 하나로 묶는 화합력', '신뢰할 수 있는 안정적 존재감', '깊고 오래가는 관계 유지 능력'],
+    cons: ['거절하지 못해 부탁을 다 떠안는 경향', '자기 감정·의견을 잘 표현하지 못함', '쌓인 불만이 한꺼번에 폭발하는 패턴', '갈등 회피로 문제가 방치되기도 함'],
+    tip: '💡 자신의 필요와 감정도 소중히 표현해 보세요. "아니오"라고 말하는 것도 배려입니다.'
+  },
+  '부': {
+    emoji: '🦉', name: '부엉이형', sub: '깊이 생각하고 정확하게 판단하는 분석가',
+    color: '#E07B20', light: '#FFF8F0', mid: '#FAD7A0',
+    desc: '꼼꼼한 분석과 논리적 사고로 최선의 답을 찾아냅니다. 완벽을 추구하며 체계적으로 계획하고 실행합니다. 신뢰할 수 있는 정보와 근거를 바탕으로 결정하는 것을 중요시합니다.',
+    pros: ['뛰어난 분석력과 논리적 사고', '꼼꼼한 완벽주의와 높은 기준', '체계적인 계획과 철저한 실행', '신뢰할 수 있는 전문성 축적'],
+    cons: ['완벽주의로 인한 결정 지연', '감정 표현이 적어 차갑게 오해받기도 함', '즉흥·변화에 적응하기 어려움', '기준이 높아 주변을 힘들게 할 수 있음'],
+    tip: '💡 완벽보다 80%의 완성을 목표로 하면 더 많이 이룰 수 있습니다. 감정 표현도 연습해 보세요.'
+  }
+};
+
+// ── 상태 ────────────────────────────────────────────
+let current = 0;
+let answers = new Array(20).fill(null);
+let userName = '';
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function startTest() {
+  userName = document.getElementById('user-name').value.trim() || '익명';
+  showScreen('screen-question');
+  renderQ();
+}
+
+function renderQ() {
+  const q = questions[current];
+  const total = questions.length;
+
+  document.getElementById('q-counter').textContent = `${current+1} / ${total}`;
+  document.getElementById('q-num-bar').textContent = `Q${String(current+1).padStart(2,'0')}`;
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('progress-fill').style.width = `${((current+1)/total)*100}%`;
+
+  const opts = document.getElementById('options');
+  opts.innerHTML = '';
+  q.opts.forEach((txt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn' + (answers[current] === i ? ' selected' : '');
+    btn.innerHTML = `<span class="option-label">${['A','B','C','D'][i]}</span><span>${txt}</span>`;
+    btn.onclick = () => selectOpt(i);
+    opts.appendChild(btn);
+  });
+
+  document.getElementById('btn-prev').style.visibility = current === 0 ? 'hidden' : 'visible';
+  document.getElementById('btn-next').style.display = current < total-1 ? 'block' : 'none';
+  document.getElementById('btn-next').disabled = answers[current] === null;
+  document.getElementById('btn-submit').style.display = current === total-1 ? 'block' : 'none';
+  document.getElementById('btn-submit').disabled = answers[current] === null;
+}
+
+function selectOpt(i) {
+  answers[current] = i;
+  document.querySelectorAll('.option-btn').forEach((btn, idx) => {
+    btn.classList.toggle('selected', idx === i);
+  });
+  document.getElementById('btn-next').disabled = false;
+  document.getElementById('btn-submit').disabled = false;
+}
+
+function nextQ() {
+  if (answers[current] === null) return;
+  current++;
+  renderQ();
+}
+
+function prevQ() {
+  if (current > 0) { current--; renderQ(); }
+}
+
+function submitTest() {
+  if (answers[current] === null) return;
+  // 채점
+  const scores = { '카':0, '사':0, '양':0, '부':0 };
+  answers.forEach((ans, i) => {
+    if (ans !== null) scores[SCORE_MAP[i][ans]]++;
+  });
+  showResult(scores);
+}
+
+function showResult(scores) {
+  const top = Object.keys(scores).reduce((a,b) => scores[a] >= scores[b] ? a : b);
+  const r = RESULTS[top];
+
+  // 배너
+  const banner = document.getElementById('result-banner');
+  banner.style.background = `linear-gradient(135deg, ${r.color} 0%, ${r.mid} 100%)`;
+  banner.style.color = 'white';
+  document.getElementById('result-name').textContent = `${userName}님의 결과`;
+  document.getElementById('result-emoji').textContent = r.emoji;
+  document.getElementById('result-type').textContent = r.name;
+  document.getElementById('result-sub').textContent = `「${r.sub}」`;
+
+  // 점수 그리드
+  const sg = document.getElementById('score-grid');
+  sg.innerHTML = '';
+  const order = ['카','사','양','부'];
+  const maxScore = Math.max(...Object.values(scores));
+  order.forEach(ak => {
+    const rv = RESULTS[ak];
+    const pct = maxScore > 0 ? (scores[ak]/maxScore)*100 : 0;
+    const isTop = (ak === top);
+    sg.innerHTML += `
+      <div class="score-item" style="background:${rv.light};border:2px solid ${isTop ? rv.color : '#eee'}">
+        <span class="s-label" style="color:${rv.color}">${rv.emoji} ${rv.name}</span>
+        <div class="s-bar-wrap">
+          <div class="score-bar" style="background:#E0E0E0">
+            <div class="score-bar-fill" style="width:${pct}%;background:${rv.color}"></div>
+          </div>
+        </div>
+        <span class="s-num" style="color:${rv.color}">${scores[ak]}점</span>
+      </div>`;
+  });
+
+  // 설명
+  document.getElementById('result-desc').textContent = r.desc;
+
+  // 장단점
+  const dg = document.getElementById('detail-grid');
+  dg.innerHTML = `
+    <div class="detail-box" style="background:${r.light};border:1.5px solid ${r.mid}">
+      <h4 style="color:${r.color}">✅ 주요 강점</h4>
+      <ul>${r.pros.map(p=>`<li>${p}</li>`).join('')}</ul>
+    </div>
+    <div class="detail-box" style="background:#FFF8F8;border:1.5px solid #FFD0D0">
+      <h4 style="color:#C00000">⚠️ 성장 포인트</h4>
+      <ul>${r.cons.map(c=>`<li>${c}</li>`).join('')}</ul>
+    </div>`;
+
+  // 팁
+  document.getElementById('tip-box').innerHTML = r.tip;
+
+  showScreen('screen-result');
+}
+
+function retryTest() {
+  current = 0;
+  answers = new Array(20).fill(null);
+  showScreen('screen-intro');
+}
+</script>
+</body>
+</html>
