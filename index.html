@@ -202,6 +202,31 @@
     cursor: pointer; transition: all .15s;
   }
   .btn-retry:hover { background: #EBF3FB; }
+  .share-row {
+    display: flex; gap: 10px; margin-bottom: 12px;
+  }
+  .btn-share-link, .btn-share-email {
+    flex: 1; padding: 13px; border-radius: 10px;
+    font-family: inherit; font-size: 0.95rem; font-weight: 600;
+    cursor: pointer; transition: all .15s;
+  }
+  .btn-share-link {
+    background: #1F3864; color: white; border: none;
+  }
+  .btn-share-link:hover { background: #2E75B6; }
+  .btn-share-email {
+    background: #F0F4FB; color: var(--primary);
+    border: 2px solid #D0DCF0;
+  }
+  .btn-share-email:hover { background: #E0E7F0; }
+  .toast {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+    background: #1F3864; color: white; padding: 12px 28px;
+    border-radius: 30px; font-size: 0.95rem; font-weight: 600;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 999;
+  }
+  .toast.show { opacity: 1; }
 
   /* ── 반응형 ── */
   @media (max-width: 500px) {
@@ -281,6 +306,10 @@
       <div class="desc-box" id="result-desc"></div>
       <div class="detail-grid" id="detail-grid"></div>
       <div class="tip-box" id="tip-box"></div>
+      <div class="share-row">
+        <button class="btn-share-link" id="btn-share-link" onclick="copyResultLink()">🔗 링크 복사</button>
+        <button class="btn-share-email" onclick="sendEmail()">📧 이메일로 보내기</button>
+      </div>
       <button class="btn-retry" onclick="retryTest()">↩ 다시 검사하기</button>
     </div>
   </div>
@@ -460,6 +489,8 @@ const RESULTS = {
 let current = 0;
 let answers = new Array(20).fill(null);
 let userName = '';
+let currentTop = '';
+let currentScores = {};
 
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -528,9 +559,26 @@ function submitTest() {
   showResult(scores);
 }
 
+function encodeResult(name, top, scores) {
+  const data = { n: name, t: top, s: scores };
+  return btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+}
+
+function decodeResult(encoded) {
+  try { return JSON.parse(decodeURIComponent(escape(atob(encoded)))); }
+  catch(e) { return null; }
+}
+
 function showResult(scores) {
   const top = Object.keys(scores).reduce((a,b) => scores[a] >= scores[b] ? a : b);
+  currentTop = top;
+  currentScores = scores;
   const r = RESULTS[top];
+
+  // URL에 결과 인코딩
+  const encoded = encodeResult(userName, top, scores);
+  const newUrl = location.pathname + '?r=' + encoded;
+  history.pushState(null, '', newUrl);
 
   // 배너
   const banner = document.getElementById('result-banner');
@@ -586,8 +634,86 @@ function showResult(scores) {
 function retryTest() {
   current = 0;
   answers = new Array(20).fill(null);
+  currentTop = '';
+  currentScores = {};
+  history.pushState(null, '', location.pathname);
   showScreen('screen-intro');
 }
+
+function copyResultLink() {
+  const url = location.href;
+  navigator.clipboard.writeText(url).then(() => {
+    showToast('✅ 링크가 복사됐어요!');
+    const btn = document.getElementById('btn-share-link');
+    btn.textContent = '✅ 복사됨!';
+    setTimeout(() => { btn.textContent = '🔗 링크 복사'; }, 2500);
+  }).catch(() => {
+    // fallback for older browsers
+    const ta = document.createElement('textarea');
+    ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    showToast('✅ 링크가 복사됐어요!');
+    const btn = document.getElementById('btn-share-link');
+    btn.textContent = '✅ 복사됨!';
+    setTimeout(() => { btn.textContent = '🔗 링크 복사'; }, 2500);
+  });
+}
+
+function sendEmail() {
+  const r = RESULTS[currentTop];
+  const scoreLines = ['카','사','양','부'].map(k =>
+    `${RESULTS[k].emoji} ${RESULTS[k].name}: ${currentScores[k]}점`
+  ).join('\n');
+
+  const subject = `[4동물 유형검사] ${userName}님의 결과: ${r.emoji} ${r.name}`;
+  const body =
+`${userName}님의 4동물 유형검사 결과입니다.
+
+━━━━━━━━━━━━━━━━━━━━
+유형: ${r.emoji} ${r.name}
+특징: 「${r.sub}」
+━━━━━━━━━━━━━━━━━━━━
+
+📊 점수
+${scoreLines}
+
+━━━━━━━━━━━━━━━━━━━━
+🔗 결과 링크 (클릭하면 동일한 결과 화면이 열립니다)
+${location.href}
+━━━━━━━━━━━━━━━━━━━━
+
+4동물 유형검사 | https://kweonjk.github.io/4animal-test/`;
+
+  window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
+function showToast(msg) {
+  let toast = document.getElementById('toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast'; toast.className = 'toast';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// ── URL에서 결과 복원 ────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(location.search);
+  const encoded = params.get('r');
+  if (encoded) {
+    const data = decodeResult(encoded);
+    if (data && data.n && data.t && data.s) {
+      userName = data.n;
+      currentTop = data.t;
+      currentScores = data.s;
+      showResult(data.s);
+    }
+  }
+});
 </script>
 </body>
 </html>
