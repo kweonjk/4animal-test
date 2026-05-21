@@ -927,9 +927,13 @@ function doSendEmail() {
   }
 
   const r = RESULTS[currentTop];
-  const scoreLines = ['카','사','양','부'].map(k =>
-    `${RESULTS[k].emoji} ${RESULTS[k].name}: ${currentScores[k]}점`
-  ).join('\n');
+  const total = Object.values(currentScores).reduce((a, b) => a + b, 0);
+  const sorted = ['카','사','양','부'].sort((a,b) => currentScores[b] - currentScores[a]);
+  const scoreLines = sorted.map(k => {
+    const pct = total > 0 ? Math.round(currentScores[k] / total * 100) : 0;
+    const mark = k === sorted[0] ? ' ★주' : (k === sorted[1] ? ' ☆부' : '');
+    return `${RESULTS[k].emoji} ${RESULTS[k].name}: ${pct}%${mark}`;
+  }).join('\n');
 
   const btn = document.getElementById('btn-modal-send');
   btn.disabled = true;
