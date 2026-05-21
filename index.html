@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>4동물 유형검사 — 나는 어떤 동물일까?</title>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
   :root {
     --ka: #1B6CA8; --ka-light: #EBF5FB; --ka-mid: #AED6F1;
@@ -219,6 +220,41 @@
     border: 2px solid #D0DCF0;
   }
   .btn-share-email:hover { background: #E0E7F0; }
+
+  /* ── 이메일 모달 ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5); z-index: 1000;
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: white; border-radius: 16px; padding: 32px 28px;
+    width: 100%; max-width: 420px; box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+  }
+  .modal-box h3 { font-size: 1.15rem; font-weight: 700; color: #1F3864; margin-bottom: 6px; }
+  .modal-box p { font-size: 0.9rem; color: #888; margin-bottom: 20px; }
+  .modal-input {
+    width: 100%; border: 2px solid #D0DCF0; border-radius: 10px;
+    padding: 12px 16px; font-size: 1rem; font-family: inherit;
+    margin-bottom: 14px; transition: border-color .2s;
+  }
+  .modal-input:focus { outline: none; border-color: #1F3864; }
+  .modal-btns { display: flex; gap: 10px; }
+  .btn-modal-cancel {
+    flex: 1; padding: 12px; border-radius: 8px; border: 2px solid #D0DCF0;
+    background: white; color: #888; font-family: inherit;
+    font-size: 0.95rem; font-weight: 600; cursor: pointer;
+  }
+  .btn-modal-send {
+    flex: 2; padding: 12px; border-radius: 8px; border: none;
+    background: #1F3864; color: white; font-family: inherit;
+    font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: background .15s;
+  }
+  .btn-modal-send:hover { background: #2E75B6; }
+  .btn-modal-send:disabled { background: #B0B8C8; cursor: not-allowed; }
+  .modal-status { font-size: 0.9rem; text-align: center; margin-top: 12px; min-height: 20px; }
+
   .toast {
     position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
     background: #1F3864; color: white; padding: 12px 28px;
@@ -239,6 +275,20 @@
 </style>
 </head>
 <body>
+
+<!-- ══════════ 이메일 모달 ══════════ -->
+<div class="modal-overlay" id="email-modal">
+  <div class="modal-box">
+    <h3>📧 결과를 이메일로 보내기</h3>
+    <p>받는 사람의 이메일 주소를 입력해주세요.</p>
+    <input class="modal-input" type="email" id="email-input" placeholder="example@gmail.com" />
+    <div class="modal-btns">
+      <button class="btn-modal-cancel" onclick="closeEmailModal()">취소</button>
+      <button class="btn-modal-send" id="btn-modal-send" onclick="doSendEmail()">📨 보내기</button>
+    </div>
+    <div class="modal-status" id="modal-status"></div>
+  </div>
+</div>
 
 <!-- ══════════ 인트로 ══════════ -->
 <div id="screen-intro" class="screen active">
@@ -660,32 +710,60 @@ function copyResultLink() {
   });
 }
 
+// ── EmailJS 설정 ────────────────────────────────────
+const EJS_PUBLIC_KEY  = 'hKIxH-TLR18w4HQun';
+const EJS_SERVICE_ID  = 'service_0moj8bs';
+const EJS_TEMPLATE_ID = 'x6qj7ig';
+emailjs.init(EJS_PUBLIC_KEY);
+
 function sendEmail() {
+  document.getElementById('email-input').value = '';
+  document.getElementById('modal-status').textContent = '';
+  document.getElementById('btn-modal-send').disabled = false;
+  document.getElementById('btn-modal-send').textContent = '📨 보내기';
+  document.getElementById('email-modal').classList.add('open');
+  setTimeout(() => document.getElementById('email-input').focus(), 100);
+}
+
+function closeEmailModal() {
+  document.getElementById('email-modal').classList.remove('open');
+}
+
+function doSendEmail() {
+  const toEmail = document.getElementById('email-input').value.trim();
+  if (!toEmail || !toEmail.includes('@')) {
+    document.getElementById('modal-status').innerHTML = '<span style="color:#C00000">올바른 이메일 주소를 입력해주세요.</span>';
+    return;
+  }
+
   const r = RESULTS[currentTop];
   const scoreLines = ['카','사','양','부'].map(k =>
     `${RESULTS[k].emoji} ${RESULTS[k].name}: ${currentScores[k]}점`
   ).join('\n');
 
-  const subject = `[4동물 유형검사] ${userName}님의 결과: ${r.emoji} ${r.name}`;
-  const body =
-`${userName}님의 4동물 유형검사 결과입니다.
+  const btn = document.getElementById('btn-modal-send');
+  btn.disabled = true;
+  btn.textContent = '전송 중...';
+  document.getElementById('modal-status').textContent = '';
 
-━━━━━━━━━━━━━━━━━━━━
-유형: ${r.emoji} ${r.name}
-특징: 「${r.sub}」
-━━━━━━━━━━━━━━━━━━━━
-
-📊 점수
-${scoreLines}
-
-━━━━━━━━━━━━━━━━━━━━
-🔗 결과 링크 (클릭하면 동일한 결과 화면이 열립니다)
-${location.href}
-━━━━━━━━━━━━━━━━━━━━
-
-4동물 유형검사 | https://kweonjk.github.io/4animal-test/`;
-
-  window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  emailjs.send(EJS_SERVICE_ID, EJS_TEMPLATE_ID, {
+    to_email:    toEmail,
+    user_name:   userName,
+    animal_type: r.name,
+    animal_emoji: r.emoji,
+    animal_sub:  r.sub,
+    scores:      scoreLines,
+    result_link: location.href,
+  }).then(() => {
+    document.getElementById('modal-status').innerHTML = '✅ <span style="color:#2E8B2E">이메일이 성공적으로 전송됐어요!</span>';
+    btn.textContent = '✅ 전송 완료';
+    setTimeout(() => closeEmailModal(), 2000);
+  }).catch((err) => {
+    document.getElementById('modal-status').innerHTML = '<span style="color:#C00000">전송 실패. 잠시 후 다시 시도해주세요.</span>';
+    btn.disabled = false;
+    btn.textContent = '📨 보내기';
+    console.error('EmailJS error:', err);
+  });
 }
 
 function showToast(msg) {
