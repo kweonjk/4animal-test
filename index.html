@@ -409,6 +409,40 @@
   }
   .ad-countdown span { font-weight: 700; color: var(--primary); }
 
+  /* ── 결과 대기 카운트다운 ── */
+  .wait-screen {
+    display: none; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-height: 100vh; padding: 40px 24px;
+    text-align: center;
+  }
+  .wait-screen.active { display: flex; }
+  .wait-animals { font-size: 2.4rem; margin-bottom: 24px; animation: bounce 1.2s infinite; }
+  @keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-8px); }
+  }
+  .wait-label { font-size: 1rem; color: #888; margin-bottom: 16px; font-weight: 500; }
+  .wait-number {
+    font-size: 6rem; font-weight: 900; color: var(--primary);
+    line-height: 1; margin-bottom: 12px;
+    animation: pulse 1s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { transform: scale(1); opacity: 1; }
+    50%      { transform: scale(1.08); opacity: .85; }
+  }
+  .wait-sub { font-size: 0.95rem; color: #AAA; margin-bottom: 32px; }
+  .wait-progress-wrap {
+    width: 100%; max-width: 300px; height: 6px;
+    background: #E0E7F0; border-radius: 4px; overflow: hidden;
+  }
+  .wait-progress-fill {
+    height: 100%; border-radius: 4px;
+    background: linear-gradient(90deg, var(--primary), #2E75B6);
+    transition: width 1s linear;
+  }
+
   /* ── 반응형 ── */
   @media (max-width: 500px) {
     .score-grid, .detail-grid { grid-template-columns: 1fr; }
@@ -493,7 +527,8 @@
 
 <!-- ══════════ 광고 ══════════ -->
 <div id="screen-ad" class="screen">
-  <div class="ad-card">
+  <!-- 광고 콘텐츠 -->
+  <div class="ad-card" id="ad-content">
     <div class="ad-label">AD · 광고</div>
     <div class="ad-image-wrap" id="ad-image-wrap">
       <img id="ad-img" src="" alt="광고 이미지" />
@@ -504,10 +539,18 @@
       <button id="ad-link-btn" class="btn-ad-link" onclick="adLinkClick()">
         🛒 <span id="ad-btn-text"></span>
       </button>
-      <button class="btn-ad-skip" id="btn-ad-skip" onclick="skipAd()">
-        결과 바로 보기 →
-      </button>
       <div class="ad-countdown" id="ad-countdown"></div>
+    </div>
+  </div>
+
+  <!-- 결과 대기 카운트다운 -->
+  <div class="wait-screen" id="wait-screen">
+    <div class="wait-animals">🦎🦁🐑🦉</div>
+    <div class="wait-label">결과를 분석하고 있어요</div>
+    <div class="wait-number" id="wait-number">10</div>
+    <div class="wait-sub">초 후 결과가 표시됩니다</div>
+    <div class="wait-progress-wrap">
+      <div class="wait-progress-fill" id="wait-progress" style="width:100%"></div>
     </div>
   </div>
 </div>
@@ -837,6 +880,10 @@ function submitTest() {
 }
 
 function showAd() {
+  // 대기 화면 초기화
+  document.getElementById('ad-content').style.display = '';
+  document.getElementById('wait-screen').classList.remove('active');
+
   // 광고 내용 세팅
   document.getElementById('ad-img').src                 = AD_CONFIG.image;
   document.getElementById('ad-image-wrap').style.cursor = 'pointer';
@@ -850,23 +897,8 @@ function showAd() {
   const skipBtn = document.getElementById('btn-ad-skip');
   let remain = AD_CONFIG.waitSec > 0 ? AD_CONFIG.waitSec : 0;
 
-  if (remain > 0) {
-    skipBtn.disabled = false;
-    cdEl.innerHTML = `<span>${remain}</span>초 후 이 창에서 결과가 자동으로 표시됩니다`;
-    adTimer = setInterval(() => {
-      remain--;
-      cdEl.innerHTML = remain > 0
-        ? `<span>${remain}</span>초 후 이 창에서 결과가 자동으로 표시됩니다`
-        : '';
-      if (remain <= 0) {
-        clearInterval(adTimer);
-        adTimer = null;
-        showResult(pendingScores);
-      }
-    }, 1000);
-  } else {
-    cdEl.textContent = '';
-  }
+  cdEl.innerHTML = `버튼을 누르면 결과가 바로 표시됩니다`;
+  adTimer = null;
 
   showScreen('screen-ad');
 }
@@ -877,8 +909,29 @@ function skipAd() {
 }
 
 function adLinkClick() {
-  // 새 창으로 광고 링크 열기 — 카운트다운은 계속 진행
+  // 새 창으로 쿠팡 열기
   window.open(AD_CONFIG.link, '_blank', 'noopener,noreferrer');
+  // 광고 콘텐츠 숨기고 카운트다운 대기 화면으로 전환
+  document.getElementById('ad-content').style.display = 'none';
+  const waitScreen = document.getElementById('wait-screen');
+  waitScreen.classList.add('active');
+
+  const WAIT = 10;
+  let remain = WAIT;
+  document.getElementById('wait-number').textContent = remain;
+  document.getElementById('wait-progress').style.width = '100%';
+
+  adTimer = setInterval(() => {
+    remain--;
+    document.getElementById('wait-number').textContent = remain;
+    document.getElementById('wait-progress').style.width = `${(remain / WAIT) * 100}%`;
+    if (remain <= 0) {
+      clearInterval(adTimer);
+      adTimer = null;
+      waitScreen.classList.remove('active');
+      showResult(pendingScores);
+    }
+  }, 1000);
 }
 
 function encodeResult(name, top, scores) {
