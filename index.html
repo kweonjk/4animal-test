@@ -360,6 +360,54 @@
   }
   .toast.show { opacity: 1; }
 
+  /* ── 광고 화면 ── */
+  #screen-ad { padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+  .ad-card {
+    background: white; border-radius: var(--radius);
+    box-shadow: var(--shadow); overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .ad-label {
+    background: #F0F4FB; color: #999; font-size: 0.78rem;
+    text-align: center; padding: 6px; letter-spacing: .05em;
+  }
+  .ad-image-wrap {
+    width: 100%; position: relative; cursor: pointer;
+    overflow: hidden; background: #f5f5f5;
+  }
+  .ad-image-wrap img {
+    width: 100%; display: block;
+    transition: transform .3s;
+  }
+  .ad-image-wrap:hover img { transform: scale(1.02); }
+  .ad-body { padding: 20px 24px 24px; }
+  .ad-title {
+    font-size: 1.1rem; font-weight: 700; color: #1F3864;
+    margin-bottom: 6px; line-height: 1.4;
+  }
+  .ad-desc { font-size: 0.9rem; color: #777; margin-bottom: 18px; line-height: 1.5; }
+  .btn-ad-link {
+    width: 100%; padding: 14px; border: none; border-radius: 10px;
+    background: linear-gradient(135deg, #E8350A, #FF6B35);
+    color: white; font-family: inherit; font-size: 1rem;
+    font-weight: 700; cursor: pointer; transition: transform .15s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    text-decoration: none; margin-bottom: 12px;
+  }
+  .btn-ad-link:hover { transform: translateY(-2px); }
+  .btn-ad-skip {
+    width: 100%; padding: 12px; border: 2px solid #D0DCF0;
+    border-radius: 10px; background: white; color: #888;
+    font-family: inherit; font-size: 0.9rem; font-weight: 600;
+    cursor: pointer; transition: all .15s;
+  }
+  .btn-ad-skip:hover { background: #F0F4FB; color: var(--primary); }
+  .ad-countdown {
+    text-align: center; font-size: 0.82rem; color: #AAA;
+    margin-top: 10px;
+  }
+  .ad-countdown span { font-weight: 700; color: var(--primary); }
+
   /* ── 반응형 ── */
   @media (max-width: 500px) {
     .score-grid, .detail-grid { grid-template-columns: 1fr; }
@@ -440,6 +488,27 @@
   <button class="btn-submit" id="btn-submit" onclick="submitTest()" style="display:none">
     🎯 결과 확인하기
   </button>
+</div>
+
+<!-- ══════════ 광고 ══════════ -->
+<div id="screen-ad" class="screen">
+  <div class="ad-card">
+    <div class="ad-label">AD · 광고</div>
+    <div class="ad-image-wrap" onclick="adLinkClick()">
+      <img id="ad-img" src="" alt="광고 이미지" />
+    </div>
+    <div class="ad-body">
+      <div class="ad-title" id="ad-title"></div>
+      <div class="ad-desc" id="ad-desc"></div>
+      <a id="ad-link-btn" class="btn-ad-link" href="#" target="_blank" rel="noopener" onclick="adLinkClick()">
+        🛒 <span id="ad-btn-text"></span>
+      </a>
+      <button class="btn-ad-skip" id="btn-ad-skip" onclick="skipAd()">
+        결과 보기 →
+      </button>
+      <div class="ad-countdown" id="ad-countdown"></div>
+    </div>
+  </div>
 </div>
 
 <!-- ══════════ 결과 ══════════ -->
@@ -593,6 +662,19 @@ const questions = [
   ]}
 ];
 
+// ════════════════════════════════════════════════════
+// 광고 설정 — 여기만 수정하면 됩니다!
+// ════════════════════════════════════════════════════
+const AD_CONFIG = {
+  image:    'https://image12.coupangcdn.com/image/affiliate/banner/~~.jpg', // 광고 이미지 URL
+  link:     'https://link.coupang.com/a/~~',                                // 쿠팡 파트너스 링크
+  title:    '지금 인기 상품을 확인해보세요!',                               // 광고 제목
+  desc:     '검사 결과 확인 전, 잠깐! 오늘의 추천 상품이에요.',             // 광고 설명 (짧게)
+  btnText:  '쿠팡에서 확인하기',                                            // 버튼 텍스트
+  waitSec:  5,   // 자동으로 결과 화면으로 넘어가는 초 (0 = 자동 없음)
+};
+// ════════════════════════════════════════════════════
+
 // ── 채점표 [사,부,양,카 순서로] ──────────────────────
 const SCORE_MAP = [
   ['사','부','양','카'], ['부','양','사','카'], ['카','사','양','부'], ['사','카','부','양'],
@@ -739,6 +821,9 @@ function prevQ() {
   if (current > 0) { current--; renderQ(); }
 }
 
+let pendingScores = null;
+let adTimer = null;
+
 function submitTest() {
   if (answers[current].length === 0) return;
   // 채점: 선택한 답변마다 0.5점
@@ -746,7 +831,55 @@ function submitTest() {
   answers.forEach((sel, i) => {
     sel.forEach(ans => { scores[SCORE_MAP[i][ans]] += 0.5; });
   });
-  showResult(scores);
+  pendingScores = scores;
+  showAd();
+}
+
+function showAd() {
+  // 광고 내용 세팅
+  document.getElementById('ad-img').src       = AD_CONFIG.image;
+  document.getElementById('ad-title').textContent = AD_CONFIG.title;
+  document.getElementById('ad-desc').textContent  = AD_CONFIG.desc;
+  document.getElementById('ad-btn-text').textContent = AD_CONFIG.btnText;
+  document.getElementById('ad-link-btn').href  = AD_CONFIG.link;
+
+  // 카운트다운
+  const cdEl = document.getElementById('ad-countdown');
+  const skipBtn = document.getElementById('btn-ad-skip');
+  if (AD_CONFIG.waitSec > 0) {
+    let remain = AD_CONFIG.waitSec;
+    skipBtn.disabled = true;
+    skipBtn.textContent = `결과 보기 (${remain}초 후)`;
+    cdEl.innerHTML = `<span>${remain}</span>초 후 자동으로 결과 화면으로 이동합니다`;
+    adTimer = setInterval(() => {
+      remain--;
+      skipBtn.textContent = remain > 0 ? `결과 보기 (${remain}초 후)` : '결과 보기 →';
+      cdEl.innerHTML = remain > 0
+        ? `<span>${remain}</span>초 후 자동으로 결과 화면으로 이동합니다`
+        : '';
+      if (remain <= 0) {
+        clearInterval(adTimer);
+        skipBtn.disabled = false;
+        skipAd();
+      }
+    }, 1000);
+  } else {
+    skipBtn.disabled = false;
+    skipBtn.textContent = '결과 보기 →';
+    cdEl.textContent = '';
+  }
+
+  showScreen('screen-ad');
+}
+
+function skipAd() {
+  if (adTimer) { clearInterval(adTimer); adTimer = null; }
+  showResult(pendingScores);
+}
+
+function adLinkClick() {
+  // 링크 클릭 후에도 결과 진행 가능하도록 카운트다운 유지
+  window.open(AD_CONFIG.link, '_blank', 'noopener');
 }
 
 function encodeResult(name, top, scores) {
