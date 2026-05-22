@@ -361,7 +361,8 @@
   .toast.show { opacity: 1; }
 
   /* ── 광고 화면 ── */
-  #screen-ad { padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+  #screen-ad { padding: 0; }
+  #screen-ad.active { display: flex; flex-direction: column; min-height: 100vh; }
   .ad-card {
     background: white; border-radius: var(--radius);
     box-shadow: var(--shadow); overflow: hidden;
