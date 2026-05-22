@@ -494,17 +494,17 @@
 <div id="screen-ad" class="screen">
   <div class="ad-card">
     <div class="ad-label">AD · 광고</div>
-    <div class="ad-image-wrap" onclick="adLinkClick()">
+    <div class="ad-image-wrap" id="ad-image-wrap">
       <img id="ad-img" src="" alt="광고 이미지" />
     </div>
     <div class="ad-body">
       <div class="ad-title" id="ad-title"></div>
       <div class="ad-desc" id="ad-desc"></div>
-      <a id="ad-link-btn" class="btn-ad-link" href="#" target="_blank" rel="noopener" onclick="adLinkClick()">
+      <button id="ad-link-btn" class="btn-ad-link" onclick="adLinkClick()">
         🛒 <span id="ad-btn-text"></span>
-      </a>
+      </button>
       <button class="btn-ad-skip" id="btn-ad-skip" onclick="skipAd()">
-        결과 보기 →
+        결과 바로 보기 →
       </button>
       <div class="ad-countdown" id="ad-countdown"></div>
     </div>
@@ -671,7 +671,7 @@ const AD_CONFIG = {
   title:    '지금 인기 상품을 확인해보세요!',                               // 광고 제목
   desc:     '검사 결과 확인 전, 잠깐! 오늘의 추천 상품이에요.',             // 광고 설명 (짧게)
   btnText:  '쿠팡에서 확인하기',                                            // 버튼 텍스트
-  waitSec:  5,   // 자동으로 결과 화면으로 넘어가는 초 (0 = 자동 없음)
+  waitSec:  10,  // 자동으로 결과 화면으로 넘어가는 초 (0 = 자동 없음)
 };
 // ════════════════════════════════════════════════════
 
@@ -837,35 +837,33 @@ function submitTest() {
 
 function showAd() {
   // 광고 내용 세팅
-  document.getElementById('ad-img').src       = AD_CONFIG.image;
-  document.getElementById('ad-title').textContent = AD_CONFIG.title;
-  document.getElementById('ad-desc').textContent  = AD_CONFIG.desc;
-  document.getElementById('ad-btn-text').textContent = AD_CONFIG.btnText;
-  document.getElementById('ad-link-btn').href  = AD_CONFIG.link;
+  document.getElementById('ad-img').src                 = AD_CONFIG.image;
+  document.getElementById('ad-image-wrap').style.cursor = 'pointer';
+  document.getElementById('ad-image-wrap').onclick      = adLinkClick;
+  document.getElementById('ad-title').textContent       = AD_CONFIG.title;
+  document.getElementById('ad-desc').textContent        = AD_CONFIG.desc;
+  document.getElementById('ad-btn-text').textContent    = AD_CONFIG.btnText;
 
-  // 카운트다운
-  const cdEl = document.getElementById('ad-countdown');
+  // 카운트다운 (항상 실행 — 버튼 클릭과 무관하게 원래 창에서 결과 표시)
+  const cdEl    = document.getElementById('ad-countdown');
   const skipBtn = document.getElementById('btn-ad-skip');
-  if (AD_CONFIG.waitSec > 0) {
-    let remain = AD_CONFIG.waitSec;
-    skipBtn.disabled = true;
-    skipBtn.textContent = `결과 보기 (${remain}초 후)`;
-    cdEl.innerHTML = `<span>${remain}</span>초 후 자동으로 결과 화면으로 이동합니다`;
+  let remain = AD_CONFIG.waitSec > 0 ? AD_CONFIG.waitSec : 0;
+
+  if (remain > 0) {
+    skipBtn.disabled = false;
+    cdEl.innerHTML = `<span>${remain}</span>초 후 이 창에서 결과가 자동으로 표시됩니다`;
     adTimer = setInterval(() => {
       remain--;
-      skipBtn.textContent = remain > 0 ? `결과 보기 (${remain}초 후)` : '결과 보기 →';
       cdEl.innerHTML = remain > 0
-        ? `<span>${remain}</span>초 후 자동으로 결과 화면으로 이동합니다`
+        ? `<span>${remain}</span>초 후 이 창에서 결과가 자동으로 표시됩니다`
         : '';
       if (remain <= 0) {
         clearInterval(adTimer);
-        skipBtn.disabled = false;
-        skipAd();
+        adTimer = null;
+        showResult(pendingScores);
       }
     }, 1000);
   } else {
-    skipBtn.disabled = false;
-    skipBtn.textContent = '결과 보기 →';
     cdEl.textContent = '';
   }
 
@@ -878,8 +876,8 @@ function skipAd() {
 }
 
 function adLinkClick() {
-  // 링크 클릭 후에도 결과 진행 가능하도록 카운트다운 유지
-  window.open(AD_CONFIG.link, '_blank', 'noopener');
+  // 새 창으로 광고 링크 열기 — 카운트다운은 계속 진행
+  window.open(AD_CONFIG.link, '_blank', 'noopener,noreferrer');
 }
 
 function encodeResult(name, top, scores) {
