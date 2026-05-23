@@ -476,17 +476,22 @@
     box-shadow: var(--shadow); overflow: hidden;
     display: flex; flex-direction: column;
   }
+  .ad-disclosure {
+    background: #FFFBF0; border-bottom: 1px solid #F0E8C8;
+    padding: 9px 16px; font-size: 0.75rem; color: #AA8800;
+    text-align: center; line-height: 1.5; font-weight: 500;
+  }
   .ad-label {
     background: #F0F4FB; color: #999; font-size: 0.78rem;
-    text-align: center; padding: 6px; letter-spacing: .05em;
+    text-align: center; padding: 5px; letter-spacing: .05em;
   }
   .ad-image-wrap {
     width: 100%; position: relative; cursor: pointer;
     overflow: hidden; background: #f5f5f5;
   }
   .ad-image-wrap img {
-    width: 100%; display: block;
-    transition: transform .3s;
+    width: 100%; aspect-ratio: 1 / 1; object-fit: cover;
+    display: block; transition: transform .3s;
   }
   .ad-image-wrap:hover img { transform: scale(1.02); }
   .ad-body { padding: 20px 24px 24px; }
@@ -495,25 +500,25 @@
     margin-bottom: 6px; line-height: 1.4;
   }
   .ad-desc { font-size: 0.9rem; color: #777; margin-bottom: 18px; line-height: 1.5; }
+  .ad-action-info {
+    display: flex; align-items: flex-start; gap: 8px;
+    background: #FFF5F5; border: 1px solid #FFD0D0;
+    border-radius: 8px; padding: 10px 14px;
+    margin-bottom: 14px; font-size: 0.83rem; color: #C00000; line-height: 1.5;
+  }
+  .ad-action-info .info-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
   .btn-ad-link {
-    width: 100%; padding: 14px; border: none; border-radius: 10px;
-    background: linear-gradient(135deg, #E8350A, #FF6B35);
-    color: white; font-family: inherit; font-size: 1rem;
-    font-weight: 700; cursor: pointer; transition: transform .15s;
+    width: 100%; padding: 15px; border: none; border-radius: 10px;
+    background: #C4031C;
+    color: white; font-family: inherit; font-size: 1.05rem;
+    font-weight: 700; cursor: pointer; transition: background .15s, transform .15s;
     display: flex; align-items: center; justify-content: center; gap: 8px;
-    text-decoration: none; margin-bottom: 12px;
+    text-decoration: none;
   }
-  .btn-ad-link:hover { transform: translateY(-2px); }
-  .btn-ad-skip {
-    width: 100%; padding: 12px; border: 2px solid #D0DCF0;
-    border-radius: 10px; background: white; color: #888;
-    font-family: inherit; font-size: 0.9rem; font-weight: 600;
-    cursor: pointer; transition: all .15s;
-  }
-  .btn-ad-skip:hover { background: #F0F4FB; color: var(--primary); }
+  .btn-ad-link:hover { background: #A50218; transform: translateY(-2px); }
   .ad-countdown {
     text-align: center; font-size: 0.82rem; color: #AAA;
-    margin-top: 10px;
+    margin-top: 12px;
   }
   .ad-countdown span { font-weight: 700; color: var(--primary); }
 
@@ -602,7 +607,7 @@
           </div>
           <div class="img-or">── 또는 ──</div>
           <input type="url" id="cfg-image" placeholder="이미지 URL 직접 입력 (https://...)" />
-          <div class="field-hint">파일 업로드 또는 URL 중 하나만 입력하세요</div>
+          <div class="field-hint">⚠️ 모든 기기에서 보이려면 <strong>URL 입력</strong>을 사용하세요.<br>파일 업로드는 현재 기기에서만 보여요.</div>
         </div>
         <div class="admin-field">
           <label>광고 링크 (쿠팡 파트너스)</label>
@@ -714,13 +719,22 @@
 <div id="screen-ad" class="screen">
   <!-- 광고 콘텐츠 -->
   <div class="ad-card" id="ad-content">
+    <div class="ad-disclosure">
+      이 페이지는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.
+    </div>
     <div class="ad-label">AD · 광고</div>
     <div class="ad-image-wrap" id="ad-image-wrap">
-      <img id="ad-img" src="" alt="광고 이미지" />
+      <img id="ad-img" src="" alt="광고 이미지"
+        onerror="this.parentElement.style.display='none'"
+        onload="this.parentElement.style.display=''" />
     </div>
     <div class="ad-body">
       <div class="ad-title" id="ad-title"></div>
       <div class="ad-desc" id="ad-desc"></div>
+      <div class="ad-action-info">
+        <span class="info-icon">👆</span>
+        <span>버튼을 누르면 <strong>새 창</strong>에서 쿠팡이 열리고,<br>이 화면에서 <strong>10초 후 결과</strong>가 자동으로 표시됩니다.</span>
+      </div>
       <button id="ad-link-btn" class="btn-ad-link" onclick="adLinkClick()">
         🛒 <span id="ad-btn-text"></span>
       </button>
@@ -895,7 +909,7 @@ const questions = [
 // 광고 설정 — 여기만 수정하면 됩니다!
 // ════════════════════════════════════════════════════
 const AD_CONFIG = {
-  image:    'https://image12.coupangcdn.com/image/affiliate/banner/~~.jpg', // 광고 이미지 URL
+  image:    '', // 광고 이미지 URL (관리자 설정에서 입력하세요)
   link:     'https://link.coupang.com/a/~~',                                // 쿠팡 파트너스 링크
   title:    '지금 인기 상품을 확인해보세요!',                               // 광고 제목
   desc:     '검사 결과 확인 전, 잠깐! 오늘의 추천 상품이에요.',             // 광고 설명 (짧게)
@@ -1070,9 +1084,15 @@ function showAd() {
   document.getElementById('wait-screen').classList.remove('active');
 
   // 광고 내용 세팅
-  document.getElementById('ad-img').src                 = AD_CONFIG.image;
-  document.getElementById('ad-image-wrap').style.cursor = 'pointer';
-  document.getElementById('ad-image-wrap').onclick      = adLinkClick;
+  const adImg  = document.getElementById('ad-img');
+  const adWrap = document.getElementById('ad-image-wrap');
+  if (AD_CONFIG.image) {
+    adImg.src = AD_CONFIG.image;
+    adWrap.style.display = '';
+    adWrap.onclick = adLinkClick;
+  } else {
+    adWrap.style.display = 'none';
+  }
   document.getElementById('ad-title').textContent       = AD_CONFIG.title;
   document.getElementById('ad-desc').textContent        = AD_CONFIG.desc;
   document.getElementById('ad-btn-text').textContent    = AD_CONFIG.btnText;
