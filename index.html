@@ -53,15 +53,18 @@
     margin-bottom: 24px;
   }
   .name-row {
-    display: flex; gap: 12px; align-items: center; margin-bottom: 20px;
+    display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px;
   }
-  .name-row label { font-weight: 600; white-space: nowrap; color: var(--primary); }
+  .name-row label { font-weight: 600; color: var(--primary); font-size: 0.95rem; }
   .name-row input {
-    flex: 1; border: 2px solid #D0DCF0; border-radius: 8px;
-    padding: 10px 14px; font-size: 1rem; font-family: inherit;
+    width: 100%; border: 2px solid #D0DCF0; border-radius: 8px;
+    padding: 12px 14px; font-size: 1rem; font-family: inherit;
     transition: border-color .2s;
   }
   .name-row input:focus { outline: none; border-color: var(--primary); }
+  .name-error {
+    font-size: 0.82rem; color: #C00000; margin-top: 2px; display: none;
+  }
   .animal-pills {
     display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px;
   }
@@ -678,7 +681,9 @@
       </div>
       <div class="name-row">
         <label>이름</label>
-        <input type="text" id="user-name" placeholder="이름 또는 닉네임을 입력하세요" />
+        <input type="text" id="user-name" placeholder="이름 또는 닉네임을 입력하세요"
+          oninput="document.getElementById('name-error').style.display='none'" />
+        <div class="name-error" id="name-error">⚠️ 이름을 입력해야 검사를 시작할 수 있어요.</div>
       </div>
       <div class="animal-pills">
         <span class="pill ka">🦎 카멜레온형</span>
@@ -774,7 +779,7 @@
       <div class="other-section" id="other-section"></div>
       <div class="share-row">
         <button class="btn-share-link" id="btn-share-link" onclick="copyResultLink()">🔗 링크 복사</button>
-        <button class="btn-share-email" onclick="sendEmail()">📧 이메일로 보내기</button>
+        <button class="btn-share-email" onclick="sendEmail()">📧 이메일 발송</button>
       </div>
       <button class="btn-retry" onclick="retryTest()">↩ 다시 검사하기</button>
     </div>
@@ -1003,7 +1008,14 @@ function showScreen(id) {
 }
 
 function startTest() {
-  userName = document.getElementById('user-name').value.trim() || '익명';
+  const nameVal = document.getElementById('user-name').value.trim();
+  if (!nameVal) {
+    const errEl = document.getElementById('name-error');
+    errEl.style.display = 'block';
+    document.getElementById('user-name').focus();
+    return;
+  }
+  userName = nameVal;
   saveSession();
   showScreen('screen-question');
   renderQ();
