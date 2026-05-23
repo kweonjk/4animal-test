@@ -1096,14 +1096,7 @@ function showAd() {
   document.getElementById('ad-desc').textContent        = AD_CONFIG.desc;
   document.getElementById('ad-btn-text').textContent    = AD_CONFIG.btnText;
 
-  // 카운트다운 (항상 실행 — 버튼 클릭과 무관하게 원래 창에서 결과 표시)
-  const cdEl    = document.getElementById('ad-countdown');
-  const skipBtn = document.getElementById('btn-ad-skip');
-  let remain = AD_CONFIG.waitSec > 0 ? AD_CONFIG.waitSec : 0;
-
-  cdEl.innerHTML = `버튼을 누르면 결과가 바로 표시됩니다`;
   adTimer = null;
-
   showScreen('screen-ad');
 }
 
