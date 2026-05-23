@@ -476,14 +476,15 @@
     box-shadow: var(--shadow); overflow: hidden;
     display: flex; flex-direction: column;
   }
-  .ad-disclosure {
-    background: #FFFBF0; border-bottom: 1px solid #F0E8C8;
-    padding: 9px 16px; font-size: 0.75rem; color: #AA8800;
-    text-align: center; line-height: 1.5; font-weight: 500;
+  .ad-footer {
+    border-top: 1px solid #F0E8C8; background: #FFFBF0;
+    padding: 10px 16px; display: flex; flex-direction: column; gap: 4px;
   }
   .ad-label {
-    background: #F0F4FB; color: #999; font-size: 0.78rem;
-    text-align: center; padding: 5px; letter-spacing: .05em;
+    color: #bbb; font-size: 0.72rem; letter-spacing: .05em;
+  }
+  .ad-disclosure {
+    font-size: 0.72rem; color: #AA8800; line-height: 1.5;
   }
   .ad-image-wrap {
     width: 100%; position: relative; cursor: pointer;
@@ -508,8 +509,7 @@
   }
   .ad-action-info .info-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
   .ad-support-msg {
-    margin-top: 12px; text-align: center;
-    font-size: 0.78rem; color: #aaa; line-height: 1.5;
+    margin: 4px 0 16px; font-size: 0.82rem; color: #999; line-height: 1.5;
   }
   .btn-ad-link {
     width: 100%; padding: 15px; border: none; border-radius: 10px;
@@ -723,10 +723,6 @@
 <div id="screen-ad" class="screen">
   <!-- 광고 콘텐츠 -->
   <div class="ad-card" id="ad-content">
-    <div class="ad-disclosure">
-      이 페이지는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.
-    </div>
-    <div class="ad-label">AD · 광고</div>
     <div class="ad-image-wrap" id="ad-image-wrap">
       <img id="ad-img" src="" alt="광고 이미지"
         onerror="this.parentElement.style.display='none'"
@@ -734,7 +730,7 @@
     </div>
     <div class="ad-body">
       <div class="ad-title" id="ad-title"></div>
-      <div class="ad-desc" id="ad-desc"></div>
+      <div class="ad-support-msg">광고 수익은 이 검사를 무료로 운영하는 데 쓰입니다.</div>
       <div class="ad-action-info">
         <span class="info-icon">👇</span>
         <span>버튼을 누르면 <strong>새 창</strong>에서 쿠팡이 열리고,<br>이 화면에서 <strong>10초 후 결과</strong>가 자동으로 표시됩니다.</span>
@@ -742,7 +738,10 @@
       <button id="ad-link-btn" class="btn-ad-link" onclick="adLinkClick()">
         🛒 <span id="ad-btn-text"></span>
       </button>
-      <div class="ad-support-msg">광고 수익은 이 검사를 무료로 운영하는 데 쓰입니다.</div>
+    </div>
+    <div class="ad-footer">
+      <div class="ad-disclosure">이 페이지는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</div>
+      <div class="ad-label">AD · 광고</div>
     </div>
   </div>
 
