@@ -262,6 +262,9 @@
   .share-row {
     display: flex; gap: 10px; margin-bottom: 12px;
   }
+  .share-row-top {
+    padding: 16px 20px 4px; background: transparent;
+  }
   .btn-share-link, .btn-share-email {
     flex: 1; padding: 13px; border-radius: 10px;
     font-family: inherit; font-size: 0.95rem; font-weight: 600;
@@ -505,7 +508,6 @@
     font-size: 1.1rem; font-weight: 700; color: #1F3864;
     margin-bottom: 6px; line-height: 1.4;
   }
-  .ad-desc { font-size: 0.9rem; color: #777; margin-bottom: 18px; line-height: 1.5; }
   .ad-action-info {
     display: flex; align-items: flex-start; gap: 8px;
     background: #FFF5F5; border: 1px solid #FFD0D0;
@@ -513,9 +515,6 @@
     margin-bottom: 14px; font-size: 0.83rem; color: #C00000; line-height: 1.5;
   }
   .ad-action-info .info-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
-  .ad-support-msg {
-    margin: 4px 0 16px; font-size: 0.82rem; color: #999; line-height: 1.5;
-  }
   .btn-ad-link {
     width: 100%; padding: 15px; border: none; border-radius: 10px;
     background: #C4031C;
@@ -525,12 +524,6 @@
     text-decoration: none;
   }
   .btn-ad-link:hover { background: #A50218; transform: translateY(-2px); }
-  .ad-countdown {
-    text-align: center; font-size: 0.82rem; color: #AAA;
-    margin-top: 12px;
-  }
-  .ad-countdown span { font-weight: 700; color: var(--primary); }
-
   /* ── 결과 대기 카운트다운 ── */
   .wait-screen {
     display: none; flex-direction: column;
@@ -771,6 +764,10 @@
       <div class="result-sub" id="result-sub"></div>
       <div class="type-tag-row" id="type-tags"></div>
     </div>
+    <div class="share-row share-row-top">
+      <button class="btn-share-link" id="btn-share-link-top" onclick="copyResultLink()">🔗 링크 복사</button>
+      <button class="btn-share-email" onclick="sendEmail()">📧 이메일 발송</button>
+    </div>
     <div class="result-body">
       <div class="score-grid" id="score-grid"></div>
       <div class="desc-box" id="result-desc"></div>
@@ -915,12 +912,10 @@ const questions = [
 // 광고 설정 — 여기만 수정하면 됩니다!
 // ════════════════════════════════════════════════════
 const AD_CONFIG = {
-  image:    'https://thumbnail.coupangcdn.com/thumbnails/remote/492x492ex/image/vendor_inventory/9000/bdebac18f2de858ad4eb360b8e195ab0e50d69cee429dfb9d734dda81ffe.jpg',
-  link:     'https://link.coupang.com/a/dZh5anXH7Q',                        // 쿠팡 파트너스 링크
-  title:    '지금 인기 상품을 확인해보세요!',                               // 광고 제목
-
-  btnText:  '상품 보고 결과 확인하기',                                      // 버튼 텍스트
-  waitSec:  10,  // 자동으로 결과 화면으로 넘어가는 초 (0 = 자동 없음)
+  image:   'https://thumbnail.coupangcdn.com/thumbnails/remote/492x492ex/image/vendor_inventory/9000/bdebac18f2de858ad4eb360b8e195ab0e50d69cee429dfb9d734dda81ffe.jpg',
+  link:    'https://link.coupang.com/a/dZh5anXH7Q',   // 쿠팡 파트너스 링크
+  title:   '지금 인기 상품을 확인해보세요!',           // 광고 제목
+  btnText: '상품 보고 결과 확인하기',                  // 버튼 텍스트
 };
 // ════════════════════════════════════════════════════
 
@@ -1130,11 +1125,6 @@ function showAd() {
   showScreen('screen-ad');
 }
 
-function skipAd() {
-  if (adTimer) { clearInterval(adTimer); adTimer = null; }
-  showResult(pendingScores);
-}
-
 function adLinkClick() {
   // 버튼 클릭 플래그 저장 (인앱 브라우저 대응: 페이지 이탈 후 복귀 시 결과 바로 표시)
   saveSession({ screen: 'ad', scores: pendingScores, adClicked: true });
@@ -1180,10 +1170,24 @@ function showResult(scores) {
   const sorted = ['카','사','양','부'].sort((a, b) => scores[b] - scores[a]);
   const top    = sorted[0];
   const second = sorted[1];
-  const pcts   = {};
-  ['카','사','양','부'].forEach(k => {
-    pcts[k] = total > 0 ? Math.round(scores[k] / total * 100) : 0;
-  });
+  // 퍼센트 계산 — 합이 항상 100%가 되도록 최대 오차 항목에 나머지 배분
+  const pcts = {};
+  if (total > 0) {
+    let sum = 0;
+    ['카','사','양','부'].forEach(k => {
+      pcts[k] = Math.floor(scores[k] / total * 100);
+      sum += pcts[k];
+    });
+    // 나머지를 소수점 가장 큰 순서대로 배분
+    const remainder = 100 - sum;
+    const keys = ['카','사','양','부'].sort((a, b) =>
+      (scores[b] / total * 100 - Math.floor(scores[b] / total * 100)) -
+      (scores[a] / total * 100 - Math.floor(scores[a] / total * 100))
+    );
+    for (let i = 0; i < remainder; i++) pcts[keys[i]]++;
+  } else {
+    ['카','사','양','부'].forEach(k => { pcts[k] = 0; });
+  }
 
   currentTop = top;
   currentScores = scores;
@@ -1298,21 +1302,22 @@ function retryTest() {
 
 function copyResultLink() {
   const url = location.href;
-  navigator.clipboard.writeText(url).then(() => {
+  const updateBtns = () => {
     showToast('✅ 링크가 복사됐어요!');
-    const btn = document.getElementById('btn-share-link');
-    btn.textContent = '✅ 복사됨!';
-    setTimeout(() => { btn.textContent = '🔗 링크 복사'; }, 2500);
-  }).catch(() => {
-    // fallback for older browsers
+    ['btn-share-link', 'btn-share-link-top'].forEach(id => {
+      const btn = document.getElementById(id);
+      if (btn) {
+        btn.textContent = '✅ 복사됨!';
+        setTimeout(() => { btn.textContent = '🔗 링크 복사'; }, 2500);
+      }
+    });
+  };
+  navigator.clipboard.writeText(url).then(updateBtns).catch(() => {
     const ta = document.createElement('textarea');
     ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0';
     document.body.appendChild(ta); ta.select();
     document.execCommand('copy'); document.body.removeChild(ta);
-    showToast('✅ 링크가 복사됐어요!');
-    const btn = document.getElementById('btn-share-link');
-    btn.textContent = '✅ 복사됨!';
-    setTimeout(() => { btn.textContent = '🔗 링크 복사'; }, 2500);
+    updateBtns();
   });
 }
 
