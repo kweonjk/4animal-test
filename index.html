@@ -732,13 +732,12 @@
       <div class="ad-title" id="ad-title"></div>
       <div class="ad-desc" id="ad-desc"></div>
       <div class="ad-action-info">
-        <span class="info-icon">👆</span>
+        <span class="info-icon">👇</span>
         <span>버튼을 누르면 <strong>새 창</strong>에서 쿠팡이 열리고,<br>이 화면에서 <strong>10초 후 결과</strong>가 자동으로 표시됩니다.</span>
       </div>
       <button id="ad-link-btn" class="btn-ad-link" onclick="adLinkClick()">
         🛒 <span id="ad-btn-text"></span>
       </button>
-      <div class="ad-countdown" id="ad-countdown"></div>
     </div>
   </div>
 
@@ -913,7 +912,7 @@ const AD_CONFIG = {
   link:     'https://link.coupang.com/a/~~',                                // 쿠팡 파트너스 링크
   title:    '지금 인기 상품을 확인해보세요!',                               // 광고 제목
   desc:     '검사 결과 확인 전, 잠깐! 오늘의 추천 상품이에요.',             // 광고 설명 (짧게)
-  btnText:  '쿠팡에서 확인하기',                                            // 버튼 텍스트
+  btnText:  '상품 보고 결과 확인하기',                                      // 버튼 텍스트
   waitSec:  10,  // 자동으로 결과 화면으로 넘어가는 초 (0 = 자동 없음)
 };
 // ════════════════════════════════════════════════════
@@ -1463,7 +1462,7 @@ function saveAdminSettings() {
   AD_CONFIG.link    = document.getElementById('cfg-link').value.trim();
   AD_CONFIG.title   = document.getElementById('cfg-title').value.trim() || '지금 인기 상품을 확인해보세요!';
   AD_CONFIG.desc    = document.getElementById('cfg-desc').value.trim()  || '오늘의 추천 상품이에요.';
-  AD_CONFIG.btnText = document.getElementById('cfg-btntext').value.trim() || '쿠팡에서 확인하기';
+  AD_CONFIG.btnText = document.getElementById('cfg-btntext').value.trim() || '상품 보고 결과 확인하기';
 
   localStorage.setItem('ad_config', JSON.stringify({
     image: AD_CONFIG.image, link: AD_CONFIG.link,
