@@ -621,10 +621,7 @@
           <label>광고 제목</label>
           <input type="text" id="cfg-title" placeholder="지금 인기 상품을 확인해보세요!" />
         </div>
-        <div class="admin-field">
-          <label>광고 설명</label>
-          <input type="text" id="cfg-desc" placeholder="오늘의 추천 상품이에요." />
-        </div>
+
         <div class="admin-field">
           <label>버튼 텍스트</label>
           <input type="text" id="cfg-btntext" placeholder="쿠팡에서 확인하기" />
@@ -730,7 +727,6 @@
     </div>
     <div class="ad-body">
       <div class="ad-title" id="ad-title"></div>
-      <div class="ad-support-msg" id="ad-support-msg"></div>
       <div class="ad-action-info">
         <span class="info-icon">👇</span>
         <span>버튼을 누르면 <strong>새 창</strong>에서 쿠팡이 열리고,<br>이 화면에서 <strong>10초 후 결과</strong>가 자동으로 표시됩니다.</span>
@@ -915,7 +911,7 @@ const AD_CONFIG = {
   image:    '', // 광고 이미지 URL (관리자 설정에서 입력하세요)
   link:     'https://link.coupang.com/a/~~',                                // 쿠팡 파트너스 링크
   title:    '지금 인기 상품을 확인해보세요!',                               // 광고 제목
-  desc:     '광고 수익은 이 검사를 무료로 운영하는 데 쓰입니다.',           // 광고 설명 (짧게)
+
   btnText:  '상품 보고 결과 확인하기',                                      // 버튼 텍스트
   waitSec:  10,  // 자동으로 결과 화면으로 넘어가는 초 (0 = 자동 없음)
 };
@@ -1113,7 +1109,6 @@ function showAd() {
     adWrap.style.display = 'none';
   }
   document.getElementById('ad-title').textContent       = AD_CONFIG.title;
-  document.getElementById('ad-support-msg').textContent = AD_CONFIG.desc;
   document.getElementById('ad-btn-text').textContent    = AD_CONFIG.btnText;
 
   adTimer = null;
@@ -1441,7 +1436,6 @@ function adminLogin() {
     }
     document.getElementById('cfg-link').value    = AD_CONFIG.link    || '';
     document.getElementById('cfg-title').value   = AD_CONFIG.title   || '';
-    document.getElementById('cfg-desc').value    = AD_CONFIG.desc    || '';
     document.getElementById('cfg-btntext').value = AD_CONFIG.btnText || '';
     document.getElementById('cfg-newpw').value   = '';
     document.getElementById('cfg-newpw2').value  = '';
@@ -1477,12 +1471,11 @@ function saveAdminSettings() {
   AD_CONFIG.image   = uploadedImageBase64 || document.getElementById('cfg-image').value.trim();
   AD_CONFIG.link    = document.getElementById('cfg-link').value.trim();
   AD_CONFIG.title   = document.getElementById('cfg-title').value.trim() || '지금 인기 상품을 확인해보세요!';
-  AD_CONFIG.desc    = document.getElementById('cfg-desc').value.trim()  || '광고 수익은 이 검사를 무료로 운영하는 데 쓰입니다.';
   AD_CONFIG.btnText = document.getElementById('cfg-btntext').value.trim() || '상품 보고 결과 확인하기';
 
   localStorage.setItem('ad_config', JSON.stringify({
     image: AD_CONFIG.image, link: AD_CONFIG.link,
-    title: AD_CONFIG.title, desc: AD_CONFIG.desc, btnText: AD_CONFIG.btnText,
+    title: AD_CONFIG.title, btnText: AD_CONFIG.btnText,
   }));
 
   msg.innerHTML = '✅ <span style="color:#2E8B2E">저장됐어요!</span>';
