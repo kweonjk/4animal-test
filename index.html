@@ -3,14 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>4동물 유형검사 — 나는 어떤 동물일까?</title>
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<title>4동물 유형검사</title>
 <style>
   :root {
-    --ka: #1B6CA8; --ka-light: #EBF5FB; --ka-mid: #AED6F1;
-    --sa: #C00000; --sa-light: #FFF0F0; --sa-mid: #FDDEDE;
-    --yang: #2E8B2E; --yang-light: #F0FFF4; --yang-mid: #A9DFBF;
-    --bu: #E07B20; --bu-light: #FFF8F0; --bu-mid: #FAD7A0;
     --primary: #1F3864;
     --radius: 14px;
     --shadow: 0 4px 20px rgba(0,0,0,0.10);
@@ -22,1539 +17,204 @@
     color: #333;
     min-height: 100vh;
   }
-  /* ── 공통 컨테이너 ── */
-  .screen { display: none; max-width: 720px; margin: 0 auto; padding: 24px 16px 40px; }
-  .screen.active { display: block; }
-
-  /* ── 인트로 ── */
-  .intro-card {
+  .wrapper {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 24px 16px 48px;
+  }
+  .hub-banner {
+    background: linear-gradient(135deg, #1F3864 0%, #2E75B6 100%);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 48px 32px 40px;
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .hub-banner .animals {
+    font-size: 2.6rem;
+    margin-bottom: 12px;
+    letter-spacing: 4px;
+  }
+  .hub-banner h1 {
+    color: white;
+    font-size: 1.8rem;
+    font-weight: 700;
+    line-height: 1.4;
+    margin-bottom: 8px;
+  }
+  .hub-banner .subtitle {
+    color: #BED4F0;
+    font-size: 1rem;
+    margin-bottom: 8px;
+  }
+  .hub-banner .desc {
+    color: #9BB8DC;
+    font-size: 0.88rem;
+    line-height: 1.6;
+  }
+  .cards-section {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  .cat-card {
     background: white;
     border-radius: var(--radius);
     box-shadow: var(--shadow);
     overflow: hidden;
-  }
-  .intro-banner {
-    background: linear-gradient(135deg, #1F3864 0%, #2E75B6 100%);
-    padding: 48px 32px 40px;
-    text-align: center;
-  }
-  .intro-banner .animals { font-size: 2.6rem; margin-bottom: 12px; }
-  .intro-banner h1 { color: white; font-size: 1.7rem; font-weight: 700; line-height: 1.4; }
-  .intro-banner p  { color: #BED4F0; font-size: 0.95rem; margin-top: 8px; }
-  .intro-body { padding: 32px; }
-  .intro-body .desc {
-    background: #F0F4FB;
-    border-left: 4px solid var(--primary);
-    border-radius: 0 8px 8px 0;
-    padding: 14px 18px;
-    font-size: 0.95rem;
-    line-height: 1.7;
-    color: #555;
-    margin-bottom: 24px;
-  }
-  .name-row {
-    display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px;
-  }
-  .name-row label { font-weight: 600; color: var(--primary); font-size: 0.95rem; }
-  .name-row input {
-    width: 100%; border: 2px solid #D0DCF0; border-radius: 8px;
-    padding: 12px 14px; font-size: 1rem; font-family: inherit;
-    transition: border-color .2s;
-  }
-  .name-row input:focus { outline: none; border-color: var(--primary); }
-  .name-error {
-    font-size: 0.82rem; color: #C00000; margin-top: 2px; display: none;
-  }
-  .animal-pills {
-    display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px;
-  }
-  .pill {
-    padding: 6px 14px; border-radius: 20px; font-size: 0.85rem;
-    font-weight: 600; color: white;
-  }
-  .pill.ka   { background: var(--ka); }
-  .pill.sa   { background: var(--sa); }
-  .pill.yang { background: var(--yang); }
-  .pill.bu   { background: var(--bu); }
-  .btn-start {
-    width: 100%; padding: 16px; border: none; border-radius: 10px;
-    background: linear-gradient(135deg, var(--primary), #2E75B6);
-    color: white; font-size: 1.1rem; font-weight: 700;
-    cursor: pointer; transition: transform .15s, box-shadow .15s;
-    font-family: inherit;
-  }
-  .btn-start:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(31,56,100,.3); }
-
-  /* ── 질문 ── */
-  .q-header {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 16px;
-  }
-  .q-counter { font-size: 0.9rem; color: #888; font-weight: 500; }
-  .progress-bar {
-    background: #E0E7F0; border-radius: 8px; height: 8px; margin-bottom: 24px; overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%; background: linear-gradient(90deg, var(--primary), #2E75B6);
-    border-radius: 8px; transition: width .4s ease;
-  }
-  .q-card {
-    background: white; border-radius: var(--radius);
-    box-shadow: var(--shadow); overflow: hidden;
-  }
-  .q-num-bar {
-    background: var(--primary); color: white;
-    padding: 12px 24px; font-size: 0.95rem; font-weight: 700;
-  }
-  .q-text {
-    padding: 22px 24px 18px; font-size: 1.05rem; font-weight: 600;
-    line-height: 1.5; color: #1F3864;
-  }
-  .q-hint {
-    padding: 6px 16px 10px; font-size: 0.85rem; color: #888;
-    display: flex; align-items: center; gap: 6px;
-  }
-  .sel-count {
-    display: inline-flex; align-items: center; justify-content: center;
-    background: #E0E7F0; color: var(--primary);
-    border-radius: 20px; padding: 2px 10px;
-    font-size: 0.82rem; font-weight: 700; transition: background .2s, color .2s;
-  }
-  .sel-count.full { background: var(--primary); color: white; }
-  .options { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 10px; }
-  .option-btn {
-    display: flex; align-items: center; gap: 14px;
-    padding: 14px 18px; border: 2px solid #E0E7F0; border-radius: 10px;
-    background: white; cursor: pointer; font-family: inherit;
-    font-size: 0.97rem; color: #333; text-align: left;
-    transition: all .18s; width: 100%;
-  }
-  .option-btn:hover:not(.dimmed) { border-color: var(--primary); background: #F0F4FB; }
-  .option-btn.selected { border-color: var(--primary); background: #EBF3FB; }
-  .option-btn.dimmed { opacity: 0.35; cursor: not-allowed; }
-  .option-label {
-    min-width: 30px; height: 30px; border-radius: 50%;
-    background: var(--primary); color: white;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 0.9rem; flex-shrink: 0;
-  }
-  .option-btn.selected .option-label { background: #1F3864; }
-  .q-nav {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-top: 20px; gap: 12px;
-  }
-  .btn-prev, .btn-next {
-    padding: 12px 28px; border-radius: 8px; border: none;
-    font-family: inherit; font-size: 0.97rem; font-weight: 600;
-    cursor: pointer; transition: all .15s;
-  }
-  .btn-prev {
-    background: #F0F4FB; color: var(--primary);
-    border: 2px solid #D0DCF0;
-  }
-  .btn-prev:hover { background: #E0E7F0; }
-  .btn-next {
-    background: var(--primary); color: white; flex: 1; max-width: 220px;
-  }
-  .btn-next:hover { background: #2E75B6; }
-  .btn-next:disabled { background: #B0B8C8; cursor: not-allowed; }
-  .btn-submit {
-    width: 100%; padding: 15px; border: none; border-radius: 10px;
-    background: linear-gradient(135deg, #2E8B2E, #1A5C1A);
-    color: white; font-size: 1.1rem; font-weight: 700;
-    cursor: pointer; font-family: inherit; margin-top: 20px;
-    transition: transform .15s;
-  }
-  .btn-submit:hover { transform: translateY(-2px); }
-  .btn-submit:disabled { background: #B0B8C8; cursor: not-allowed; transform: none; }
-
-  /* ── 결과 ── */
-  .result-card {
-    background: white; border-radius: var(--radius);
-    box-shadow: var(--shadow); overflow: hidden;
-  }
-  .result-banner {
-    padding: 40px 28px 28px; text-align: center;
-  }
-  .result-emoji { font-size: 4rem; margin-bottom: 8px; }
-  .result-banner h2 { font-size: 1.6rem; font-weight: 700; margin-bottom: 6px; }
-  .result-banner .result-sub { font-size: 1rem; opacity: .85; }
-  .result-banner .name-tag { font-size: 1.1rem; margin-bottom: 14px; opacity: .9; }
-  .type-tag-row {
-    display: flex; gap: 10px; justify-content: center; margin-top: 18px;
-  }
-  .type-tag {
-    display: flex; flex-direction: column; align-items: center;
-    padding: 10px 18px; border-radius: 12px; min-width: 120px;
-  }
-  .main-tag { background: rgba(255,255,255,0.25); border: 2px solid rgba(255,255,255,0.7); }
-  .sub-tag  { background: rgba(0,0,0,0.12); border: 2px solid rgba(255,255,255,0.3); }
-  .tag-label {
-    font-size: 0.75rem; font-weight: 700; opacity: .8;
-    letter-spacing: .06em; margin-bottom: 4px;
-  }
-  .main-tag .tag-label::before { content: '🎯 '; }
-  .sub-tag  .tag-label::before { content: '✨ '; }
-  .tag-animal { font-size: 0.95rem; font-weight: 700; }
-  .tag-pct {
-    font-size: 1.3rem; font-weight: 900; margin-top: 2px;
-  }
-  .main-tag .tag-pct { color: white; }
-  .sub-tag  .tag-pct { color: rgba(255,255,255,0.85); }
-  .result-keywords {
-    display: flex; gap: 6px; justify-content: center;
-    flex-wrap: wrap; margin: 8px 0 6px;
-  }
-  .result-keywords .kw-tag {
-    font-size: 0.82rem; font-weight: 700;
-    padding: 3px 12px; border-radius: 20px;
-    background: rgba(255,255,255,0.25);
-    border: 1.5px solid rgba(255,255,255,0.6);
-    color: white;
-  }
-  .result-body { padding: 28px; }
-  .score-grid {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 10px; margin-bottom: 24px;
-  }
-  .score-item {
-    border-radius: 10px; padding: 12px 16px;
-    display: flex; flex-direction: column; gap: 6px;
-  }
-  .score-item-top {
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .score-item .s-label { font-weight: 600; font-size: 0.95rem; }
-  .score-item .s-bar-wrap { flex: 1; margin: 0 10px; }
-  .score-bar { height: 8px; border-radius: 4px; background: rgba(255,255,255,.5); overflow: hidden; }
-  .score-bar-fill { height: 100%; border-radius: 4px; background: rgba(255,255,255,.9); }
-  .score-item .s-num { font-weight: 700; font-size: 1.1rem; min-width: 36px; text-align: right; }
-  .kw-row { display: flex; gap: 5px; flex-wrap: wrap; }
-  .kw-tag {
-    font-size: 0.75rem; font-weight: 600; padding: 2px 9px;
-    border-radius: 20px; background: rgba(255,255,255,0.65);
-    border: 1px solid rgba(0,0,0,0.08);
-  }
-  .desc-box {
-    background: #F8F9FF; border-radius: 10px; padding: 18px 20px;
-    margin-bottom: 20px; line-height: 1.75; font-size: 0.97rem; color: #444;
-  }
-  .detail-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px;
-  }
-  .detail-box { border-radius: 10px; padding: 16px; }
-  .detail-box h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 8px; }
-  .detail-box ul { padding-left: 18px; }
-  .detail-box ul li { font-size: 0.88rem; line-height: 1.65; color: #444; margin-bottom: 2px; }
-  .tip-box {
-    background: #FFFDF0; border: 1.5px solid #F0D060;
-    border-radius: 10px; padding: 14px 18px;
-    font-size: 0.93rem; color: #664400; line-height: 1.65; margin-bottom: 24px;
-  }
-  .tip-box strong { color: #AA6600; }
-  .btn-retry {
-    width: 100%; padding: 14px; border: 2px solid var(--primary);
-    border-radius: 10px; background: white; color: var(--primary);
-    font-family: inherit; font-size: 1rem; font-weight: 700;
-    cursor: pointer; transition: all .15s;
-  }
-  .btn-retry:hover { background: #EBF3FB; }
-  .share-row {
-    display: flex; gap: 10px; margin-bottom: 12px;
-  }
-  .share-row-top {
-    padding: 16px 20px 4px; background: transparent;
-  }
-  .btn-share-link, .btn-share-email {
-    flex: 1; padding: 13px; border-radius: 10px;
-    font-family: inherit; font-size: 0.95rem; font-weight: 600;
-    cursor: pointer; transition: all .15s;
-  }
-  .btn-share-link {
-    background: #1F3864; color: white; border: none;
-  }
-  .btn-share-link:hover { background: #2E75B6; }
-  .btn-share-email {
-    background: #F0F4FB; color: var(--primary);
-    border: 2px solid #D0DCF0;
-  }
-  .btn-share-email:hover { background: #E0E7F0; }
-
-  /* ── 다른 유형 소통 섹션 ── */
-  .other-section { margin-bottom: 24px; }
-  .other-section h3 {
-    font-size: 1rem; font-weight: 700; color: #1F3864;
-    margin-bottom: 12px; padding-bottom: 8px;
-    border-bottom: 2px solid #E0E7F0;
-  }
-  .other-cards { display: flex; flex-direction: column; gap: 12px; }
-  .other-card {
-    border-radius: 12px; border: 1.5px solid #E0E7F0;
-    overflow: hidden;
-  }
-  .other-card-header {
-    display: flex; align-items: center; gap: 10px;
-    padding: 12px 16px;
-  }
-  .other-card-header .o-emoji { font-size: 1.5rem; }
-  .other-card-header .o-name { font-weight: 700; font-size: 0.97rem; }
-  .o-kw-row { display: flex; gap: 4px; flex-wrap: wrap; margin: 4px 0 5px; }
-  .o-kw-tag {
-    font-size: 0.75rem; font-weight: 600; padding: 1px 8px;
-    border-radius: 20px; background: white; border: 1.5px solid;
-  }
-  .other-card-header .o-brief { font-size: 0.85rem; color: #666; line-height: 1.5; }
-  .other-card-body {
-    background: white; padding: 12px 16px 14px;
-    border-top: 1px solid #F0F0F0;
-  }
-  .other-card-body .comm-title {
-    font-size: 0.82rem; font-weight: 700; color: #888;
-    text-transform: uppercase; letter-spacing: .04em;
-    margin-bottom: 8px;
-  }
-  .other-card-body ul { padding-left: 0; list-style: none; }
-  .other-card-body ul li {
-    font-size: 0.88rem; color: #444; line-height: 1.6;
-    padding: 3px 0 3px 18px; position: relative;
-  }
-  .other-card-body ul li::before {
-    content: '✔'; position: absolute; left: 0;
-    color: #2E8B2E; font-size: 0.78rem; top: 4px;
-  }
-
-  /* ── 관리자 설정 ── */
-  .btn-admin {
-    position: fixed; top: 16px; right: 16px; z-index: 500;
-    width: 36px; height: 36px; border-radius: 50%;
-    background: rgba(255,255,255,0.85); border: 1.5px solid #D0DCF0;
-    font-size: 1rem; cursor: pointer; transition: all .2s;
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
-  }
-  .btn-admin:hover { background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-  /* 이미지 업로드 */
-  .img-upload-area {
-    border: 2px dashed #D0DCF0; border-radius: 10px;
-    padding: 16px; text-align: center; cursor: pointer;
-    transition: border-color .2s; background: #FAFBFF;
-    margin-bottom: 8px;
-  }
-  .img-upload-area:hover { border-color: var(--primary); }
-  .img-upload-area input[type=file] { display: none; }
-  .img-upload-label {
-    font-size: 0.88rem; color: #888; cursor: pointer;
-    display: flex; flex-direction: column; align-items: center; gap: 6px;
-  }
-  .img-upload-label .upload-icon { font-size: 1.8rem; }
-  .img-preview {
-    width: 100%; border-radius: 8px; margin-top: 10px;
-    max-height: 160px; object-fit: cover; display: none;
-  }
-  .img-or { text-align: center; font-size: 0.8rem; color: #BBB; margin: 8px 0; }
-  .admin-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.55); z-index: 2000;
-    align-items: flex-start; justify-content: center;
-    padding: 20px; overflow-y: auto;
-  }
-  .admin-overlay.open { display: flex; }
-  .admin-box {
-    background: white; border-radius: 16px;
-    width: 100%; max-width: 460px;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.25);
-    overflow: hidden; margin: auto;
-  }
-  .admin-header {
-    background: var(--primary); color: white;
-    padding: 18px 24px; display: flex;
-    align-items: center; justify-content: space-between;
-  }
-  .admin-header h3 { font-size: 1rem; font-weight: 700; margin: 0; }
-  .btn-admin-close {
-    background: none; border: none; color: white;
-    font-size: 1.3rem; cursor: pointer; padding: 0; line-height: 1;
-  }
-  .admin-body { padding: 24px; }
-  .admin-section {
-    border: 1.5px solid #E0E7F0; border-radius: 10px;
-    padding: 16px; margin-bottom: 16px;
-  }
-  .admin-section-title {
-    font-size: 0.82rem; font-weight: 700; color: #888;
-    text-transform: uppercase; letter-spacing: .05em;
-    margin-bottom: 12px;
-  }
-  .admin-field { margin-bottom: 12px; }
-  .admin-field label {
-    display: block; font-size: 0.85rem; font-weight: 600;
-    color: #555; margin-bottom: 5px;
-  }
-  .admin-field input, .admin-field textarea {
-    width: 100%; border: 1.5px solid #D0DCF0; border-radius: 8px;
-    padding: 9px 12px; font-size: 0.92rem; font-family: inherit;
-    transition: border-color .2s; resize: vertical;
-  }
-  .admin-field input:focus, .admin-field textarea:focus {
-    outline: none; border-color: var(--primary);
-  }
-  .admin-field .field-hint {
-    font-size: 0.78rem; color: #AAA; margin-top: 4px;
-  }
-  .btn-admin-save {
-    width: 100%; padding: 13px; border: none; border-radius: 10px;
-    background: var(--primary); color: white;
-    font-family: inherit; font-size: 1rem; font-weight: 700;
-    cursor: pointer; transition: background .15s; margin-bottom: 10px;
-  }
-  .btn-admin-save:hover { background: #2E75B6; }
-  .admin-msg {
-    text-align: center; font-size: 0.88rem; min-height: 20px; margin-top: 6px;
-  }
-  /* 비밀번호 화면 */
-  .admin-pw-screen { padding: 32px 24px; text-align: center; }
-  .admin-pw-screen .lock-icon { font-size: 2.5rem; margin-bottom: 12px; }
-  .admin-pw-screen h3 { font-size: 1.1rem; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
-  .admin-pw-screen p { font-size: 0.88rem; color: #888; margin-bottom: 20px; }
-  .admin-pw-input {
-    width: 100%; border: 2px solid #D0DCF0; border-radius: 10px;
-    padding: 12px 16px; font-size: 1rem; font-family: inherit;
-    margin-bottom: 12px; text-align: center; letter-spacing: .1em;
-    transition: border-color .2s;
-  }
-  .admin-pw-input:focus { outline: none; border-color: var(--primary); }
-  .btn-admin-login {
-    width: 100%; padding: 13px; border: none; border-radius: 10px;
-    background: var(--primary); color: white;
-    font-family: inherit; font-size: 1rem; font-weight: 700;
-    cursor: pointer;
-  }
-  .admin-pw-error { color: #C00000; font-size: 0.88rem; margin-top: 8px; min-height: 20px; }
-
-  /* ── 이메일 모달 ── */
-  .modal-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.5); z-index: 1000;
-    align-items: center; justify-content: center; padding: 20px;
-  }
-  .modal-overlay.open { display: flex; }
-  .modal-box {
-    background: white; border-radius: 16px; padding: 32px 28px;
-    width: 100%; max-width: 420px; box-shadow: 0 8px 40px rgba(0,0,0,0.2);
-  }
-  .modal-box h3 { font-size: 1.15rem; font-weight: 700; color: #1F3864; margin-bottom: 6px; }
-  .modal-box p { font-size: 0.9rem; color: #888; margin-bottom: 20px; }
-  .modal-input {
-    width: 100%; border: 2px solid #D0DCF0; border-radius: 10px;
-    padding: 12px 16px; font-size: 1rem; font-family: inherit;
-    margin-bottom: 14px; transition: border-color .2s;
-  }
-  .modal-input:focus { outline: none; border-color: #1F3864; }
-  .modal-btns { display: flex; gap: 10px; }
-  .btn-modal-cancel {
-    flex: 1; padding: 12px; border-radius: 8px; border: 2px solid #D0DCF0;
-    background: white; color: #888; font-family: inherit;
-    font-size: 0.95rem; font-weight: 600; cursor: pointer;
-  }
-  .btn-modal-send {
-    flex: 2; padding: 12px; border-radius: 8px; border: none;
-    background: #1F3864; color: white; font-family: inherit;
-    font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: background .15s;
-  }
-  .btn-modal-send:hover { background: #2E75B6; }
-  .btn-modal-send:disabled { background: #B0B8C8; cursor: not-allowed; }
-  .modal-status { font-size: 0.9rem; text-align: center; margin-top: 12px; min-height: 20px; }
-
-  .toast {
-    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
-    background: #1F3864; color: white; padding: 12px 28px;
-    border-radius: 30px; font-size: 0.95rem; font-weight: 600;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-    opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 999;
-  }
-  .toast.show { opacity: 1; }
-
-  /* ── 광고 화면 ── */
-  #screen-ad { padding: 0; }
-  #screen-ad.active { display: flex; flex-direction: column; min-height: 100vh; }
-  .ad-card {
-    background: white; border-radius: var(--radius);
-    box-shadow: var(--shadow); overflow: hidden;
-    display: flex; flex-direction: column;
-  }
-  .ad-footer {
-    margin: 0 24px 20px;
-    background: #F5F5F5; border: 1px solid #DDDDDD;
-    border-radius: 8px; padding: 10px 14px;
-    display: flex; flex-direction: column; gap: 3px;
-  }
-  .ad-label {
-    color: #888; font-size: 0.72rem; letter-spacing: .05em;
-  }
-  .ad-disclosure {
-    font-size: 0.78rem; color: #888; line-height: 1.5;
-  }
-  .ad-image-wrap {
-    width: 100%; position: relative; cursor: pointer;
-    overflow: hidden; background: #f5f5f5;
-  }
-  .ad-image-wrap img {
-    width: 100%; aspect-ratio: 1 / 1; object-fit: cover;
-    display: block; transition: transform .3s;
-  }
-  .ad-image-wrap:hover img { transform: scale(1.02); }
-  .ad-body { padding: 20px 24px 24px; }
-  .ad-title {
-    font-size: 1.1rem; font-weight: 700; color: #1F3864;
-    margin-bottom: 6px; line-height: 1.4;
-  }
-  .ad-action-info {
-    display: flex; align-items: flex-start; gap: 8px;
-    background: #FFF5F5; border: 1px solid #FFD0D0;
-    border-radius: 8px; padding: 10px 14px;
-    margin-bottom: 14px; font-size: 0.83rem; color: #C00000; line-height: 1.5;
-  }
-  .ad-action-info .info-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
-  .btn-ad-link {
-    width: 100%; padding: 15px; border: none; border-radius: 10px;
-    background: #C4031C;
-    color: white; font-family: inherit; font-size: 1.05rem;
-    font-weight: 700; cursor: pointer; transition: background .15s, transform .15s;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
     text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: transform 0.15s, box-shadow 0.15s;
   }
-  .btn-ad-link:hover { background: #A50218; transform: translateY(-2px); }
-  /* ── 결과 대기 카운트다운 ── */
-  .wait-screen {
-    display: none; flex-direction: column;
-    align-items: center; justify-content: center;
-    min-height: 100vh; padding: 40px 24px;
+  .cat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.14);
+  }
+  .cat-card-inner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 22px;
+    border-top: 4px solid var(--accent, #1F3864);
+  }
+  .cat-emoji {
+    font-size: 2.2rem;
+    flex-shrink: 0;
+    width: 48px;
     text-align: center;
   }
-  .wait-screen.active { display: flex; }
-  .wait-animals { font-size: 2.4rem; margin-bottom: 24px; animation: bounce 1.2s infinite; }
-  @keyframes bounce {
-    0%,100% { transform: translateY(0); }
-    50%      { transform: translateY(-8px); }
+  .cat-info {
+    flex: 1;
   }
-  .wait-label { font-size: 1rem; color: #888; margin-bottom: 16px; font-weight: 500; }
-  .wait-number {
-    font-size: 6rem; font-weight: 900; color: var(--primary);
-    line-height: 1; margin-bottom: 12px;
-    animation: pulse 1s infinite;
+  .cat-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #888;
+    margin-bottom: 3px;
   }
-  @keyframes pulse {
-    0%,100% { transform: scale(1); opacity: 1; }
-    50%      { transform: scale(1.08); opacity: .85; }
+  .cat-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1F3864;
+    margin-bottom: 4px;
   }
-  .wait-sub { font-size: 0.95rem; color: #AAA; margin-bottom: 32px; }
-  .wait-progress-wrap {
-    width: 100%; max-width: 300px; height: 6px;
-    background: #E0E7F0; border-radius: 4px; overflow: hidden;
+  .cat-desc {
+    font-size: 0.88rem;
+    color: #666;
+    line-height: 1.5;
   }
-  .wait-progress-fill {
-    height: 100%; border-radius: 4px;
-    background: linear-gradient(90deg, var(--primary), #2E75B6);
-    transition: width 1s linear;
+  .cat-btn {
+    flex-shrink: 0;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 16px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+    pointer-events: none;
   }
-
-  /* ── 반응형 ── */
+  .footer-note {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #888;
+    line-height: 1.7;
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 16px 24px;
+  }
   @media (max-width: 500px) {
-    .score-grid, .detail-grid { grid-template-columns: 1fr; }
-    .intro-banner { padding: 36px 20px 28px; }
-    .intro-banner h1 { font-size: 1.4rem; }
-    .q-text { padding: 18px 18px 14px; font-size: 1rem; }
-    .options { padding: 0 10px 12px; }
+    .hub-banner { padding: 36px 20px 28px; }
+    .hub-banner h1 { font-size: 1.5rem; }
+    .cat-card-inner { padding: 16px; gap: 12px; }
+    .cat-emoji { font-size: 1.9rem; width: 40px; }
+    .cat-btn { padding: 8px 12px; font-size: 0.82rem; }
   }
 </style>
 </head>
 <body>
+<div class="wrapper">
 
-<!-- ══════════ 관리자 설정 버튼 ══════════ -->
-<button class="btn-admin" onclick="openAdmin()" title="관리자 설정">⚙️</button>
-
-<!-- ══════════ 관리자 모달 ══════════ -->
-<div class="admin-overlay" id="admin-overlay">
-  <div class="admin-box">
-    <div class="admin-header">
-      <h3>⚙️ 관리자 설정</h3>
-      <button class="btn-admin-close" onclick="closeAdmin()">✕</button>
-    </div>
-
-    <!-- 비밀번호 화면 -->
-    <div class="admin-pw-screen" id="admin-pw-screen">
-      <div class="lock-icon">🔒</div>
-      <h3>관리자 로그인</h3>
-      <p>비밀번호를 입력해주세요</p>
-      <input class="admin-pw-input" type="password" id="admin-pw-input"
-        placeholder="••••••••" onkeydown="if(event.key==='Enter') adminLogin()" />
-      <button class="btn-admin-login" onclick="adminLogin()">로그인</button>
-      <div class="admin-pw-error" id="admin-pw-error"></div>
-    </div>
-
-    <!-- 설정 화면 -->
-    <div class="admin-body" id="admin-settings-screen" style="display:none">
-
-      <div class="admin-section">
-        <div class="admin-section-title">📢 광고 설정</div>
-        <div class="admin-field">
-          <label>광고 이미지</label>
-          <div class="img-upload-area" onclick="document.getElementById('cfg-img-file').click()">
-            <input type="file" id="cfg-img-file" accept="image/*" onchange="handleImgUpload(event)" />
-            <label class="img-upload-label">
-              <span class="upload-icon">🖼️</span>
-              <span id="upload-label-text">클릭해서 이미지 파일 업로드</span>
-            </label>
-            <img id="img-preview" class="img-preview" alt="미리보기" />
-          </div>
-          <div class="img-or">── 또는 ──</div>
-          <input type="url" id="cfg-image" placeholder="이미지 URL 직접 입력 (https://...)" />
-          <div class="field-hint">⚠️ 모든 기기에서 보이려면 <strong>URL 입력</strong>을 사용하세요.<br>파일 업로드는 현재 기기에서만 보여요.</div>
-        </div>
-        <div class="admin-field">
-          <label>광고 링크 (쿠팡 파트너스)</label>
-          <input type="url" id="cfg-link" placeholder="https://link.coupang.com/a/..." />
-        </div>
-        <div class="admin-field">
-          <label>광고 제목</label>
-          <input type="text" id="cfg-title" placeholder="지금 인기 상품을 확인해보세요!" />
-        </div>
-
-        <div class="admin-field">
-          <label>버튼 텍스트</label>
-          <input type="text" id="cfg-btntext" placeholder="쿠팡에서 확인하기" />
-        </div>
-      </div>
-
-      <div class="admin-section">
-        <div class="admin-section-title">🔐 비밀번호 변경</div>
-        <div class="admin-field">
-          <label>새 비밀번호</label>
-          <input type="password" id="cfg-newpw" placeholder="새 비밀번호 입력" />
-        </div>
-        <div class="admin-field">
-          <label>비밀번호 확인</label>
-          <input type="password" id="cfg-newpw2" placeholder="다시 입력" />
-        </div>
-      </div>
-
-      <button class="btn-admin-save" onclick="saveAdminSettings()">💾 저장하기</button>
-      <div class="admin-msg" id="admin-save-msg"></div>
-    </div>
+  <div class="hub-banner">
+    <div class="animals">🦎🦁🐑🦉</div>
+    <h1>4동물 유형검사</h1>
+    <div class="subtitle">나는 어떤 동물 유형일까?</div>
+    <div class="desc">직장·연인·가족·친구 — 상황별로 알아보는 나의 동물 유형</div>
   </div>
+
+  <div class="cards-section">
+
+    <a class="cat-card" href="일반.html">
+      <div class="cat-card-inner" style="--accent: #1F3864;">
+        <div class="cat-emoji">🌟</div>
+        <div class="cat-info">
+          <div class="cat-label">전반적인 성격 유형 검사</div>
+          <div class="cat-name">일반 유형검사</div>
+          <div class="cat-desc">일상에서의 나는 어떤 동물 유형일까?</div>
+        </div>
+        <div class="cat-btn" style="background: #1F3864;">검사 시작 →</div>
+      </div>
+    </a>
+
+    <a class="cat-card" href="직장.html">
+      <div class="cat-card-inner" style="--accent: #2E75B6;">
+        <div class="cat-emoji">💼</div>
+        <div class="cat-info">
+          <div class="cat-label">직장 유형 검사</div>
+          <div class="cat-name">직장 유형검사</div>
+          <div class="cat-desc">직장에서의 나는 어떤 동물 유형일까?</div>
+        </div>
+        <div class="cat-btn" style="background: #2E75B6;">검사 시작 →</div>
+      </div>
+    </a>
+
+    <a class="cat-card" href="연인.html">
+      <div class="cat-card-inner" style="--accent: #C00000;">
+        <div class="cat-emoji">💕</div>
+        <div class="cat-info">
+          <div class="cat-label">연인 유형 검사</div>
+          <div class="cat-name">연인 유형검사</div>
+          <div class="cat-desc">연인 관계에서의 나는 어떤 동물 유형일까?</div>
+        </div>
+        <div class="cat-btn" style="background: #C00000;">검사 시작 →</div>
+      </div>
+    </a>
+
+    <a class="cat-card" href="가족.html">
+      <div class="cat-card-inner" style="--accent: #2E8B2E;">
+        <div class="cat-emoji">🏠</div>
+        <div class="cat-info">
+          <div class="cat-label">가족 유형 검사</div>
+          <div class="cat-name">가족 유형검사</div>
+          <div class="cat-desc">가족 안에서의 나는 어떤 동물 유형일까?</div>
+        </div>
+        <div class="cat-btn" style="background: #2E8B2E;">검사 시작 →</div>
+      </div>
+    </a>
+
+    <a class="cat-card" href="친구.html">
+      <div class="cat-card-inner" style="--accent: #E07B20;">
+        <div class="cat-emoji">🤝</div>
+        <div class="cat-info">
+          <div class="cat-label">친구 유형 검사</div>
+          <div class="cat-name">친구 유형검사</div>
+          <div class="cat-desc">친구 관계에서의 나는 어떤 동물 유형일까?</div>
+        </div>
+        <div class="cat-btn" style="background: #E07B20;">검사 시작 →</div>
+      </div>
+    </a>
+
+  </div>
+
+  <div class="footer-note">
+    각 유형은 🦎카멜레온 · 🦁사자 · 🐑양 · 🦉부엉이 중 하나로 분석됩니다
+  </div>
+
 </div>
-
-<!-- ══════════ 이메일 모달 ══════════ -->
-<div class="modal-overlay" id="email-modal">
-  <div class="modal-box">
-    <h3>📧 결과를 이메일로 보내기</h3>
-    <p>받는 사람의 이메일 주소를 입력해주세요.</p>
-    <input class="modal-input" type="email" id="email-input" placeholder="example@gmail.com" />
-    <div class="modal-btns">
-      <button class="btn-modal-cancel" onclick="closeEmailModal()">취소</button>
-      <button class="btn-modal-send" id="btn-modal-send" onclick="doSendEmail()">📨 보내기</button>
-    </div>
-    <div class="modal-status" id="modal-status"></div>
-  </div>
-</div>
-
-<!-- ══════════ 인트로 ══════════ -->
-<div id="screen-intro" class="screen active">
-  <div class="intro-card">
-    <div class="intro-banner">
-      <div class="animals">🦎🦁🐑🦉</div>
-      <h1>나는 어떤 동물 유형일까?</h1>
-      <p>4동물 유형 성격검사</p>
-    </div>
-    <div class="intro-body">
-      <div class="desc">
-        20개의 질문에 솔직하게 답해주세요.<br>
-        정답은 없습니다 — 가장 나다운 보기를 고르는 것이 가장 정확합니다.<br>
-        소요 시간: 약 <strong>3~5분</strong>
-      </div>
-      <div class="name-row">
-        <label>이름</label>
-        <input type="text" id="user-name" placeholder="이름 또는 닉네임을 입력하세요"
-          oninput="document.getElementById('name-error').style.display='none'" />
-        <div class="name-error" id="name-error">⚠️ 이름을 입력해야 검사를 시작할 수 있어요.</div>
-      </div>
-      <div class="animal-pills">
-        <span class="pill ka">🦎 카멜레온형</span>
-        <span class="pill sa">🦁 사자형</span>
-        <span class="pill yang">🐑 양형</span>
-        <span class="pill bu">🦉 부엉이형</span>
-      </div>
-      <button class="btn-start" onclick="startTest()">검사 시작하기 →</button>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════ 질문 ══════════ -->
-<div id="screen-question" class="screen">
-  <div class="q-header">
-    <span class="q-counter" id="q-counter">1 / 20</span>
-    <span style="font-size:.85rem;color:#888">🦎🦁🐑🦉</span>
-  </div>
-  <div class="progress-bar">
-    <div class="progress-fill" id="progress-fill" style="width:5%"></div>
-  </div>
-  <div class="q-card">
-    <div class="q-num-bar" id="q-num-bar">Q01</div>
-    <div class="q-text" id="q-text"></div>
-    <div class="q-hint">
-      최대 <strong>2개</strong>까지 선택 가능 &nbsp;
-      <span class="sel-count" id="sel-count">0 / 2</span>
-    </div>
-    <div class="options" id="options"></div>
-  </div>
-  <div class="q-nav">
-    <button class="btn-prev" id="btn-prev" onclick="prevQ()">← 이전</button>
-    <button class="btn-next" id="btn-next" onclick="nextQ()">다음 →</button>
-  </div>
-  <button class="btn-submit" id="btn-submit" onclick="submitTest()" style="display:none">
-    🎯 결과 확인하기
-  </button>
-</div>
-
-<!-- ══════════ 광고 ══════════ -->
-<div id="screen-ad" class="screen">
-  <!-- 광고 콘텐츠 -->
-  <div class="ad-card" id="ad-content">
-    <div class="ad-image-wrap" id="ad-image-wrap">
-      <img id="ad-img" src="" alt="광고 이미지"
-        onerror="this.parentElement.style.display='none'"
-        onload="this.parentElement.style.display=''" />
-    </div>
-    <div class="ad-body">
-      <div class="ad-title" id="ad-title"></div>
-      <div class="ad-action-info">
-        <span class="info-icon">👇</span>
-        <span>버튼을 누르면 <strong>새 창</strong>에서 쿠팡이 열리고,<br>이 화면에서 <strong>10초 후 결과</strong>가 자동으로 표시됩니다.</span>
-      </div>
-      <button id="ad-link-btn" class="btn-ad-link" onclick="adLinkClick()">
-        🛒 <span id="ad-btn-text"></span>
-      </button>
-    </div>
-    <div class="ad-footer">
-      <div class="ad-disclosure">이 페이지는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</div>
-      <div class="ad-label">AD · 광고</div>
-    </div>
-  </div>
-
-  <!-- 결과 대기 카운트다운 -->
-  <div class="wait-screen" id="wait-screen">
-    <div class="wait-animals">🦎🦁🐑🦉</div>
-    <div class="wait-label">결과를 분석하고 있어요</div>
-    <div class="wait-number" id="wait-number">10</div>
-    <div class="wait-sub">초 후 결과가 표시됩니다</div>
-    <div class="wait-progress-wrap">
-      <div class="wait-progress-fill" id="wait-progress" style="width:100%"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════ 결과 ══════════ -->
-<div id="screen-result" class="screen">
-  <div class="result-card" id="result-card">
-    <div class="result-banner" id="result-banner">
-      <div class="name-tag" id="result-name"></div>
-      <div class="result-emoji" id="result-emoji"></div>
-      <h2 id="result-type"></h2>
-      <div class="result-keywords" id="result-keywords"></div>
-      <div class="result-sub" id="result-sub"></div>
-      <div class="type-tag-row" id="type-tags"></div>
-    </div>
-    <div class="share-row share-row-top">
-      <button class="btn-share-link" id="btn-share-link-top" onclick="copyResultLink()">🔗 링크 복사</button>
-      <button class="btn-share-email" onclick="sendEmail()">📧 이메일 발송</button>
-    </div>
-    <div class="result-body">
-      <div class="score-grid" id="score-grid"></div>
-      <div class="desc-box" id="result-desc"></div>
-      <div class="detail-grid" id="detail-grid"></div>
-      <div class="tip-box" id="tip-box"></div>
-      <div class="other-section" id="other-section"></div>
-      <div class="share-row">
-        <button class="btn-share-link" id="btn-share-link" onclick="copyResultLink()">🔗 링크 복사</button>
-        <button class="btn-share-email" onclick="sendEmail()">📧 이메일 발송</button>
-      </div>
-      <button class="btn-retry" onclick="retryTest()">↩ 다시 검사하기</button>
-    </div>
-  </div>
-</div>
-
-<script>
-// ── 질문 데이터 ────────────────────────────────────
-const questions = [
-  { q: "새로운 프로젝트가 주어졌을 때 나는?", opts: [
-    "목표와 마감부터 정하고 바로 실행한다",
-    "계획서를 먼저 꼼꼼히 작성하고 검토한 후 시작한다",
-    "팀원들과 충분히 이야기하고 함께 진행한다",
-    "일단 시작하고 진행하면서 맞춰간다"
-  ]},
-  { q: "친구와 갈등이 생겼을 때 나는?", opts: [
-    "혼자 충분히 생각한 후 감정이 가라앉으면 이야기한다",
-    "내가 조금 양보하더라도 관계를 유지하는 게 먼저다",
-    "직접 말로 해결하고 빠르게 결론을 낸다",
-    "유머로 분위기를 풀거나 화제를 돌린다"
-  ]},
-  { q: "모르는 사람들과의 모임에서 나는?", opts: [
-    "금방 친해져서 대화를 주도하고 분위기를 만든다",
-    "주요 인물을 파악하고 목적에 맞는 사람과 대화한다",
-    "먼저 다가오는 사람과 편하게 이야기하며 천천히 섞인다",
-    "전체 분위기를 관찰하며 조용히 있다가 필요할 때 말한다"
-  ]},
-  { q: "중요한 결정을 내릴 때 나는?", opts: [
-    "빠르게 판단하고 결정한 후 밀어붙인다",
-    "여러 가능성을 열어두고 유연하게 결정한다",
-    "관련 자료를 최대한 수집하고 분석한 후 결정한다",
-    "주변 사람들 의견을 충분히 듣고 신중하게 결정한다"
-  ]},
-  { q: "스트레스를 받을 때 나는?", opts: [
-    "사람들과 어울리거나 새로운 활동으로 기분 전환한다",
-    "운동이나 일에 집중하며 혼자 해결한다",
-    "믿을 수 있는 사람에게 털어놓고 공감받는다",
-    "혼자만의 시간을 갖고 조용히 정리한다"
-  ]},
-  { q: "누군가 나에게 부탁할 때 나는?", opts: [
-    "가능 여부를 따지고 명확한 기준으로 수락 또는 거절한다",
-    "흔쾌히 받아들이고 내 방식으로 창의적으로 해결한다",
-    "거절하기 어려워서 일단 받아들이는 편이다",
-    "내가 제대로 할 수 있는지 꼼꼼히 따진 후 결정한다"
-  ]},
-  { q: "회의에서 나는?", opts: [
-    "충분히 검토된 의견만 말하고 발언 횟수는 적다",
-    "아이디어를 자유롭게 쏟아내고 토론을 즐긴다",
-    "결론과 실행 방안 위주로 짧고 굵게 발언한다",
-    "다른 사람 의견을 잘 듣고 분위기를 맞춰준다"
-  ]},
-  { q: "여행 계획을 세울 때 나는?", opts: [
-    "함께 가는 사람이 좋으면 어디든 상관없다",
-    "교통·숙소·동선까지 꼼꼼하게 미리 준비한다",
-    "큰 틀만 잡고 현지에서 즉흥적으로 움직인다",
-    "핵심 일정만 빠르게 정하고 효율적으로 움직인다"
-  ]},
-  { q: "칭찬받을 때 가장 기분 좋은 말은?", opts: [
-    "\"네가 없었으면 이 프로젝트 못 끝냈어, 결과가 대단해\"",
-    "\"항상 옆에서 챙겨줘서 고마워, 네 덕분에 버텼어\"",
-    "\"이렇게 꼼꼼하게 준비한 사람은 처음 봤어, 믿음직해\"",
-    "\"역시 너는 아이디어가 넘쳐, 함께하면 즐거워\""
-  ]},
-  { q: "상대방이 약속을 어겼을 때 나는?", opts: [
-    "그 자리에서 말하기보다 분위기 봐서 나중에 언급한다",
-    "말은 안 하지만 신뢰도가 내려가고 오래 기억한다",
-    "속상하지만 관계가 상할까봐 그냥 넘기는 편이다",
-    "즉시 짚고 넘어가고 다음엔 어떻게 할지 명확히 한다"
-  ]},
-  { q: "나는 어떤 환경에서 일이 가장 잘 되나?", opts: [
-    "조용하고 방해받지 않는 환경, 충분한 시간이 있을 때",
-    "명확한 목표와 권한이 주어진 환경",
-    "자유롭고 변화가 있는 환경, 다양한 사람들과 함께",
-    "팀원들과 사이가 좋고 분위기가 따뜻한 환경"
-  ]},
-  { q: "나를 가장 힘들게 하는 상황은?", opts: [
-    "주변 사람들과 사이가 나쁘거나 갈등이 생길 때",
-    "똑같은 일을 반복하거나 변화 없이 틀에 갇힐 때",
-    "근거 없이 결정되거나 준비 없이 일이 진행될 때",
-    "내 의견이 무시되거나 결정권이 없을 때"
-  ]},
-  { q: "처음 만난 사람에게 호감을 표현하는 방식은?", opts: [
-    "따뜻하게 공감하고 상대 이야기를 잘 들어준다",
-    "내가 아는 유용한 정보를 제공하며 신뢰를 쌓는다",
-    "핵심을 짚는 질문으로 관심을 직접적으로 표현한다",
-    "유머와 재치 있는 말로 웃기고 분위기를 띄운다"
-  ]},
-  { q: "팀 프로젝트에서 내가 자연스럽게 맡는 역할은?", opts: [
-    "아이디어 제안, 분위기 메이커, 대외 소통",
-    "팀원 간 조율, 갈등 중재, 꼼꼼한 실행",
-    "자료 조사, 리스크 검토, 품질 관리",
-    "전체 방향 결정, 일정 관리, 최종 의사결정"
-  ]},
-  { q: "누군가 내 의견을 반박할 때 나는?", opts: [
-    "상대 말도 맞다고 느끼며 입장이 흔들린다",
-    "논리적으로 맞서거나 단호하게 내 입장을 고수한다",
-    "다양한 각도로 반론을 제시하며 토론을 즐긴다",
-    "반박의 근거를 분석하고 충분히 검토한 후 답한다"
-  ]},
-  { q: "연인과 싸웠을 때 나는?", opts: [
-    "바로 해결하고 싶어서 즉시 대화를 요구한다",
-    "감정이 가라앉을 때까지 혼자 있다가 이성적으로 대화한다",
-    "속상해도 먼저 사과하거나 맞춰주는 편이다",
-    "분위기가 풀릴 때를 기다리다가 먼저 화해를 시도한다"
-  ]},
-  { q: "내가 가장 듣기 싫은 말은?", opts: [
-    "\"왜 이렇게 산만해, 집중 좀 해\"",
-    "\"왜 그냥 참아, 좀 더 강하게 나가야지\"",
-    "\"왜 이렇게 독단적이야, 다른 사람 생각도 들어봐\"",
-    "\"왜 이렇게 꼼꼼해, 대충 해도 돼\""
-  ]},
-  { q: "SNS를 사용하는 방식은?", opts: [
-    "필요한 정보 위주로 활용하고 감정 노출은 최소화한다",
-    "친한 사람들 소식을 챙기고 공감 댓글을 잘 단다",
-    "일상·감정을 자주 올리고 댓글·반응을 즐긴다",
-    "거의 올리지 않고 필요한 정보를 찾는 용도로만 쓴다"
-  ]},
-  { q: "내가 가장 중요하게 생각하는 가치는?", opts: [
-    "관계와 화합, 안정과 신뢰",
-    "자유와 즐거움, 새로운 경험",
-    "성취와 목표, 효율과 결과",
-    "정확성과 원칙, 완성도와 품질"
-  ]},
-  { q: "10년 후 내 모습을 상상할 때?", opts: [
-    "다양한 분야에서 활발하게 활동하며 많은 사람과 연결된 삶",
-    "명확한 목표를 이루고 영향력 있는 위치에 있는 삶",
-    "소중한 사람들과 따뜻하고 안정적인 관계를 맺는 삶",
-    "한 분야를 깊이 파고들어 진정한 전문가가 된 삶"
-  ]}
-];
-
-// ════════════════════════════════════════════════════
-// 광고 설정 — 여기만 수정하면 됩니다!
-// ════════════════════════════════════════════════════
-const AD_CONFIG = {
-  image:   'https://thumbnail.coupangcdn.com/thumbnails/remote/492x492ex/image/vendor_inventory/9000/bdebac18f2de858ad4eb360b8e195ab0e50d69cee429dfb9d734dda81ffe.jpg',
-  link:    'https://link.coupang.com/a/dZh5anXH7Q',   // 쿠팡 파트너스 링크
-  title:   '지금 인기 상품을 확인해보세요!',           // 광고 제목
-  btnText: '상품 보고 결과 확인하기',                  // 버튼 텍스트
-};
-// ════════════════════════════════════════════════════
-
-// ── 채점표 [사,부,양,카 순서로] ──────────────────────
-const SCORE_MAP = [
-  ['사','부','양','카'], ['부','양','사','카'], ['카','사','양','부'], ['사','카','부','양'],
-  ['카','사','양','부'], ['사','카','양','부'], ['부','카','사','양'], ['양','부','카','사'],
-  ['사','양','부','카'], ['카','부','양','사'], ['부','사','카','양'], ['양','카','부','사'],
-  ['양','부','사','카'], ['카','양','부','사'], ['양','사','카','부'], ['사','부','양','카'],
-  ['카','양','사','부'], ['사','양','카','부'], ['양','카','사','부'], ['카','사','양','부'],
-];
-
-// ── 결과 데이터 ──────────────────────────────────────
-const RESULTS = {
-  '카': {
-    emoji: '🦎', name: '카멜레온형', sub: '변화를 즐기는 적응의 달인',
-    color: '#1B6CA8', light: '#EBF5FB', mid: '#AED6F1',
-    desc: '어떤 상황에서도 유연하게 적응하며 사람들과 쉽게 어울립니다. 창의적이고 표현력이 풍부하며 분위기 메이커 역할을 자처합니다. 다양한 관점으로 문제를 바라보는 능력이 탁월합니다.',
-    pros: ['풍부한 공감 능력과 사교성', '창의적 아이디어와 표현력', '유연한 적응력과 융통성', '사람들과 쉽게 친해지는 능력'],
-    cons: ['일관성이 다소 부족한 편', '시작은 잘 하지만 마무리 약함', '한 가지에 깊이 집중하기 어려움', '감정 기복이 주변에 영향을 줄 수 있음'],
-    tip: '💡 일관성과 마무리 능력을 키우면 더욱 빛납니다. 아이디어를 끝까지 완성하는 습관이 큰 강점이 됩니다.',
-    brief: '분위기를 이끄는 사교형. 창의적이고 표현력이 풍부하며 새로운 관계를 쉽게 만들어요. 즐거운 에너지로 주변을 활기차게 합니다.',
-    comm: ['가볍고 유쾌한 분위기로 대화하면 잘 통해요', '아이디어와 감정에 충분히 공감해 주세요', '세부 사항보다 큰 그림과 재미 위주로 이야기하세요'],
-    keywords: ['사교적', '창의적', '유연한']
-  },
-  '사': {
-    emoji: '🦁', name: '사자형', sub: '목표를 향해 돌진하는 리더',
-    color: '#C00000', light: '#FFF0F0', mid: '#FDDEDE',
-    desc: '강한 추진력과 결단력으로 목표를 향해 나아갑니다. 도전을 즐기고 결과 중심으로 움직이며 팀을 이끄는 힘이 있습니다. 어려운 상황에서도 흔들리지 않는 용기가 매력입니다.',
-    pros: ['강한 리더십과 추진력', '명확한 결단력과 도전 정신', '목표 지향적인 효율적 사고', '어려운 상황에서도 흔들리지 않는 용기'],
-    cons: ['상대방 감정 배려가 부족한 편', '자기 확신이 강해 독단적일 수 있음', '직설적 표현이 상처가 되기도 함', '패배·실수를 인정하기 어려워하는 편'],
-    tip: '💡 상대방의 속도와 감정을 배려하면 더 강력한 리더가 됩니다. 결과만큼 과정도 중요합니다.',
-    brief: '목표를 향해 돌진하는 리더형. 강한 추진력과 결단력으로 결과를 만들어내요. 도전을 즐기고 팀을 이끄는 힘이 있습니다.',
-    comm: ['결론부터 간결하게 말하면 효과적이에요', '의견 충돌 시 근거를 명확히 제시하세요', '성과와 기여를 인정해 주면 관계가 좋아져요'],
-    keywords: ['주도적', '결단력', '도전적']
-  },
-  '양': {
-    emoji: '🐑', name: '양형', sub: '관계를 소중히 여기는 따뜻한 동반자',
-    color: '#2E8B2E', light: '#F0FFF4', mid: '#A9DFBF',
-    desc: '진심 어린 배려와 따뜻한 공감으로 주변 사람들을 하나로 묶습니다. 안정적이고 신뢰할 수 있으며 갈등 상황에서 완충 역할을 잘합니다. 오랫동안 깊은 관계를 유지하는 능력이 뛰어납니다.',
-    pros: ['진심 어린 배려와 공감 능력', '팀을 하나로 묶는 화합력', '신뢰할 수 있는 안정적 존재감', '깊고 오래가는 관계 유지 능력'],
-    cons: ['거절하지 못해 부탁을 다 떠안는 경향', '자기 감정·의견을 잘 표현하지 못함', '쌓인 불만이 한꺼번에 폭발하는 패턴', '갈등 회피로 문제가 방치되기도 함'],
-    tip: '💡 자신의 필요와 감정도 소중히 표현해 보세요. "아니오"라고 말하는 것도 배려입니다.',
-    brief: '관계를 소중히 여기는 배려형. 따뜻한 공감으로 주변을 하나로 묶어요. 신뢰할 수 있는 든든한 동반자입니다.',
-    comm: ['충분히 경청하고 감정을 먼저 공감해 주세요', '강요보다 부드럽게 제안하는 방식이 효과적이에요', '관계와 신뢰를 소중히 여긴다고 표현해 주세요'],
-    keywords: ['배려심', '공감능력', '신뢰감']
-  },
-  '부': {
-    emoji: '🦉', name: '부엉이형', sub: '깊이 생각하고 정확하게 판단하는 분석가',
-    color: '#E07B20', light: '#FFF8F0', mid: '#FAD7A0',
-    desc: '꼼꼼한 분석과 논리적 사고로 최선의 답을 찾아냅니다. 완벽을 추구하며 체계적으로 계획하고 실행합니다. 신뢰할 수 있는 정보와 근거를 바탕으로 결정하는 것을 중요시합니다.',
-    pros: ['뛰어난 분석력과 논리적 사고', '꼼꼼한 완벽주의와 높은 기준', '체계적인 계획과 철저한 실행', '신뢰할 수 있는 전문성 축적'],
-    cons: ['완벽주의로 인한 결정 지연', '감정 표현이 적어 차갑게 오해받기도 함', '즉흥·변화에 적응하기 어려움', '기준이 높아 주변을 힘들게 할 수 있음'],
-    tip: '💡 완벽보다 80%의 완성을 목표로 하면 더 많이 이룰 수 있습니다. 감정 표현도 연습해 보세요.',
-    brief: '깊이 생각하는 분석형. 꼼꼼한 분석과 논리로 최선의 답을 찾아냅니다. 체계적이고 완벽을 추구하는 전문가예요.',
-    comm: ['근거와 데이터를 함께 제시하면 신뢰를 얻어요', '생각할 시간과 여유를 충분히 주세요', '즉흥 결정보다 미리 공유해 준비할 수 있게 해주세요'],
-    keywords: ['분석적', '꼼꼼한', '논리적']
-  }
-};
-
-// ── 상태 ────────────────────────────────────────────
-let current = 0;
-let answers = Array.from({length: 20}, () => []);
-let userName = '';
-let currentTop = '';
-let currentScores = {};
-
-// ── 세션 저장/복원 ───────────────────────────────────
-function saveSession(extra) {
-  try {
-    sessionStorage.setItem('quiz_state', JSON.stringify(
-      Object.assign({ current, answers, userName }, extra)
-    ));
-  } catch(e) {}
-}
-
-function clearSession() {
-  try { sessionStorage.removeItem('quiz_state'); } catch(e) {}
-}
-
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  window.scrollTo(0, 0);
-}
-
-function startTest() {
-  const nameVal = document.getElementById('user-name').value.trim();
-  if (!nameVal) {
-    const errEl = document.getElementById('name-error');
-    errEl.style.display = 'block';
-    document.getElementById('user-name').focus();
-    return;
-  }
-  userName = nameVal;
-  saveSession();
-  showScreen('screen-question');
-  renderQ();
-}
-
-function renderQ() {
-  const q = questions[current];
-  const total = questions.length;
-  const sel = answers[current];
-
-  document.getElementById('q-counter').textContent = `${current+1} / ${total}`;
-  document.getElementById('q-num-bar').textContent = `Q${String(current+1).padStart(2,'0')}`;
-  document.getElementById('q-text').textContent = q.q;
-  document.getElementById('progress-fill').style.width = `${((current+1)/total)*100}%`;
-
-  const opts = document.getElementById('options');
-  opts.innerHTML = '';
-  q.opts.forEach((txt, i) => {
-    const btn = document.createElement('button');
-    const isSelected = sel.includes(i);
-    const isDimmed = !isSelected && sel.length >= 2;
-    btn.className = 'option-btn' + (isSelected ? ' selected' : '') + (isDimmed ? ' dimmed' : '');
-    btn.innerHTML = `<span class="option-label">${['A','B','C','D'][i]}</span><span>${txt}</span>`;
-    btn.onclick = () => selectOpt(i);
-    opts.appendChild(btn);
-  });
-
-  updateSelCount();
-  document.getElementById('btn-prev').style.visibility = current === 0 ? 'hidden' : 'visible';
-  document.getElementById('btn-next').style.display = current < total-1 ? 'block' : 'none';
-  document.getElementById('btn-next').disabled = sel.length === 0;
-  document.getElementById('btn-submit').style.display = current === total-1 ? 'block' : 'none';
-  document.getElementById('btn-submit').disabled = sel.length === 0;
-}
-
-function updateSelCount() {
-  const count = answers[current].length;
-  const el = document.getElementById('sel-count');
-  el.textContent = `${count} / 2`;
-  el.classList.toggle('full', count >= 2);
-}
-
-function selectOpt(i) {
-  const sel = answers[current];
-  const idx = sel.indexOf(i);
-  if (idx > -1) {
-    sel.splice(idx, 1);           // 이미 선택 → 해제
-  } else if (sel.length < 2) {
-    sel.push(i);                  // 2개 미만 → 추가 선택
-  } else {
-    return;                       // 2개 이미 선택 → 무시
-  }
-  // 버튼 UI 갱신
-  document.querySelectorAll('.option-btn').forEach((btn, idx) => {
-    const isSelected = sel.includes(idx);
-    const isDimmed = !isSelected && sel.length >= 2;
-    btn.classList.toggle('selected', isSelected);
-    btn.classList.toggle('dimmed', isDimmed);
-  });
-  updateSelCount();
-  saveSession();
-  const hasAny = sel.length > 0;
-  document.getElementById('btn-next').disabled = !hasAny;
-  document.getElementById('btn-submit').disabled = !hasAny;
-}
-
-function nextQ() {
-  if (answers[current].length === 0) return;
-  current++;
-  saveSession();
-  renderQ();
-}
-
-function prevQ() {
-  if (current > 0) { current--; saveSession(); renderQ(); }
-}
-
-let pendingScores = null;
-let adTimer = null;
-
-function submitTest() {
-  if (answers[current].length === 0) return;
-  // 채점: 선택한 답변마다 0.5점
-  const scores = { '카':0, '사':0, '양':0, '부':0 };
-  answers.forEach((sel, i) => {
-    sel.forEach(ans => { scores[SCORE_MAP[i][ans]] += 0.5; });
-  });
-  pendingScores = scores;
-  showAd();
-}
-
-function showAd() {
-  // 대기 화면 초기화
-  document.getElementById('ad-content').style.display = '';
-  document.getElementById('wait-screen').classList.remove('active');
-
-  // 광고 내용 세팅
-  const adImg  = document.getElementById('ad-img');
-  const adWrap = document.getElementById('ad-image-wrap');
-  if (AD_CONFIG.image) {
-    adImg.src = AD_CONFIG.image;
-    adWrap.style.display = '';
-    adWrap.onclick = adLinkClick;
-  } else {
-    adWrap.style.display = 'none';
-  }
-  document.getElementById('ad-title').textContent       = AD_CONFIG.title;
-  document.getElementById('ad-btn-text').textContent    = AD_CONFIG.btnText;
-
-  adTimer = null;
-  saveSession({ screen: 'ad', scores: pendingScores });
-  showScreen('screen-ad');
-}
-
-function adLinkClick() {
-  // 버튼 클릭 플래그 저장 (인앱 브라우저 대응: 페이지 이탈 후 복귀 시 결과 바로 표시)
-  saveSession({ screen: 'ad', scores: pendingScores, adClicked: true });
-  // 새 창으로 쿠팡 열기
-  window.open(AD_CONFIG.link, '_blank', 'noopener,noreferrer');
-  // 광고 콘텐츠 숨기고 카운트다운 대기 화면으로 전환
-  document.getElementById('ad-content').style.display = 'none';
-  const waitScreen = document.getElementById('wait-screen');
-  waitScreen.classList.add('active');
-
-  const WAIT = 10;
-  let remain = WAIT;
-  document.getElementById('wait-number').textContent = remain;
-  document.getElementById('wait-progress').style.width = '100%';
-
-  adTimer = setInterval(() => {
-    remain--;
-    document.getElementById('wait-number').textContent = remain;
-    document.getElementById('wait-progress').style.width = `${(remain / WAIT) * 100}%`;
-    if (remain <= 0) {
-      clearInterval(adTimer);
-      adTimer = null;
-      waitScreen.classList.remove('active');
-      showResult(pendingScores);
-    }
-  }, 1000);
-}
-
-function encodeResult(name, top, scores) {
-  const data = { n: name, t: top, s: scores };
-  return btoa(unescape(encodeURIComponent(JSON.stringify(data))));
-}
-
-function decodeResult(encoded) {
-  try { return JSON.parse(decodeURIComponent(escape(atob(encoded)))); }
-  catch(e) { return null; }
-}
-
-function showResult(scores) {
-  clearSession();
-  // 순위 정렬 및 비율 계산
-  const total = Object.values(scores).reduce((a, b) => a + b, 0);
-  const sorted = ['카','사','양','부'].sort((a, b) => scores[b] - scores[a]);
-  const top    = sorted[0];
-  const second = sorted[1];
-  // 퍼센트 계산 — 합이 항상 100%가 되도록 최대 오차 항목에 나머지 배분
-  const pcts = {};
-  if (total > 0) {
-    let sum = 0;
-    ['카','사','양','부'].forEach(k => {
-      pcts[k] = Math.floor(scores[k] / total * 100);
-      sum += pcts[k];
-    });
-    // 나머지를 소수점 가장 큰 순서대로 배분
-    const remainder = 100 - sum;
-    const keys = ['카','사','양','부'].sort((a, b) =>
-      (scores[b] / total * 100 - Math.floor(scores[b] / total * 100)) -
-      (scores[a] / total * 100 - Math.floor(scores[a] / total * 100))
-    );
-    for (let i = 0; i < remainder; i++) pcts[keys[i]]++;
-  } else {
-    ['카','사','양','부'].forEach(k => { pcts[k] = 0; });
-  }
-
-  currentTop = top;
-  currentScores = scores;
-  const r  = RESULTS[top];
-  const r2 = RESULTS[second];
-
-  // URL에 결과 인코딩
-  const encoded = encodeResult(userName, top, scores);
-  history.pushState(null, '', location.pathname + '?r=' + encoded);
-
-  // 배너
-  const banner = document.getElementById('result-banner');
-  banner.style.background = `linear-gradient(135deg, ${r.color} 0%, ${r.mid} 100%)`;
-  banner.style.color = 'white';
-  document.getElementById('result-name').textContent = `${userName}님의 결과`;
-  document.getElementById('result-emoji').textContent = r.emoji;
-  document.getElementById('result-type').textContent = r.name;
-  document.getElementById('result-keywords').innerHTML =
-    r.keywords.map(k => `<span class="kw-tag">#${k}</span>`).join('');
-  document.getElementById('result-sub').textContent = `「${r.sub}」`;
-
-  // 주/부 유형 태그
-  document.getElementById('type-tags').innerHTML = `
-    <div class="type-tag main-tag">
-      <span class="tag-label">주 유형</span>
-      <span class="tag-animal">${r.emoji} ${r.name}</span>
-      <span class="tag-pct">${pcts[top]}%</span>
-    </div>
-    <div class="type-tag sub-tag">
-      <span class="tag-label">부 유형</span>
-      <span class="tag-animal">${r2.emoji} ${r2.name}</span>
-      <span class="tag-pct">${pcts[second]}%</span>
-    </div>`;
-
-  // 비율 그리드
-  const sg = document.getElementById('score-grid');
-  sg.innerHTML = '';
-  ['카','사','양','부'].forEach(ak => {
-    const rv = RESULTS[ak];
-    const isTop    = (ak === top);
-    const isSecond = (ak === second);
-    const border   = isTop ? rv.color : (isSecond ? rv.color + '88' : '#eee');
-    sg.innerHTML += `
-      <div class="score-item" style="background:${rv.light};border:2px solid ${border}">
-        <div class="score-item-top">
-          <span class="s-label" style="color:${rv.color}">${rv.emoji} ${rv.name}</span>
-          <div class="s-bar-wrap">
-            <div class="score-bar" style="background:#E0E0E0">
-              <div class="score-bar-fill" style="width:${pcts[ak]}%;background:${rv.color}"></div>
-            </div>
-          </div>
-          <span class="s-num" style="color:${rv.color}">${pcts[ak]}%</span>
-        </div>
-      </div>`;
-  });
-
-  // 설명
-  document.getElementById('result-desc').textContent = r.desc;
-
-  // 장단점
-  const dg = document.getElementById('detail-grid');
-  dg.innerHTML = `
-    <div class="detail-box" style="background:${r.light};border:1.5px solid ${r.mid}">
-      <h4 style="color:${r.color}">✅ 주요 강점</h4>
-      <ul>${r.pros.map(p=>`<li>${p}</li>`).join('')}</ul>
-    </div>
-    <div class="detail-box" style="background:#FFF8F8;border:1.5px solid #FFD0D0">
-      <h4 style="color:#C00000">⚠️ 성장 포인트</h4>
-      <ul>${r.cons.map(c=>`<li>${c}</li>`).join('')}</ul>
-    </div>`;
-
-  // 팁
-  document.getElementById('tip-box').innerHTML = r.tip;
-
-  // 다른 유형 소통 카드
-  const others = ['카','사','양','부'].filter(k => k !== top);
-  const os = document.getElementById('other-section');
-  os.innerHTML = `<h3>🤝 다른 유형과 소통하는 법</h3><div class="other-cards">` +
-    others.map(k => {
-      const ov = RESULTS[k];
-      return `
-        <div class="other-card">
-          <div class="other-card-header" style="background:${ov.light}">
-            <span class="o-emoji">${ov.emoji}</span>
-            <div>
-              <div class="o-name" style="color:${ov.color}">${ov.name}</div>
-              <div class="o-kw-row">
-                ${ov.keywords.map(k=>`<span class="o-kw-tag" style="color:${ov.color};border-color:${ov.color}40">${k}</span>`).join('')}
-              </div>
-              <div class="o-brief">${ov.brief}</div>
-            </div>
-          </div>
-          <div class="other-card-body">
-            <div class="comm-title">💬 이렇게 소통하세요</div>
-            <ul>${ov.comm.map(c => `<li>${c}</li>`).join('')}</ul>
-          </div>
-        </div>`;
-    }).join('') + `</div>`;
-
-  showScreen('screen-result');
-}
-
-function retryTest() {
-  current = 0;
-  answers = Array.from({length: 20}, () => []);
-  currentTop = '';
-  currentScores = {};
-  clearSession();
-  history.pushState(null, '', location.pathname);
-  showScreen('screen-intro');
-}
-
-function copyResultLink() {
-  const url = location.href;
-  const updateBtns = () => {
-    showToast('✅ 링크가 복사됐어요!');
-    ['btn-share-link', 'btn-share-link-top'].forEach(id => {
-      const btn = document.getElementById(id);
-      if (btn) {
-        btn.textContent = '✅ 복사됨!';
-        setTimeout(() => { btn.textContent = '🔗 링크 복사'; }, 2500);
-      }
-    });
-  };
-  navigator.clipboard.writeText(url).then(updateBtns).catch(() => {
-    const ta = document.createElement('textarea');
-    ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0';
-    document.body.appendChild(ta); ta.select();
-    document.execCommand('copy'); document.body.removeChild(ta);
-    updateBtns();
-  });
-}
-
-// ── EmailJS 설정 ────────────────────────────────────
-const EJS_PUBLIC_KEY  = 'hKIxH-TLR18w4HQun';
-const EJS_SERVICE_ID  = 'service_0moj8bs';
-const EJS_TEMPLATE_ID = 'template_9buriby';
-emailjs.init(EJS_PUBLIC_KEY);
-
-function sendEmail() {
-  document.getElementById('email-input').value = '';
-  document.getElementById('modal-status').textContent = '';
-  document.getElementById('btn-modal-send').disabled = false;
-  document.getElementById('btn-modal-send').textContent = '📨 보내기';
-  document.getElementById('email-modal').classList.add('open');
-  setTimeout(() => document.getElementById('email-input').focus(), 100);
-}
-
-function closeEmailModal() {
-  document.getElementById('email-modal').classList.remove('open');
-}
-
-function doSendEmail() {
-  const toEmail = document.getElementById('email-input').value.trim();
-  if (!toEmail || !toEmail.includes('@')) {
-    document.getElementById('modal-status').innerHTML = '<span style="color:#C00000">올바른 이메일 주소를 입력해주세요.</span>';
-    return;
-  }
-
-  const r = RESULTS[currentTop];
-  const total = Object.values(currentScores).reduce((a, b) => a + b, 0);
-  const sorted = ['카','사','양','부'].sort((a,b) => currentScores[b] - currentScores[a]);
-  const scoreLines = sorted.map(k => {
-    const pct = total > 0 ? Math.round(currentScores[k] / total * 100) : 0;
-    const mark = k === sorted[0] ? ' ★주' : (k === sorted[1] ? ' ☆부' : '');
-    return `${RESULTS[k].emoji} ${RESULTS[k].name}: ${pct}%${mark}`;
-  }).join('\n');
-
-  const btn = document.getElementById('btn-modal-send');
-  btn.disabled = true;
-  btn.textContent = '전송 중...';
-  document.getElementById('modal-status').textContent = '';
-
-  emailjs.send(EJS_SERVICE_ID, EJS_TEMPLATE_ID, {
-    to_email:    toEmail,
-    user_name:   userName,
-    animal_type: r.name,
-    animal_emoji: r.emoji,
-    animal_sub:  r.sub,
-    scores:      scoreLines,
-    result_link: location.href,
-  }).then(() => {
-    document.getElementById('modal-status').innerHTML = '✅ <span style="color:#2E8B2E">이메일이 성공적으로 전송됐어요!</span>';
-    btn.textContent = '✅ 전송 완료';
-    setTimeout(() => closeEmailModal(), 2000);
-  }).catch((err) => {
-    document.getElementById('modal-status').innerHTML = '<span style="color:#C00000">전송 실패. 잠시 후 다시 시도해주세요.</span>';
-    btn.disabled = false;
-    btn.textContent = '📨 보내기';
-    console.error('EmailJS error:', err);
-  });
-}
-
-function showToast(msg) {
-  let toast = document.getElementById('toast');
-  if (!toast) {
-    toast = document.createElement('div');
-    toast.id = 'toast'; toast.className = 'toast';
-    document.body.appendChild(toast);
-  }
-  toast.textContent = msg;
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 2500);
-}
-
-// ── 관리자 설정 ─────────────────────────────────────
-const DEFAULT_ADMIN_PW = '4animal';
-
-function loadAdConfig() {
-  try {
-    const saved = localStorage.getItem('ad_config');
-    if (saved) Object.assign(AD_CONFIG, JSON.parse(saved));
-  } catch(e) {}
-}
-
-let uploadedImageBase64 = null;
-
-function handleImgUpload(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(ev) {
-    uploadedImageBase64 = ev.target.result;
-    const preview = document.getElementById('img-preview');
-    preview.src = uploadedImageBase64;
-    preview.style.display = 'block';
-    document.getElementById('upload-label-text').textContent = file.name;
-    document.getElementById('cfg-image').value = ''; // URL 입력 초기화
-  };
-  reader.readAsDataURL(file);
-}
-
-function openAdmin() {
-  uploadedImageBase64 = null;
-  document.getElementById('admin-pw-input').value = '';
-  document.getElementById('admin-pw-error').textContent = '';
-  document.getElementById('admin-pw-screen').style.display = '';
-  document.getElementById('admin-settings-screen').style.display = 'none';
-  document.getElementById('admin-overlay').classList.add('open');
-  setTimeout(() => document.getElementById('admin-pw-input').focus(), 100);
-}
-
-function closeAdmin() {
-  document.getElementById('admin-overlay').classList.remove('open');
-}
-
-function adminLogin() {
-  const pw = document.getElementById('admin-pw-input').value;
-  const stored = localStorage.getItem('admin_pw') || DEFAULT_ADMIN_PW;
-  if (pw === stored) {
-    document.getElementById('admin-pw-screen').style.display = 'none';
-    document.getElementById('admin-settings-screen').style.display = '';
-    document.getElementById('admin-save-msg').textContent = '';
-    // 현재 설정값 불러오기
-    const currentImg = AD_CONFIG.image || '';
-    const preview = document.getElementById('img-preview');
-    if (currentImg) {
-      preview.src = currentImg;
-      preview.style.display = 'block';
-      document.getElementById('upload-label-text').textContent =
-        currentImg.startsWith('data:') ? '업로드된 이미지' : '현재 이미지';
-      document.getElementById('cfg-image').value = currentImg.startsWith('data:') ? '' : currentImg;
-    } else {
-      preview.style.display = 'none';
-      document.getElementById('upload-label-text').textContent = '클릭해서 이미지 파일 업로드';
-      document.getElementById('cfg-image').value = '';
-    }
-    document.getElementById('cfg-link').value    = AD_CONFIG.link    || '';
-    document.getElementById('cfg-title').value   = AD_CONFIG.title   || '';
-    document.getElementById('cfg-btntext').value = AD_CONFIG.btnText || '';
-    document.getElementById('cfg-newpw').value   = '';
-    document.getElementById('cfg-newpw2').value  = '';
-    document.getElementById('cfg-img-file').value = '';
-  } else {
-    const err = document.getElementById('admin-pw-error');
-    err.textContent = '비밀번호가 틀렸어요.';
-    document.getElementById('admin-pw-input').value = '';
-    document.getElementById('admin-pw-input').focus();
-    setTimeout(() => { err.textContent = ''; }, 2500);
-  }
-}
-
-function saveAdminSettings() {
-  const newpw  = document.getElementById('cfg-newpw').value.trim();
-  const newpw2 = document.getElementById('cfg-newpw2').value.trim();
-  const msg    = document.getElementById('admin-save-msg');
-
-  // 비밀번호 변경 검증
-  if (newpw || newpw2) {
-    if (newpw !== newpw2) {
-      msg.innerHTML = '<span style="color:#C00000">비밀번호가 일치하지 않아요.</span>';
-      return;
-    }
-    if (newpw.length < 4) {
-      msg.innerHTML = '<span style="color:#C00000">비밀번호는 4자리 이상이어야 해요.</span>';
-      return;
-    }
-    localStorage.setItem('admin_pw', newpw);
-  }
-
-  // 광고 설정 저장 (업로드 이미지 우선, 없으면 URL 사용)
-  AD_CONFIG.image   = uploadedImageBase64 || document.getElementById('cfg-image').value.trim();
-  AD_CONFIG.link    = document.getElementById('cfg-link').value.trim();
-  AD_CONFIG.title   = document.getElementById('cfg-title').value.trim() || '지금 인기 상품을 확인해보세요!';
-  AD_CONFIG.btnText = document.getElementById('cfg-btntext').value.trim() || '상품 보고 결과 확인하기';
-
-  localStorage.setItem('ad_config', JSON.stringify({
-    image: AD_CONFIG.image, link: AD_CONFIG.link,
-    title: AD_CONFIG.title, btnText: AD_CONFIG.btnText,
-  }));
-
-  msg.innerHTML = '✅ <span style="color:#2E8B2E">저장됐어요!</span>';
-  setTimeout(() => { msg.textContent = ''; closeAdmin(); }, 1500);
-}
-
-// ── URL에서 결과 복원 / 세션 복원 ───────────────────
-window.addEventListener('DOMContentLoaded', () => {
-  loadAdConfig(); // 저장된 광고 설정 불러오기
-
-  // 1) URL 결과 파라미터 복원 (공유 링크)
-  const params = new URLSearchParams(location.search);
-  const encoded = params.get('r');
-  if (encoded) {
-    const data = decodeResult(encoded);
-    if (data && data.n && data.t && data.s) {
-      userName = data.n;
-      currentTop = data.t;
-      currentScores = data.s;
-      showResult(data.s);
-      return;
-    }
-  }
-
-  // 2) 세션 복원 (새로고침 시 진행상태 유지)
-  try {
-    const saved = sessionStorage.getItem('quiz_state');
-    if (saved) {
-      const state = JSON.parse(saved);
-      if (!state) return;
-
-      userName = state.userName || '익명';
-      document.getElementById('user-name').value = userName;
-
-      // 광고 화면에서 복귀한 경우
-      if (state.screen === 'ad' && state.scores) {
-        current       = state.current;
-        answers       = state.answers || Array.from({length:20}, () => []);
-        pendingScores = state.scores;
-        // 버튼을 눌렀다가 돌아온 경우(인앱 브라우저) → 결과 바로 표시
-        if (state.adClicked) {
-          showResult(pendingScores);
-        } else {
-          showAd();
-        }
-        return;
-      }
-
-      // 퀴즈 진행 중 새로고침한 경우
-      if (typeof state.current === 'number' && Array.isArray(state.answers)) {
-        current = state.current;
-        answers = state.answers;
-        showScreen('screen-question');
-        renderQ();
-      }
-    }
-  } catch(e) {}
-});
-</script>
 </body>
 </html>
