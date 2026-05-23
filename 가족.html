@@ -209,6 +209,7 @@
   .back-link { color: #1F3864; text-decoration: none; font-size: 0.9rem; font-weight: 600; }
   .back-link:hover { color: #2E75B6; }
   @media (max-width: 500px) { .score-grid, .detail-grid { grid-template-columns: 1fr; } .intro-banner { padding: 36px 20px 28px; } .intro-banner h1 { font-size: 1.4rem; } .q-text { padding: 18px 18px 14px; font-size: 1rem; } .options { padding: 0 10px 12px; } }
+  .result-category-chip { display: inline-block; background: rgba(255,255,255,0.22); border: 1.5px solid rgba(255,255,255,0.55); color: white; font-size: 0.8rem; font-weight: 700; padding: 4px 14px; border-radius: 20px; margin-bottom: 8px; letter-spacing: 0.02em; }
 </style>
 </head>
 <body>
@@ -323,6 +324,7 @@
 <div id="screen-result" class="screen">
   <div class="result-card" id="result-card">
     <div class="result-banner" id="result-banner">
+      <div class="result-category-chip" id="result-category-chip"></div>
       <div class="name-tag" id="result-name"></div>
       <div class="result-emoji" id="result-emoji"></div>
       <h2 id="result-type"></h2>
@@ -377,6 +379,7 @@ const AD_CONFIG = {
   title:   '지금 인기 상품을 확인해보세요!',
   btnText: '상품 보고 결과 확인하기',
 };
+const CATEGORY_LABEL = '🏠 가족 유형';
 const SCORE_MAP = [
   ['사','카','양','부'],
   ['사','양','부','카'],
@@ -400,10 +403,50 @@ const SCORE_MAP = [
   ['사','양','카','부'],
 ];
 const RESULTS = {
-  '카': { emoji: '🦎', name: '카멜레온형', sub: '변화를 즐기는 적응의 달인', color: '#1B6CA8', light: '#EBF5FB', mid: '#AED6F1', desc: '어떤 상황에서도 유연하게 적응하며 사람들과 쉽게 어울립니다. 창의적이고 표현력이 풍부하며 분위기 메이커 역할을 자처합니다. 다양한 관점으로 문제를 바라보는 능력이 탁월합니다.', pros: ['풍부한 공감 능력과 사교성', '창의적 아이디어와 표현력', '유연한 적응력과 융통성', '사람들과 쉽게 친해지는 능력'], cons: ['일관성이 다소 부족한 편', '시작은 잘 하지만 마무리 약함', '한 가지에 깊이 집중하기 어려움', '감정 기복이 주변에 영향을 줄 수 있음'], tip: '💡 일관성과 마무리 능력을 키우면 더욱 빛납니다. 아이디어를 끝까지 완성하는 습관이 큰 강점이 됩니다.', brief: '분위기를 이끄는 사교형. 창의적이고 표현력이 풍부하며 새로운 관계를 쉽게 만들어요. 즐거운 에너지로 주변을 활기차게 합니다.', comm: ['가볍고 유쾌한 분위기로 대화하면 잘 통해요', '아이디어와 감정에 충분히 공감해 주세요', '세부 사항보다 큰 그림과 재미 위주로 이야기하세요'], keywords: ['사교적', '창의적', '유연한'] },
-  '사': { emoji: '🦁', name: '사자형', sub: '목표를 향해 돌진하는 리더', color: '#C00000', light: '#FFF0F0', mid: '#FDDEDE', desc: '강한 추진력과 결단력으로 목표를 향해 나아갑니다. 도전을 즐기고 결과 중심으로 움직이며 팀을 이끄는 힘이 있습니다. 어려운 상황에서도 흔들리지 않는 용기가 매력입니다.', pros: ['강한 리더십과 추진력', '명확한 결단력과 도전 정신', '목표 지향적인 효율적 사고', '어려운 상황에서도 흔들리지 않는 용기'], cons: ['상대방 감정 배려가 부족한 편', '자기 확신이 강해 독단적일 수 있음', '직설적 표현이 상처가 되기도 함', '패배·실수를 인정하기 어려워하는 편'], tip: '💡 상대방의 속도와 감정을 배려하면 더 강력한 리더가 됩니다. 결과만큼 과정도 중요합니다.', brief: '목표를 향해 돌진하는 리더형. 강한 추진력과 결단력으로 결과를 만들어내요. 도전을 즐기고 팀을 이끄는 힘이 있습니다.', comm: ['결론부터 간결하게 말하면 효과적이에요', '의견 충돌 시 근거를 명확히 제시하세요', '성과와 기여를 인정해 주면 관계가 좋아져요'], keywords: ['주도적', '결단력', '도전적'] },
-  '양': { emoji: '🐑', name: '양형', sub: '관계를 소중히 여기는 따뜻한 동반자', color: '#2E8B2E', light: '#F0FFF4', mid: '#A9DFBF', desc: '진심 어린 배려와 따뜻한 공감으로 주변 사람들을 하나로 묶습니다. 안정적이고 신뢰할 수 있으며 갈등 상황에서 완충 역할을 잘합니다. 오랫동안 깊은 관계를 유지하는 능력이 뛰어납니다.', pros: ['진심 어린 배려와 공감 능력', '팀을 하나로 묶는 화합력', '신뢰할 수 있는 안정적 존재감', '깊고 오래가는 관계 유지 능력'], cons: ['거절하지 못해 부탁을 다 떠안는 경향', '자기 감정·의견을 잘 표현하지 못함', '쌓인 불만이 한꺼번에 폭발하는 패턴', '갈등 회피로 문제가 방치되기도 함'], tip: '💡 자신의 필요와 감정도 소중히 표현해 보세요. "아니오"라고 말하는 것도 배려입니다.', brief: '관계를 소중히 여기는 배려형. 따뜻한 공감으로 주변을 하나로 묶어요. 신뢰할 수 있는 든든한 동반자입니다.', comm: ['충분히 경청하고 감정을 먼저 공감해 주세요', '강요보다 부드럽게 제안하는 방식이 효과적이에요', '관계와 신뢰를 소중히 여긴다고 표현해 주세요'], keywords: ['배려심', '공감능력', '신뢰감'] },
-  '부': { emoji: '🦉', name: '부엉이형', sub: '깊이 생각하고 정확하게 판단하는 분석가', color: '#E07B20', light: '#FFF8F0', mid: '#FAD7A0', desc: '꼼꼼한 분석과 논리적 사고로 최선의 답을 찾아냅니다. 완벽을 추구하며 체계적으로 계획하고 실행합니다. 신뢰할 수 있는 정보와 근거를 바탕으로 결정하는 것을 중요시합니다.', pros: ['뛰어난 분석력과 논리적 사고', '꼼꼼한 완벽주의와 높은 기준', '체계적인 계획과 철저한 실행', '신뢰할 수 있는 전문성 축적'], cons: ['완벽주의로 인한 결정 지연', '감정 표현이 적어 차갑게 오해받기도 함', '즉흥·변화에 적응하기 어려움', '기준이 높아 주변을 힘들게 할 수 있음'], tip: '💡 완벽보다 80%의 완성을 목표로 하면 더 많이 이룰 수 있습니다. 감정 표현도 연습해 보세요.', brief: '깊이 생각하는 분석형. 꼼꼼한 분석과 논리로 최선의 답을 찾아냅니다. 체계적이고 완벽을 추구하는 전문가예요.', comm: ['근거와 데이터를 함께 제시하면 신뢰를 얻어요', '생각할 시간과 여유를 충분히 주세요', '즉흥 결정보다 미리 공유해 준비할 수 있게 해주세요'], keywords: ['분석적', '꼼꼼한', '논리적'] }
+  '카': {
+    emoji: '🦎', name: '카멜레온형', sub: '가족 모임을 활기차게 만드는 에너지 메이커',
+    color: '#1B6CA8', light: '#EBF5FB', mid: '#AED6F1',
+    desc: '가족 안에서 유연하게 분위기를 읽고 다양한 가족 구성원과 자연스럽게 어울립니다. 모임을 즐겁고 활기차게 만드는 에너지를 가지고 있으며, 변화에 잘 적응해 가족 사이의 완충 역할도 합니다.',
+    pros: ['가족 모임을 활기차게 만드는 분위기 메이커', '다양한 가족 구성원과 자연스럽게 어울림', '가족 갈등 시 유머로 긴장을 풀어주는 역할', '변화하는 가족 상황에 유연하게 적응'],
+    cons: ['가족과의 관계에 일관성이 부족할 수 있음', '표면적인 유대감에 머물고 깊이 있는 대화를 피하기도 함', '감정 기복이 가족 분위기에 영향을 줄 수 있음', '중요한 가족 문제를 가볍게 넘기는 경향'],
+    tip: '💡 가족과의 즐거운 시간만큼, 깊이 있는 대화와 안정감도 중요합니다. 가족에게 일관된 모습을 보여주세요.',
+    brief: '가족 모임의 에너지형. 유연한 적응력과 유머로 분위기를 만들어요. 함께 있으면 늘 즐거운 가족입니다.',
+    comm: ['가볍고 유쾌한 분위기로 대화하면 잘 통해요', '의견을 강요하기보다 자연스럽게 제안해 주세요', '즐거운 활동을 함께 제안하면 더 가까워질 수 있어요'],
+    keywords: ['활기찬', '유연한', '분위기메이커']
+  },
+  '사': {
+    emoji: '🦁', name: '사자형', sub: '가족을 든든하게 이끄는 버팀목',
+    color: '#C00000', light: '#FFF0F0', mid: '#FDDEDE',
+    desc: '가족 안에서 강한 책임감과 추진력으로 가족을 이끌고 지킵니다. 문제가 생겼을 때 앞장서서 해결하며, 가족이 어려울 때 의지할 수 있는 든든한 존재입니다. 가족을 위한 결정을 주저하지 않고 실행합니다.',
+    pros: ['가족이 어려울 때 앞장서 해결하는 추진력', '강한 책임감과 가족을 향한 든든한 보호', '명확한 방향 제시와 결단력', '가족을 위해 기꺼이 나서는 실행력'],
+    cons: ['가족의 감정과 속도를 배려하기 어려운 편', '혼자 결정하고 가족에게 강요하기도 함', '직설적인 표현이 가족에게 상처가 되기도 함', '자존심이 강해 가족에게 먼저 사과하기 어려워함'],
+    tip: '💡 가족을 보호하는 것만큼, 가족의 의견을 충분히 듣고 함께 결정하는 것이 더 강한 가족을 만듭니다.',
+    brief: '가족의 든든한 버팀목. 강한 책임감과 추진력으로 가족을 지켜요. 어려울 때 가장 먼저 나서는 존재입니다.',
+    comm: ['결론부터 간결하게 말하면 효과적이에요', '가족을 위한 노력과 책임감을 인정해주면 관계가 좋아져요', '의견 차이가 있을 때는 근거를 명확히 제시해주세요'],
+    keywords: ['책임감', '든든한', '보호자']
+  },
+  '양': {
+    emoji: '🐑', name: '양형', sub: '가족을 하나로 묶는 따뜻한 중심',
+    color: '#2E8B2E', light: '#F0FFF4', mid: '#A9DFBF',
+    desc: '가족 안에서 따뜻한 배려와 공감으로 모든 가족이 편안하게 있을 수 있도록 합니다. 가족 간 갈등에서 중재자 역할을 하며, 언제나 가족의 편이 되어줍니다. 가족의 작은 것 하나하나를 소중히 기억하고 챙깁니다.',
+    pros: ['가족을 하나로 묶는 따뜻한 배려', '가족 간 갈등에서 중재자 역할', '언제나 가족의 편이 되는 신뢰감', '가족의 소소한 것까지 기억하고 챙기는 세심함'],
+    cons: ['자신의 감정과 필요를 잘 표현하지 못함', '거절하지 못해 가족의 부탁을 다 떠안는 경향', '가족 갈등을 회피해 문제가 방치되기도 함', '쌓인 불만이 한꺼번에 폭발하는 패턴'],
+    tip: '💡 가족을 위한 배려만큼, 자신의 감정과 필요도 가족에게 솔직하게 표현해보세요. 가족도 당신의 진심을 알고 싶어합니다.',
+    brief: '가족의 따뜻한 중심. 배려와 공감으로 모두가 편안하게 있을 수 있게 해요. 언제나 가족의 편인 든든한 존재입니다.',
+    comm: ['충분히 경청하고 감정을 먼저 공감해 주세요', '강요보다 부드럽게 제안하는 방식이 효과적이에요', '가족을 위한 노력과 배려를 자주 표현해주세요'],
+    keywords: ['배려심', '화합', '가족의중심']
+  },
+  '부': {
+    emoji: '🦉', name: '부엉이형', sub: '가족을 지혜롭게 이끄는 든든한 조언자',
+    color: '#E07B20', light: '#FFF8F0', mid: '#FAD7A0',
+    desc: '가족 안에서 꼼꼼한 분석과 논리적 사고로 현명한 결정을 내립니다. 가족이 중요한 결정을 할 때 충분한 정보와 근거를 제시하며, 장기적인 관점에서 가족을 위한 최선을 생각합니다.',
+    pros: ['가족의 중요한 결정에서 냉철한 분석과 조언', '장기적 관점으로 가족을 위한 최선을 생각', '체계적인 계획으로 가족의 안정에 기여', '신뢰할 수 있는 전문성과 지혜'],
+    cons: ['감정 표현이 적어 가족이 차갑게 느낄 수 있음', '완벽주의로 인해 가족에게 부담을 주기도 함', '즉흥적인 가족 활동이나 변화에 적응하기 어려움', '논리를 앞세우다 감정적 공감을 놓치기도 함'],
+    tip: '💡 가족에게는 논리적 조언보다 따뜻한 한마디가 더 큰 위안이 될 수 있습니다. 감정 표현도 연습해보세요.',
+    brief: '가족의 지혜로운 조언자. 꼼꼼한 분석과 신중한 판단으로 가족을 이끌어요. 믿음직스러운 든든한 존재입니다.',
+    comm: ['근거와 데이터를 함께 제시하면 신뢰를 얻어요', '생각할 시간과 여유를 충분히 주세요', '즉흥보다 미리 계획을 공유해 준비할 수 있게 해주세요'],
+    keywords: ['분석적', '신중한', '지혜로운']
+  }
 };
 let current = 0, answers = Array.from({length: 20}, () => []), userName = '', currentTop = '', currentScores = {};
 function saveSession(extra) { try { sessionStorage.setItem('quiz_state_가족', JSON.stringify(Object.assign({ current, answers, userName }, extra))); } catch(e) {} }
@@ -421,7 +464,8 @@ function showAd() { document.getElementById('ad-content').style.display = ''; do
 function adLinkClick() { saveSession({ screen: 'ad', scores: pendingScores, adClicked: true }); window.open(AD_CONFIG.link, '_blank', 'noopener,noreferrer'); document.getElementById('ad-content').style.display = 'none'; const waitScreen = document.getElementById('wait-screen'); waitScreen.classList.add('active'); const WAIT = 10; let remain = WAIT; document.getElementById('wait-number').textContent = remain; document.getElementById('wait-progress').style.width = '100%'; adTimer = setInterval(() => { remain--; document.getElementById('wait-number').textContent = remain; document.getElementById('wait-progress').style.width = `${(remain / WAIT) * 100}%`; if (remain <= 0) { clearInterval(adTimer); adTimer = null; waitScreen.classList.remove('active'); showResult(pendingScores); } }, 1000); }
 function encodeResult(name, top, scores) { const data = { n: name, t: top, s: scores }; return btoa(unescape(encodeURIComponent(JSON.stringify(data)))); }
 function decodeResult(encoded) { try { return JSON.parse(decodeURIComponent(escape(atob(encoded)))); } catch(e) { return null; } }
-function showResult(scores) { clearSession(); const total = Object.values(scores).reduce((a, b) => a + b, 0); const sorted = ['카','사','양','부'].sort((a, b) => scores[b] - scores[a]); const top = sorted[0]; const second = sorted[1]; const pcts = {}; if (total > 0) { let sum = 0; ['카','사','양','부'].forEach(k => { pcts[k] = Math.floor(scores[k] / total * 100); sum += pcts[k]; }); const remainder = 100 - sum; const keys = ['카','사','양','부'].sort((a, b) => (scores[b] / total * 100 - Math.floor(scores[b] / total * 100)) - (scores[a] / total * 100 - Math.floor(scores[a] / total * 100))); for (let i = 0; i < remainder; i++) pcts[keys[i]]++; } else { ['카','사','양','부'].forEach(k => { pcts[k] = 0; }); } currentTop = top; currentScores = scores; const r = RESULTS[top]; const r2 = RESULTS[second]; const encoded = encodeResult(userName, top, scores); history.pushState(null, '', location.pathname + '?r=' + encoded); const banner = document.getElementById('result-banner'); banner.style.background = `linear-gradient(135deg, ${r.color} 0%, ${r.mid} 100%)`; banner.style.color = 'white'; document.getElementById('result-name').textContent = `${userName}님의 결과`; document.getElementById('result-emoji').textContent = r.emoji; document.getElementById('result-type').textContent = r.name; document.getElementById('result-keywords').innerHTML = r.keywords.map(k => `<span class="kw-tag">#${k}</span>`).join(''); document.getElementById('result-sub').textContent = `「${r.sub}」`; document.getElementById('type-tags').innerHTML = `<div class="type-tag main-tag"><span class="tag-label">주 유형</span><span class="tag-animal">${r.emoji} ${r.name}</span><span class="tag-pct">${pcts[top]}%</span></div><div class="type-tag sub-tag"><span class="tag-label">부 유형</span><span class="tag-animal">${r2.emoji} ${r2.name}</span><span class="tag-pct">${pcts[second]}%</span></div>`; const sg = document.getElementById('score-grid'); sg.innerHTML = ''; ['카','사','양','부'].forEach(ak => { const rv = RESULTS[ak]; const isTop = (ak === top); const isSecond = (ak === second); const border = isTop ? rv.color : (isSecond ? rv.color + '88' : '#eee'); sg.innerHTML += `<div class="score-item" style="background:${rv.light};border:2px solid ${border}"><div class="score-item-top"><span class="s-label" style="color:${rv.color}">${rv.emoji} ${rv.name}</span><div class="s-bar-wrap"><div class="score-bar" style="background:#E0E0E0"><div class="score-bar-fill" style="width:${pcts[ak]}%;background:${rv.color}"></div></div></div><span class="s-num" style="color:${rv.color}">${pcts[ak]}%</span></div></div>`; }); document.getElementById('result-desc').textContent = r.desc; const dg = document.getElementById('detail-grid'); dg.innerHTML = `<div class="detail-box" style="background:${r.light};border:1.5px solid ${r.mid}"><h4 style="color:${r.color}">✅ 주요 강점</h4><ul>${r.pros.map(p=>`<li>${p}</li>`).join('')}</ul></div><div class="detail-box" style="background:#FFF8F8;border:1.5px solid #FFD0D0"><h4 style="color:#C00000">⚠️ 성장 포인트</h4><ul>${r.cons.map(c=>`<li>${c}</li>`).join('')}</ul></div>`; document.getElementById('tip-box').innerHTML = r.tip; const others = ['카','사','양','부'].filter(k => k !== top); const os = document.getElementById('other-section'); os.innerHTML = `<h3>🤝 다른 유형과 소통하는 법</h3><div class="other-cards">` + others.map(k => { const ov = RESULTS[k]; return `<div class="other-card"><div class="other-card-header" style="background:${ov.light}"><span class="o-emoji">${ov.emoji}</span><div><div class="o-name" style="color:${ov.color}">${ov.name}</div><div class="o-kw-row">${ov.keywords.map(k=>`<span class="o-kw-tag" style="color:${ov.color};border-color:${ov.color}40">${k}</span>`).join('')}</div><div class="o-brief">${ov.brief}</div></div></div><div class="other-card-body"><div class="comm-title">💬 이렇게 소통하세요</div><ul>${ov.comm.map(c => `<li>${c}</li>`).join('')}</ul></div></div>`; }).join('') + `</div>`; showScreen('screen-result'); }
+function showResult(scores) { clearSession(); const total = Object.values(scores).reduce((a, b) => a + b, 0); const sorted = ['카','사','양','부'].sort((a, b) => scores[b] - scores[a]); const top = sorted[0]; const second = sorted[1]; const pcts = {}; if (total > 0) { let sum = 0; ['카','사','양','부'].forEach(k => { pcts[k] = Math.floor(scores[k] / total * 100); sum += pcts[k]; }); const remainder = 100 - sum; const keys = ['카','사','양','부'].sort((a, b) => (scores[b] / total * 100 - Math.floor(scores[b] / total * 100)) - (scores[a] / total * 100 - Math.floor(scores[a] / total * 100))); for (let i = 0; i < remainder; i++) pcts[keys[i]]++; } else { ['카','사','양','부'].forEach(k => { pcts[k] = 0; }); } currentTop = top; currentScores = scores; const r = RESULTS[top]; const r2 = RESULTS[second]; const encoded = encodeResult(userName, top, scores); history.pushState(null, '', location.pathname + '?r=' + encoded); const banner = document.getElementById('result-banner'); banner.style.background = `linear-gradient(135deg, ${r.color} 0%, ${r.mid} 100%)`; banner.style.color = 'white'; document.getElementById('result-name').textContent = `${userName}님의 결과`;
+  document.getElementById('result-category-chip').textContent = CATEGORY_LABEL; document.getElementById('result-emoji').textContent = r.emoji; document.getElementById('result-type').textContent = r.name; document.getElementById('result-keywords').innerHTML = r.keywords.map(k => `<span class="kw-tag">#${k}</span>`).join(''); document.getElementById('result-sub').textContent = `「${r.sub}」`; document.getElementById('type-tags').innerHTML = `<div class="type-tag main-tag"><span class="tag-label">주 유형</span><span class="tag-animal">${r.emoji} ${r.name}</span><span class="tag-pct">${pcts[top]}%</span></div><div class="type-tag sub-tag"><span class="tag-label">부 유형</span><span class="tag-animal">${r2.emoji} ${r2.name}</span><span class="tag-pct">${pcts[second]}%</span></div>`; const sg = document.getElementById('score-grid'); sg.innerHTML = ''; ['카','사','양','부'].forEach(ak => { const rv = RESULTS[ak]; const isTop = (ak === top); const isSecond = (ak === second); const border = isTop ? rv.color : (isSecond ? rv.color + '88' : '#eee'); sg.innerHTML += `<div class="score-item" style="background:${rv.light};border:2px solid ${border}"><div class="score-item-top"><span class="s-label" style="color:${rv.color}">${rv.emoji} ${rv.name}</span><div class="s-bar-wrap"><div class="score-bar" style="background:#E0E0E0"><div class="score-bar-fill" style="width:${pcts[ak]}%;background:${rv.color}"></div></div></div><span class="s-num" style="color:${rv.color}">${pcts[ak]}%</span></div></div>`; }); document.getElementById('result-desc').textContent = r.desc; const dg = document.getElementById('detail-grid'); dg.innerHTML = `<div class="detail-box" style="background:${r.light};border:1.5px solid ${r.mid}"><h4 style="color:${r.color}">✅ 주요 강점</h4><ul>${r.pros.map(p=>`<li>${p}</li>`).join('')}</ul></div><div class="detail-box" style="background:#FFF8F8;border:1.5px solid #FFD0D0"><h4 style="color:#C00000">⚠️ 성장 포인트</h4><ul>${r.cons.map(c=>`<li>${c}</li>`).join('')}</ul></div>`; document.getElementById('tip-box').innerHTML = r.tip; const others = ['카','사','양','부'].filter(k => k !== top); const os = document.getElementById('other-section'); os.innerHTML = `<h3>🤝 다른 유형과 소통하는 법</h3><div class="other-cards">` + others.map(k => { const ov = RESULTS[k]; return `<div class="other-card"><div class="other-card-header" style="background:${ov.light}"><span class="o-emoji">${ov.emoji}</span><div><div class="o-name" style="color:${ov.color}">${ov.name}</div><div class="o-kw-row">${ov.keywords.map(k=>`<span class="o-kw-tag" style="color:${ov.color};border-color:${ov.color}40">${k}</span>`).join('')}</div><div class="o-brief">${ov.brief}</div></div></div><div class="other-card-body"><div class="comm-title">💬 이렇게 소통하세요</div><ul>${ov.comm.map(c => `<li>${c}</li>`).join('')}</ul></div></div>`; }).join('') + `</div>`; showScreen('screen-result'); }
 function retryTest() { current = 0; answers = Array.from({length: 20}, () => []); currentTop = ''; currentScores = {}; clearSession(); history.pushState(null, '', location.pathname); showScreen('screen-intro'); }
 function copyResultLink() { const url = location.href; const updateBtns = () => { showToast('✅ 링크가 복사됐어요!'); ['btn-share-link', 'btn-share-link-top'].forEach(id => { const btn = document.getElementById(id); if (btn) { btn.textContent = '✅ 복사됨!'; setTimeout(() => { btn.textContent = '🔗 링크 복사'; }, 2500); } }); }; navigator.clipboard.writeText(url).then(updateBtns).catch(() => { const ta = document.createElement('textarea'); ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); updateBtns(); }); }
 const EJS_PUBLIC_KEY = 'hKIxH-TLR18w4HQun', EJS_SERVICE_ID = 'service_0moj8bs', EJS_TEMPLATE_ID = 'template_9buriby';
