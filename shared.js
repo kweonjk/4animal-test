@@ -294,14 +294,13 @@ function releaseFocusTrap() {
 
 // 결과 화면에 다운로드 버튼 동적 추가
 function injectShareImgButtons() {
-  // 상단 share-row-top 아래에만 카드 다운로드 단독 버튼 추가 (하단은 injectResultRecommendBtn에서 친구추천과 함께 처리)
-  document.querySelectorAll('.share-row-img-top').forEach(el => el.remove());
+  // 상단 share-row-top 아래에 친구추천 + 결과 카드 다운로드 가로 50/50 추가
+  document.querySelectorAll('.share-row-img-top, .share-row-actions-top').forEach(el => el.remove());
   const topShareRow = document.querySelector('.share-row-top');
   if (!topShareRow) return;
   const row = document.createElement('div');
-  row.className = 'share-row-img-top';
-  row.style.cssText = 'padding: 0 20px 16px;';
-  row.innerHTML = `<button class="btn-share-img" onclick="downloadShareCard()">🖼️ 결과 카드 다운로드</button>`;
+  row.className = 'share-row share-row-actions share-row-actions-top';
+  row.innerHTML = '<button class="btn-recommend-result" type="button" onclick="shareTestLink()">📨 친구에게 추천</button><button class="btn-share-img" type="button" onclick="downloadShareCard()">🖼️ 결과 카드 다운로드</button>';
   topShareRow.insertAdjacentElement('afterend', row);
 }
 
@@ -347,7 +346,7 @@ function injectResultRecommendBtn() {
   if (!shareRow) return;
   const row = document.createElement('div');
   row.className = 'share-row share-row-actions';
-  row.innerHTML = '<button class="btn-recommend-result" type="button" onclick="shareTestLink()">📨 친구에게 추천</button><button class="btn-share-img" type="button" onclick="downloadShareCard()">🖼️ 결과 카드</button>';
+  row.innerHTML = '<button class="btn-recommend-result" type="button" onclick="shareTestLink()">📨 친구에게 추천</button><button class="btn-share-img" type="button" onclick="downloadShareCard()">🖼️ 결과 카드 다운로드</button>';
   shareRow.insertAdjacentElement('afterend', row);
 }
 

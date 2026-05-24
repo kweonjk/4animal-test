@@ -262,6 +262,8 @@ body.admin-mode .btn-admin { display: flex; }
 /* 친구추천 + 카드다운로드 가로 50/50 배치 */
 .share-row-actions { display: flex; gap: 10px; margin-bottom: 12px; }
 .share-row-actions > button { flex: 1; width: auto; padding: 13px 10px; font-size: 0.9rem; min-width: 0; }
+/* 상단 share-row-top 아래에 위치할 때 padding 정렬 */
+.share-row-actions-top { padding: 0 20px 12px; margin-bottom: 0; }
 
 /* 다른 유형 카드 아코디언 */
 .other-card-header { cursor: pointer; position: relative; padding-right: 40px; transition: background-color 0.15s; }
