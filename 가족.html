@@ -26,10 +26,10 @@
 </head>
 <body>
 <nav class="back-nav"><a href="index.html" class="back-link">← 목록으로</a></nav>
-<button class="btn-admin" onclick="openAdmin()" title="관리자 설정">⚙️</button>
-<div class="admin-overlay" id="admin-overlay">
+<button class="btn-admin" onclick="openAdmin()" aria-label="관리자 설정 열기">⚙️</button>
+<div class="admin-overlay" id="admin-overlay" role="dialog" aria-labelledby="admin-modal-title" aria-modal="true">
   <div class="admin-box">
-    <div class="admin-header"><h3>⚙️ 관리자 설정</h3><button class="btn-admin-close" onclick="closeAdmin()">✕</button></div>
+    <div class="admin-header"><h3 id="admin-modal-title">⚙️ 관리자 설정</h3><button class="btn-admin-close" onclick="closeAdmin()" aria-label="관리자 패널 닫기">✕</button></div>
     <div class="admin-pw-screen" id="admin-pw-screen">
       <div class="lock-icon">🔒</div><h3>관리자 로그인</h3><p>비밀번호를 입력해주세요</p>
       <input class="admin-pw-input" type="password" id="admin-pw-input" placeholder="••••••••" onkeydown="if(event.key==='Enter') adminLogin()" />
@@ -64,9 +64,9 @@
     </div>
   </div>
 </div>
-<div class="modal-overlay" id="email-modal">
+<div class="modal-overlay" id="email-modal" role="dialog" aria-labelledby="email-modal-title" aria-modal="true">
   <div class="modal-box">
-    <h3>📧 결과를 이메일로 보내기</h3><p>받는 사람의 이메일 주소를 입력해주세요.</p>
+    <h3 id="email-modal-title">📧 결과를 이메일로 보내기</h3><p>받는 사람의 이메일 주소를 입력해주세요.</p>
     <input class="modal-input" type="email" id="email-input" placeholder="example@gmail.com" />
     <div class="modal-btns">
       <button class="btn-modal-cancel" onclick="closeEmailModal()">취소</button>
@@ -75,10 +75,11 @@
     <div class="modal-status" id="modal-status"></div>
   </div>
 </div>
+<main id="main-content">
 <div id="screen-intro" class="screen active">
   <div class="intro-card">
     <div class="intro-banner">
-      <div class="animals">🦎🦁🐑🦉</div>
+      <div class="animals" aria-label="카멜레온, 사자, 양, 부엉이 4가지 동물 유형">🦎🦁🐑🦉</div>
       <h1>가족 안에서 나는 어떤 동물 유형일까?</h1>
       <p>4동물 유형 성격검사</p>
       <p style="color:#BED4F0;font-size:0.8rem;margin-top:4px;opacity:.8">🏠 가족 유형</p>
@@ -98,12 +99,12 @@
   </div>
 </div>
 <div id="screen-question" class="screen">
-  <div class="q-header"><span class="q-counter" id="q-counter">1 / 20</span><span style="font-size:.85rem;color:#888">🦎🦁🐑🦉</span></div>
+  <div class="q-header"><span class="q-counter" id="q-counter" aria-live="polite" aria-atomic="true">1 / 20</span><span style="font-size:.85rem;color:#888">🦎🦁🐑🦉</span></div>
   <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:5%"></div></div>
   <div class="q-card">
     <div class="q-num-bar" id="q-num-bar">Q01</div>
     <div class="q-text" id="q-text"></div>
-    <div class="q-hint">최대 <strong>2개</strong>까지 선택 가능 &nbsp;<span class="sel-count" id="sel-count">0 / 2</span></div>
+    <div class="q-hint">최대 <strong>2개</strong>까지 선택 가능 &nbsp;<span class="sel-count" id="sel-count" aria-live="polite" aria-atomic="true">0 / 2</span></div>
     <div class="options" id="options"></div>
   </div>
   <div class="q-nav">
@@ -114,7 +115,7 @@
 </div>
 <div id="screen-ad" class="screen">
   <div class="ad-card" id="ad-content">
-    <div class="ad-image-wrap" id="ad-image-wrap"><img id="ad-img" src="" alt="광고 이미지" onerror="this.parentElement.style.display='none'" onload="this.parentElement.style.display=''" /></div>
+    <div class="ad-image-wrap" id="ad-image-wrap"><img id="ad-img" src="" alt="쿠팡 파트너스 상품 광고 이미지" onerror="this.parentElement.style.display='none'" onload="this.parentElement.style.display=''" /></div>
     <div class="ad-body">
       <div class="ad-title" id="ad-title"></div>
       <div class="ad-action-info"><span class="info-icon">👇</span><span>버튼을 누르면 <strong>새 창</strong>에서 쿠팡이 열리고,<br>이 화면에서 <strong>10초 후 결과</strong>가 자동으로 표시됩니다.</span></div>
@@ -125,10 +126,10 @@
       <div class="ad-label">AD · 광고</div>
     </div>
   </div>
-  <div class="wait-screen" id="wait-screen">
+  <div class="wait-screen" id="wait-screen" role="progressbar" aria-valuemin="0" aria-valuemax="10" aria-valuenow="10" aria-valuetext="결과 표시까지 10초 남음">
     <div class="wait-animals">🦎🦁🐑🦉</div>
     <div class="wait-label">결과를 분석하고 있어요</div>
-    <div class="wait-number" id="wait-number">10</div>
+    <div class="wait-number" id="wait-number" aria-live="polite">10</div>
     <div class="wait-sub">초 후 결과가 표시됩니다</div>
     <div class="wait-progress-wrap"><div class="wait-progress-fill" id="wait-progress" style="width:100%"></div></div>
   </div>
@@ -162,6 +163,7 @@
     </div>
   </div>
 </div>
+</main>
 <script>
 const QUIZ_DATA = {
   CATEGORY_LABEL: '🏠 가족 유형',

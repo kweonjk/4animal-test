@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>관리자 모드 활성화 — 4동물 유형검사</title>
+<style>
+  body { font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif; background: #F4F7FB; min-height: 100vh; padding: 40px 20px; margin: 0; display: flex; align-items: center; justify-content: center; }
+  .admin-box { background: white; max-width: 480px; width: 100%; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.10); overflow: hidden; }
+  .admin-header { background: linear-gradient(135deg, #1F3864, #2E75B6); color: white; padding: 32px 28px 24px; text-align: center; }
+  .admin-header .icon { font-size: 3rem; margin-bottom: 12px; }
+  .admin-header h1 { font-size: 1.3rem; font-weight: 700; margin: 0 0 6px; }
+  .admin-header p { font-size: 0.9rem; opacity: 0.9; margin: 0; }
+  .admin-body { padding: 28px; }
+  .status { background: #E8F5E9; border: 1.5px solid #2E8B2E; border-radius: 10px; padding: 14px 18px; font-size: 0.95rem; color: #1A5C1A; margin-bottom: 20px; line-height: 1.6; }
+  .links-section h3 { font-size: 0.95rem; font-weight: 700; color: #1F3864; margin: 0 0 12px; }
+  .link-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .link-grid a { display: flex; align-items: center; gap: 8px; padding: 12px 14px; background: #F0F4FB; border: 1.5px solid #D0DCF0; border-radius: 10px; text-decoration: none; color: #1F3864; font-weight: 600; font-size: 0.92rem; transition: all 0.15s; }
+  .link-grid a:hover { background: #E0E7F0; transform: translateY(-1px); }
+  .link-grid a .emoji { font-size: 1.2rem; }
+  .actions { display: flex; gap: 10px; }
+  .btn { flex: 1; padding: 12px; border-radius: 10px; font-family: inherit; font-size: 0.95rem; font-weight: 700; cursor: pointer; border: none; transition: all 0.15s; }
+  .btn-primary { background: #1F3864; color: white; }
+  .btn-primary:hover { background: #2E75B6; }
+  .btn-danger { background: #FFF0F0; color: #C00000; border: 1.5px solid #FFD0D0; }
+  .btn-danger:hover { background: #FDDEDE; }
+  .footer-note { text-align: center; color: #888; font-size: 0.82rem; margin-top: 16px; line-height: 1.5; }
+</style>
+</head>
+<body>
+<div class="admin-box">
+  <div class="admin-header">
+    <div class="icon">🔓</div>
+    <h1>관리자 모드 활성화됨</h1>
+    <p>모든 카테고리 페이지에 ⚙️ 버튼이 표시됩니다</p>
+  </div>
+  <div class="admin-body">
+    <div class="status" id="status">
+      ✅ 관리자 모드가 활성화되었습니다.<br>
+      모든 카테고리 페이지에서 우측 상단 <strong>⚙️ 버튼</strong>으로 광고·비밀번호 설정이 가능합니다.
+    </div>
+    <div class="links-section">
+      <h3>📂 카테고리 페이지로 이동</h3>
+      <div class="link-grid">
+        <a href="../일반.html"><span class="emoji">🌟</span>일반 유형</a>
+        <a href="../직장.html"><span class="emoji">💼</span>직장 유형</a>
+        <a href="../연인.html"><span class="emoji">💕</span>연인 유형</a>
+        <a href="../가족.html"><span class="emoji">🏠</span>가족 유형</a>
+        <a href="../친구.html"><span class="emoji">🤝</span>친구 유형</a>
+        <a href="../index.html"><span class="emoji">🏠</span>허브 페이지</a>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-danger" onclick="deactivate()">🔒 관리자 모드 해제</button>
+    </div>
+    <div class="footer-note">
+      관리자 모드는 현재 브라우저에만 저장됩니다.<br>
+      다른 기기·브라우저에서는 새로 /admin URL을 방문해야 합니다.
+    </div>
+  </div>
+</div>
+<script>
+  // 관리자 모드 활성화
+  localStorage.setItem('admin_mode', '1');
+
+  function deactivate() {
+    localStorage.removeItem('admin_mode');
+    document.getElementById('status').innerHTML = '🔒 <strong>관리자 모드가 해제되었습니다.</strong><br>이제 ⚙️ 버튼이 보이지 않습니다.';
+    document.getElementById('status').style.background = '#FFF8F0';
+    document.getElementById('status').style.borderColor = '#E07B20';
+    document.getElementById('status').style.color = '#A04A0A';
+  }
+</script>
+</body>
+</html>
