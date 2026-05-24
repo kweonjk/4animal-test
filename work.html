@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="직장에서 나는 어떤 동물 유형일까? 20개 질문으로 알아보는 일할 때의 나.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="4동물 유형검사 — 직장 유형 | 일할 때 나는 어떤 동물?">
+<meta property="og:description" content="직장에서 나는 어떤 동물 유형일까? 20개 질문으로 알아보는 일할 때의 나.">
+<meta property="og:image" content="https://4animal.kr/og-work.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="4동물 유형검사 — 직장 유형 미리보기">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:site_name" content="4동물 유형검사">
+<meta property="og:url" content="https://4animal.kr/work.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="4동물 유형검사 — 직장 유형 | 일할 때 나는 어떤 동물?">
+<meta name="twitter:description" content="직장에서 나는 어떤 동물 유형일까? 20개 질문으로 알아보는 일할 때의 나.">
+<meta name="twitter:image" content="https://4animal.kr/og-work.png">
+<meta name="twitter:image:alt" content="4동물 유형검사 — 직장 유형 미리보기">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💼</text></svg>'>
+<title>4동물 유형검사 — 직장 유형</title>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<link rel="stylesheet" href="shared.css">
+<style>
+  :root {
+    --cat-primary: #006064;
+    --cat-mid: #00ACC1;
+  }
+</style>
+</head>
+<body>
+<nav class="back-nav"><a href="index.html" class="back-link">← 목록으로</a></nav>
+<button class="btn-admin" onclick="openAdmin()" aria-label="관리자 설정 열기">⚙️</button>
+<div class="admin-overlay" id="admin-overlay" role="dialog" aria-labelledby="admin-modal-title" aria-modal="true">
+  <div class="admin-box">
+    <div class="admin-header"><h3 id="admin-modal-title">⚙️ 관리자 설정</h3><button class="btn-admin-close" onclick="closeAdmin()" aria-label="관리자 패널 닫기">✕</button></div>
+    <div class="admin-pw-screen" id="admin-pw-screen">
+      <div class="lock-icon">🔒</div><h3>관리자 로그인</h3><p>비밀번호를 입력해주세요</p>
+      <input class="admin-pw-input" type="password" id="admin-pw-input" placeholder="••••••••" onkeydown="if(event.key==='Enter') adminLogin()" />
+      <button class="btn-admin-login" onclick="adminLogin()">로그인</button>
+      <div class="admin-pw-error" id="admin-pw-error"></div>
+    </div>
+    <div class="admin-body" id="admin-settings-screen" style="display:none">
+      <div class="admin-section">
+        <div class="admin-section-title">📢 광고 설정</div>
+        <div class="admin-field">
+          <label>광고 이미지</label>
+          <div class="img-upload-area" onclick="document.getElementById('cfg-img-file').click()">
+            <input type="file" id="cfg-img-file" accept="image/*" onchange="handleImgUpload(event)" />
+            <label class="img-upload-label"><span class="upload-icon">🖼️</span><span id="upload-label-text">클릭해서 이미지 파일 업로드</span></label>
+            <img id="img-preview" class="img-preview" alt="미리보기" />
+          </div>
+          <div class="img-or">── 또는 ──</div>
+          <input type="url" id="cfg-image" placeholder="이미지 URL 직접 입력 (https://...)" />
+          <div class="field-hint">⚠️ 모든 기기에서 보이려면 <strong>URL 입력</strong>을 사용하세요.</div>
+        </div>
+        <div class="admin-field"><label>광고 링크 (쿠팡 파트너스)</label><input type="url" id="cfg-link" placeholder="https://link.coupang.com/a/..." /></div>
+        <div class="admin-field"><label>광고 제목</label><input type="text" id="cfg-title" placeholder="지금 인기 상품을 확인해보세요!" /></div>
+        <div class="admin-field"><label>버튼 텍스트</label><input type="text" id="cfg-btntext" placeholder="상품 보고 결과 확인하기" /></div>
+      </div>
+      <div class="admin-section">
+        <div class="admin-section-title">🔐 비밀번호 변경</div>
+        <div class="admin-field"><label>새 비밀번호</label><input type="password" id="cfg-newpw" placeholder="새 비밀번호 입력" /></div>
+        <div class="admin-field"><label>비밀번호 확인</label><input type="password" id="cfg-newpw2" placeholder="다시 입력" /></div>
+      </div>
+      <button class="btn-admin-save" onclick="saveAdminSettings()">💾 저장하기</button>
+      <div class="admin-msg" id="admin-save-msg"></div>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="email-modal" role="dialog" aria-labelledby="email-modal-title" aria-modal="true">
+  <div class="modal-box">
+    <h3 id="email-modal-title">📧 결과를 이메일로 보내기</h3><p>받는 사람의 이메일 주소를 입력해주세요.</p>
+    <input class="modal-input" type="email" id="email-input" placeholder="example@gmail.com" />
+    <div class="modal-btns">
+      <button class="btn-modal-cancel" onclick="closeEmailModal()">취소</button>
+      <button class="btn-modal-send" id="btn-modal-send" onclick="doSendEmail()">📨 보내기</button>
+    </div>
+    <div class="modal-status" id="modal-status"></div>
+  </div>
+</div>
+<main id="main-content">
+<div id="screen-intro" class="screen active">
+  <div class="intro-card">
+    <div class="intro-banner">
+      <div class="animals" aria-label="카멜레온, 사자, 양, 부엉이 4가지 동물 유형">🦎🦁🐑🦉</div>
+      <h1>직장에서 나는 어떤 동물 유형일까?</h1>
+      <p>4동물 유형 성격검사</p>
+      <p style="color:#BED4F0;font-size:0.8rem;margin-top:4px;opacity:.8">💼 직장 유형</p>
+    </div>
+    <div class="intro-body">
+      <div class="desc">직장 생활 속 20개의 질문에 솔직하게 답해주세요.<br>정답은 없습니다 — 직장에서 가장 나다운 보기를 고르는 것이 가장 정확합니다.<br>소요 시간: 약 <strong>3~5분</strong></div>
+      <div class="name-row">
+        <label>이름</label>
+        <input type="text" id="user-name" placeholder="이름 또는 닉네임을 입력하세요" oninput="document.getElementById('name-error').style.display='none'" />
+        <div class="name-error" id="name-error">⚠️ 이름을 입력해야 검사를 시작할 수 있어요.</div>
+      </div>
+      <div class="animal-pills">
+        <span class="pill ka">🦎 카멜레온형</span><span class="pill sa">🦁 사자형</span><span class="pill yang">🐑 양형</span><span class="pill bu">🦉 부엉이형</span>
+      </div>
+      <button class="btn-start" onclick="startTest()">검사 시작하기 →</button>
+    </div>
+  </div>
+</div>
+<div id="screen-question" class="screen">
+  <div class="q-header"><span class="q-counter" id="q-counter" aria-live="polite" aria-atomic="true">1 / 20</span><span style="font-size:.85rem;color:#888">🦎🦁🐑🦉</span></div>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:5%"></div></div>
+  <div class="q-card">
+    <div class="q-num-bar" id="q-num-bar">Q01</div>
+    <div class="q-text" id="q-text"></div>
+    <div class="q-hint">최대 <strong>2개</strong>까지 선택 가능 &nbsp;<span class="sel-count" id="sel-count" aria-live="polite" aria-atomic="true">0 / 2</span></div>
+    <div class="options" id="options"></div>
+  </div>
+  <div class="q-nav">
+    <button class="btn-prev" id="btn-prev" onclick="prevQ()">← 이전</button>
+    <button class="btn-next" id="btn-next" onclick="nextQ()">다음 →</button>
+  </div>
+  <button class="btn-submit" id="btn-submit" onclick="submitTest()" style="display:none">🎯 결과 확인하기</button>
+</div>
+<div id="screen-ad" class="screen">
+  <div class="ad-card" id="ad-content">
+    <div class="ad-image-wrap" id="ad-image-wrap"><img id="ad-img" src="" alt="쿠팡 파트너스 상품 광고 이미지" onerror="this.parentElement.style.display='none'" onload="this.parentElement.style.display=''" /></div>
+    <div class="ad-body">
+      <div class="ad-title" id="ad-title"></div>
+      <div class="ad-action-info"><span class="info-icon">👇</span><span>버튼을 누르면 <strong>새 창</strong>에서 쿠팡이 열리고,<br>이 화면에서 <strong>10초 후 결과</strong>가 자동으로 표시됩니다.</span></div>
+      <button id="ad-link-btn" class="btn-ad-link" onclick="adLinkClick()">🛒 <span id="ad-btn-text"></span></button>
+    </div>
+    <div class="ad-footer">
+      <div class="ad-disclosure">이 페이지는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</div>
+      <div class="ad-label">AD · 광고</div>
+    </div>
+  </div>
+  <div class="wait-screen" id="wait-screen" role="progressbar" aria-valuemin="0" aria-valuemax="10" aria-valuenow="10" aria-valuetext="결과 표시까지 10초 남음">
+    <div class="wait-animals">🦎🦁🐑🦉</div>
+    <div class="wait-label">결과를 분석하고 있어요</div>
+    <div class="wait-number" id="wait-number" aria-live="polite">10</div>
+    <div class="wait-sub">초 후 결과가 표시됩니다</div>
+    <div class="wait-progress-wrap"><div class="wait-progress-fill" id="wait-progress" style="width:100%"></div></div>
+  </div>
+</div>
+<div id="screen-result" class="screen">
+  <div class="result-card" id="result-card">
+    <div class="result-banner" id="result-banner">
+      <div class="result-category-chip" id="result-category-chip"></div>
+      <div class="name-tag" id="result-name"></div>
+      <div class="result-emoji" id="result-emoji"></div>
+      <h2 id="result-type"></h2>
+      <div class="result-keywords" id="result-keywords"></div>
+      <div class="result-sub" id="result-sub"></div>
+      <div class="type-tag-row" id="type-tags"></div>
+    </div>
+    <div class="share-row share-row-top">
+      <button class="btn-share-link" id="btn-share-link-top" onclick="copyResultLink()">🔗 링크 복사</button>
+      <button class="btn-share-email" onclick="sendEmail()">📧 이메일 발송</button>
+    </div>
+    <div class="result-body">
+      <div class="score-grid" id="score-grid"></div>
+      <div class="desc-box" id="result-desc"></div>
+      <div class="detail-grid" id="detail-grid"></div>
+      <div class="tip-box" id="tip-box"></div>
+      <div class="other-section" id="other-section"></div>
+      <div class="share-row">
+        <button class="btn-share-link" id="btn-share-link" onclick="copyResultLink()">🔗 링크 복사</button>
+        <button class="btn-share-email" onclick="sendEmail()">📧 이메일 발송</button>
+      </div>
+      <button class="btn-retry" onclick="retryTest()">↩ 다시 검사하기</button>
+    </div>
+  </div>
+</div>
+</main>
+<script>
+const QUIZ_DATA = {
+  CATEGORY_LABEL: '💼 직장 유형',
+  SESSION_KEY: 'quiz_state_work',
+  questions: [
+    { q: "상사로부터 새 프로젝트를 맡았을 때 나는?", opts: ["목표와 기한을 먼저 정하고 바로 실행한다","참신한 접근 방법을 먼저 구상해 본다","팀원들과 역할을 나누고 함께 진행한다","자료와 선행 사례를 꼼꼼히 조사하고 계획을 세운다"] },
+    { q: "직장 동료와 의견 충돌이 생겼을 때 나는?", opts: ["유머로 분위기를 풀고 대화를 이어간다","서로 타협점을 찾으며 조율한다","데이터와 근거를 들어 내 의견을 논리적으로 설명한다","단호하게 내 의견을 밀어붙인다"] },
+    { q: "마감 기한이 촉박할 때 나는?", opts: ["팀원에게 도움을 요청하고 역할을 나눈다","끝까지 완성도를 유지하기 위해 꼼꼼하게 마무리한다","가장 중요한 것부터 처리하고 나머지는 과감히 줄인다","에너지를 쥐어짜 창의적으로 빠르게 해결한다"] },
+    { q: "보고서를 작성할 때 나의 스타일은?", opts: ["빠짐없이 근거와 데이터를 첨부해 완성도를 높인다","핵심만 간결하게, 결론부터 쓴다","보기 좋게 구성하고 필요한 내용을 적당히 담는다","분량을 상황에 맞게 조절하고 읽기 편하게 쓴다"] },
+    { q: "팀장이나 리더가 된다면 어떤 스타일?", opts: ["비전을 제시하고 팀을 강하게 이끈다","자유로운 분위기를 만들어 창의성을 끌어낸다","팀원들의 의견을 모아 합의 기반으로 진행한다","체계적인 계획과 명확한 역할 분담으로 이끈다"] },
+    { q: "회사에서 갑자기 발표를 요청받으면?", opts: ["즉흥적으로도 잘 해낼 자신이 있다","걱정되지만 동료들의 반응을 살피며 차분하게 한다","자료를 최대한 준비하고 철저히 연습한다","짧게 핵심을 전달하고 자신 있게 한다"] },
+    { q: "업무 중 실수를 했을 때 나는?", opts: ["주변에 영향을 줄까봐 먼저 알리고 사과한다","같은 실수가 반복되지 않도록 원인을 철저히 분석한다","즉시 인정하고 빠르게 수습 방법을 찾는다","당황하지 않고 유연하게 상황을 수습한다"] },
+    { q: "직장에서 인정받고 싶은 모습은?", opts: ["전문성과 꼼꼼함으로 신뢰받는 것","탁월한 성과로 주목받는 것","창의적인 아이디어로 인정받는 것","팀의 화합을 이끄는 사람으로 알려지는 것"] },
+    { q: "새로운 아이디어를 제안할 때 나는?", opts: ["성과와 효과를 강조하며 강하게 밀어붙인다","아이디어를 자유롭게 쏟아내고 토론을 유도한다","팀원들이 공감할지 먼저 살펴본 후 제안한다","실현 가능성을 충분히 검토한 후 제안한다"] },
+    { q: "직장 내 분위기가 안 좋을 때 나는?", opts: ["분위기를 풀 수 있도록 유머나 가벼운 대화를 시도한다","힘들어하는 동료를 먼저 챙기고 위로한다","갈등의 원인이 무엇인지 조용히 분석한다","직접적으로 문제를 파악하고 해결에 나선다"] },
+    { q: "업무 중 가장 힘든 상황은?", opts: ["동료들과의 관계가 틀어질 때","근거 없이 결정이 내려지거나 일이 대충 처리될 때","성과 없이 똑같은 일만 반복될 때","창의성을 발휘하지 못하고 틀에 갇혀 있을 때"] },
+    { q: "야근을 해야 할 때 나는?", opts: ["완성도를 위해 필요하다면 기꺼이 한다","효율적으로 처리해 야근을 최소화한다","야근도 나름 재미있게 만든다","팀원이 힘들면 함께 남아 돕는다"] },
+    { q: "상사의 피드백을 받을 때 나는?", opts: ["수긍할 부분만 빠르게 인정하고 결과로 보여준다","새로운 시각으로 재해석해 창의적으로 발전시킨다","감사히 받아들이며 관계를 소중히 여긴다","충분히 이해한 후 더 나은 방향으로 개선한다"] },
+    { q: "신입 동료가 들어왔을 때 나는?", opts: ["재미있는 농담과 가벼운 대화로 자연스럽게 친해진다","필요한 것을 챙겨주고 따뜻하게 환영해준다","필요한 자료와 매뉴얼을 정리해 전달한다","먼저 다가가 업무 흐름을 빠르게 알려주고 적응을 돕는다"] },
+    { q: "업무에서 가장 중요한 것은?", opts: ["팀워크와 화합","정확성과 완성도","명확한 목표와 실행력","창의적인 아이디어와 새로운 시도"] },
+    { q: "회식 자리에서 나는?", opts: ["적당히 어울리다 일찍 자리를 뜨는 편이다","리드하며 분위기를 이끈다","다양한 사람들과 두루두루 어울린다","조용히 들으면서 필요한 사람 곁에 있어준다"] },
+    { q: "연봉 협상을 할 때 나는?", opts: ["내 성과를 강하게 어필하고 원하는 금액을 명확히 말한다","분위기를 파악하며 유연하게 대화한다","회사 상황도 감안해 조율하며 진행한다","충분한 자료와 근거를 바탕으로 논리적으로 진행한다"] },
+    { q: "직장에서 불합리한 일이 생겼을 때 나는?", opts: ["상황에 따라 유연하게 대처한다","동료들과 함께 의논하고 공감을 구한다","원인을 분석하고 개선안을 만들어 제안한다","즉시 결정권자에게 직접 말한다"] },
+    { q: "일이 잘 풀릴 때 가장 기분 좋은 것은?", opts: ["팀원들이 행복하게 일할 때","완벽하게 완성된 결과물을 볼 때","큰 성과를 달성했을 때","새로운 아이디어가 성공했을 때"] },
+    { q: "이상적인 직장 생활은?", opts: ["체계적이고 전문성을 키울 수 있는 환경","명확한 목표를 향해 빠르게 성장하는 환경","자유롭고 창의적으로 일할 수 있는 환경","좋은 동료들과 함께하는 따뜻한 조직"] }
+  ],
+  SCORE_MAP: [
+    ['사','카','양','부'],
+    ['카','양','부','사'],
+    ['양','부','사','카'],
+    ['부','사','카','양'],
+    ['사','카','양','부'],
+    ['카','양','부','사'],
+    ['양','부','사','카'],
+    ['부','사','카','양'],
+    ['사','카','양','부'],
+    ['카','양','부','사'],
+    ['양','부','사','카'],
+    ['부','사','카','양'],
+    ['사','카','양','부'],
+    ['카','양','부','사'],
+    ['양','부','사','카'],
+    ['부','사','카','양'],
+    ['사','카','양','부'],
+    ['카','양','부','사'],
+    ['양','부','사','카'],
+    ['부','사','카','양'],
+  ],
+  RESULTS: {
+    '카': {
+      emoji: '🦎', name: '카멜레온형', sub: '정체된 흐름을 다시 굴리는 사람',
+      color: '#1B6CA8', light: '#EBF5FB', mid: '#AED6F1',
+      desc: '낯선 팀, 새로운 클라이언트, 갑작스러운 조직 개편에도 빠르게 적응합니다. 회의가 막힐 때 엉뚱한 한 마디로 흐름을 바꾸고, 부서 간 경계를 넘어 사람을 연결합니다.',
+      pros: ['팀 분위기를 살리는 사교성과 풍부한 표현력', '창의적인 아이디어로 새로운 돌파구 제시', '변화하는 업무 환경에 빠르게 적응', '다양한 부서·직원들과 원활한 협업 능력'],
+      cons: ['업무의 일관성과 마무리가 부족한 편', '여러 일을 동시에 진행하다 집중력이 분산됨', '그날 컨디션에 따라 업무 몰입도 편차가 큰 편', '세부 사항보다 큰 그림에만 집중하는 경향'],
+      tip: '💡 아이디어 회의 직후 5분만 더 써서 다음 액션과 담당자를 못 박아 두세요. 말한 것이 한 일로 남는 순간 평가가 달라집니다.',
+      brief: '팀의 에너지를 높이는 창의형. 유연한 적응력과 아이디어로 활기를 만들어요. 변화에 강하고 협업에 능한 동료입니다.',
+      comm: ['자유롭고 유연한 분위기에서 대화하면 잘 통해요', '아이디어와 기여를 충분히 인정해 주세요', '세부 지시보다 큰 방향과 목표를 제시하는 게 효과적이에요'],
+      keywords: ['창의적', '유연한', '사교적']
+    },
+    '사': {
+      emoji: '🦁', name: '사자형', sub: '성과를 만드는 직장의 리더',
+      color: '#C00000', light: '#FFF0F0', mid: '#FDDEDE',
+      desc: '직장에서 강한 추진력과 결단력으로 목표를 향해 돌진합니다. 도전적인 프로젝트를 즐기고 결과 중심으로 팀을 이끄는 힘이 있습니다. 명확한 방향 제시와 빠른 실행으로 성과를 만들어냅니다.',
+      pros: ['강한 리더십과 목표 지향적 추진력', '빠른 결단과 실행으로 성과 창출', '도전적인 상황에서도 흔들리지 않는 용기', '위기 상황에서도 빠르게 판단하는 결정력'],
+      cons: ['동료의 감정과 속도를 배려하기 어려운 편', '독단적인 결정으로 팀의 공감을 잃을 수 있음', '직설적인 표현이 동료에게 상처가 되기도 함', '실수나 패배를 인정하기 어려워하는 경향'],
+      tip: '💡 결과만큼 팀원들의 과정과 감정도 중요합니다. 배려하는 리더십이 더 큰 성과와 신뢰로 이어집니다.',
+      brief: '회의실에서 가장 먼저 결론을 내는 사람. 결과로 말하는 리더형.',
+      comm: ['결론부터 간결하게 말하면 효과적이에요', '성과와 기여를 명확히 인정해 주면 관계가 좋아져요', '의견 충돌 시 근거와 데이터를 명확히 제시하세요'],
+      keywords: ['주도적', '결단력', '성과지향']
+    },
+    '양': {
+      emoji: '🐑', name: '양형', sub: '팀을 하나로 묶는 따뜻한 중재자',
+      color: '#2E8B2E', light: '#F0FFF4', mid: '#A9DFBF',
+      desc: '팀이 흔들릴 때 가장 먼저 분위기를 챙기는 사람. 갈등이 생기면 누구의 편도 아닌 자리에서 가장 부드러운 해법을 찾아냅니다. 사람들이 당신 옆에서 편안함을 느끼는 이유입니다.',
+      pros: ['팀 화합을 이끄는 배려와 공감 능력', '갈등 중재와 안정적인 분위기 조성', '신뢰할 수 있는 든든한 팀원', '동료의 상황을 먼저 챙기는 따뜻함'],
+      cons: ['거절하지 못해 업무를 다 떠안는 경향', '자기 의견을 표현하지 못해 손해를 보기도 함', '공로를 드러내지 않아 평가에서 손해 보기도 함', '참다가 한순간에 폭발해 평소 이미지와 달라 보일 때가 있음'],
+      tip: '💡 직장에서 "아니오"라고 말하는 것도 팀을 위한 배려입니다. 자신의 업무 범위와 한계를 명확히 표현해 보세요.',
+      brief: '팀을 하나로 묶는 배려형. 따뜻한 공감으로 팀 분위기를 안정시켜요. 신뢰할 수 있는 든든한 동료입니다.',
+      comm: ['충분히 경청하고 감정을 먼저 공감해 주세요', '강요보다 부드럽게 제안하는 방식이 효과적이에요', '팀 기여와 노력을 진심으로 인정해 표현해 주세요'],
+      keywords: ['배려심', '화합', '신뢰감']
+    },
+    '부': {
+      emoji: '🦉', name: '부엉이형', sub: '디테일로 팀의 완성도를 끌어올리는 전문가',
+      color: '#E07B20', light: '#FFF8F0', mid: '#FAD7A0',
+      desc: '결정 전 한 번 더 검토하는 사람. 표면 아래 숨겨진 리스크를 먼저 발견하고, 흔들리지 않는 결론을 만들어 팀의 신뢰를 얻습니다. 당신의 한 마디는 가장 늦지만 가장 정확합니다.',
+      pros: ['디테일을 놓치지 않는 꼼꼼함과 정확성', '체계적인 계획과 철저한 실행력', '신뢰할 수 있는 전문성과 품질 관리', '근거 기반 의사결정으로 리스크 최소화'],
+      cons: ['완벽주의로 인한 결정 지연과 업무 병목', '감정 표현이 적어 동료에게 차갑게 오해받기도 함', '즉흥적 변화와 빠른 업무 전환에 적응하기 어려움', '기준이 높아 팀원들에게 부담을 줄 수 있음'],
+      tip: '💡 완벽한 결과보다 80%의 완성으로 빠르게 피드백을 받는 것이 직장에서 더 효과적일 때가 많습니다. 속도와 완성도의 균형을 찾아보세요.',
+      brief: '깊이 분석하는 전문가형. 꼼꼼한 분석과 논리로 팀의 완성도를 높여요. 체계적이고 신뢰할 수 있는 동료입니다.',
+      comm: ['근거와 데이터를 함께 제시하면 신뢰를 얻어요', '생각할 시간과 충분한 정보를 먼저 주세요', '즉흥 결정보다 미리 공유해 준비할 수 있게 해주세요'],
+      keywords: ['분석적', '꼼꼼한', '전문적']
+    }
+  }
+};
+</script>
+<script src="shared.js"></script>
+</body>
+</html>

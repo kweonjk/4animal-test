@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="가족 안에서 나는 어떤 동물 유형일까? 20개 질문으로 알아보는 가족 속의 나.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="4동물 유형검사 — 가족 유형 | 가족 안에서 나는?">
+<meta property="og:description" content="가족 안에서 나는 어떤 동물 유형일까? 20개 질문으로 알아보는 가족 속의 나.">
+<meta property="og:image" content="https://4animal.kr/og-family.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="4동물 유형검사 — 가족 유형 미리보기">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:site_name" content="4동물 유형검사">
+<meta property="og:url" content="https://4animal.kr/family.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="4동물 유형검사 — 가족 유형 | 가족 안에서 나는?">
+<meta name="twitter:description" content="가족 안에서 나는 어떤 동물 유형일까? 20개 질문으로 알아보는 가족 속의 나.">
+<meta name="twitter:image" content="https://4animal.kr/og-family.png">
+<meta name="twitter:image:alt" content="4동물 유형검사 — 가족 유형 미리보기">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏠</text></svg>'>
+<title>4동물 유형검사 — 가족 유형</title>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<link rel="stylesheet" href="shared.css">
+<style>
+  :root {
+    --cat-primary: #1A5C1A;
+    --cat-mid: #2E8B2E;
+  }
+</style>
+</head>
+<body>
+<nav class="back-nav"><a href="index.html" class="back-link">← 목록으로</a></nav>
+<button class="btn-admin" onclick="openAdmin()" aria-label="관리자 설정 열기">⚙️</button>
+<div class="admin-overlay" id="admin-overlay" role="dialog" aria-labelledby="admin-modal-title" aria-modal="true">
+  <div class="admin-box">
+    <div class="admin-header"><h3 id="admin-modal-title">⚙️ 관리자 설정</h3><button class="btn-admin-close" onclick="closeAdmin()" aria-label="관리자 패널 닫기">✕</button></div>
+    <div class="admin-pw-screen" id="admin-pw-screen">
+      <div class="lock-icon">🔒</div><h3>관리자 로그인</h3><p>비밀번호를 입력해주세요</p>
+      <input class="admin-pw-input" type="password" id="admin-pw-input" placeholder="••••••••" onkeydown="if(event.key==='Enter') adminLogin()" />
+      <button class="btn-admin-login" onclick="adminLogin()">로그인</button>
+      <div class="admin-pw-error" id="admin-pw-error"></div>
+    </div>
+    <div class="admin-body" id="admin-settings-screen" style="display:none">
+      <div class="admin-section">
+        <div class="admin-section-title">📢 광고 설정</div>
+        <div class="admin-field">
+          <label>광고 이미지</label>
+          <div class="img-upload-area" onclick="document.getElementById('cfg-img-file').click()">
+            <input type="file" id="cfg-img-file" accept="image/*" onchange="handleImgUpload(event)" />
+            <label class="img-upload-label"><span class="upload-icon">🖼️</span><span id="upload-label-text">클릭해서 이미지 파일 업로드</span></label>
+            <img id="img-preview" class="img-preview" alt="미리보기" />
+          </div>
+          <div class="img-or">── 또는 ──</div>
+          <input type="url" id="cfg-image" placeholder="이미지 URL 직접 입력 (https://...)" />
+          <div class="field-hint">⚠️ 모든 기기에서 보이려면 <strong>URL 입력</strong>을 사용하세요.</div>
+        </div>
+        <div class="admin-field"><label>광고 링크 (쿠팡 파트너스)</label><input type="url" id="cfg-link" placeholder="https://link.coupang.com/a/..." /></div>
+        <div class="admin-field"><label>광고 제목</label><input type="text" id="cfg-title" placeholder="지금 인기 상품을 확인해보세요!" /></div>
+        <div class="admin-field"><label>버튼 텍스트</label><input type="text" id="cfg-btntext" placeholder="상품 보고 결과 확인하기" /></div>
+      </div>
+      <div class="admin-section">
+        <div class="admin-section-title">🔐 비밀번호 변경</div>
+        <div class="admin-field"><label>새 비밀번호</label><input type="password" id="cfg-newpw" placeholder="새 비밀번호 입력" /></div>
+        <div class="admin-field"><label>비밀번호 확인</label><input type="password" id="cfg-newpw2" placeholder="다시 입력" /></div>
+      </div>
+      <button class="btn-admin-save" onclick="saveAdminSettings()">💾 저장하기</button>
+      <div class="admin-msg" id="admin-save-msg"></div>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="email-modal" role="dialog" aria-labelledby="email-modal-title" aria-modal="true">
+  <div class="modal-box">
+    <h3 id="email-modal-title">📧 결과를 이메일로 보내기</h3><p>받는 사람의 이메일 주소를 입력해주세요.</p>
+    <input class="modal-input" type="email" id="email-input" placeholder="example@gmail.com" />
+    <div class="modal-btns">
+      <button class="btn-modal-cancel" onclick="closeEmailModal()">취소</button>
+      <button class="btn-modal-send" id="btn-modal-send" onclick="doSendEmail()">📨 보내기</button>
+    </div>
+    <div class="modal-status" id="modal-status"></div>
+  </div>
+</div>
+<main id="main-content">
+<div id="screen-intro" class="screen active">
+  <div class="intro-card">
+    <div class="intro-banner">
+      <div class="animals" aria-label="카멜레온, 사자, 양, 부엉이 4가지 동물 유형">🦎🦁🐑🦉</div>
+      <h1>가족 안에서 나는 어떤 동물 유형일까?</h1>
+      <p>4동물 유형 성격검사</p>
+      <p style="color:#BED4F0;font-size:0.8rem;margin-top:4px;opacity:.8">🏠 가족 유형</p>
+    </div>
+    <div class="intro-body">
+      <div class="desc">가족 관계 속 20개의 질문에 솔직하게 답해주세요.<br>정답은 없습니다 — 가족 안에서 가장 나다운 보기를 고르는 것이 가장 정확합니다.<br>소요 시간: 약 <strong>3~5분</strong></div>
+      <div class="name-row">
+        <label>이름</label>
+        <input type="text" id="user-name" placeholder="이름 또는 닉네임을 입력하세요" oninput="document.getElementById('name-error').style.display='none'" />
+        <div class="name-error" id="name-error">⚠️ 이름을 입력해야 검사를 시작할 수 있어요.</div>
+      </div>
+      <div class="animal-pills">
+        <span class="pill ka">🦎 카멜레온형</span><span class="pill sa">🦁 사자형</span><span class="pill yang">🐑 양형</span><span class="pill bu">🦉 부엉이형</span>
+      </div>
+      <button class="btn-start" onclick="startTest()">검사 시작하기 →</button>
+    </div>
+  </div>
+</div>
+<div id="screen-question" class="screen">
+  <div class="q-header"><span class="q-counter" id="q-counter" aria-live="polite" aria-atomic="true">1 / 20</span><span style="font-size:.85rem;color:#888">🦎🦁🐑🦉</span></div>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:5%"></div></div>
+  <div class="q-card">
+    <div class="q-num-bar" id="q-num-bar">Q01</div>
+    <div class="q-text" id="q-text"></div>
+    <div class="q-hint">최대 <strong>2개</strong>까지 선택 가능 &nbsp;<span class="sel-count" id="sel-count" aria-live="polite" aria-atomic="true">0 / 2</span></div>
+    <div class="options" id="options"></div>
+  </div>
+  <div class="q-nav">
+    <button class="btn-prev" id="btn-prev" onclick="prevQ()">← 이전</button>
+    <button class="btn-next" id="btn-next" onclick="nextQ()">다음 →</button>
+  </div>
+  <button class="btn-submit" id="btn-submit" onclick="submitTest()" style="display:none">🎯 결과 확인하기</button>
+</div>
+<div id="screen-ad" class="screen">
+  <div class="ad-card" id="ad-content">
+    <div class="ad-image-wrap" id="ad-image-wrap"><img id="ad-img" src="" alt="쿠팡 파트너스 상품 광고 이미지" onerror="this.parentElement.style.display='none'" onload="this.parentElement.style.display=''" /></div>
+    <div class="ad-body">
+      <div class="ad-title" id="ad-title"></div>
+      <div class="ad-action-info"><span class="info-icon">👇</span><span>버튼을 누르면 <strong>새 창</strong>에서 쿠팡이 열리고,<br>이 화면에서 <strong>10초 후 결과</strong>가 자동으로 표시됩니다.</span></div>
+      <button id="ad-link-btn" class="btn-ad-link" onclick="adLinkClick()">🛒 <span id="ad-btn-text"></span></button>
+    </div>
+    <div class="ad-footer">
+      <div class="ad-disclosure">이 페이지는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</div>
+      <div class="ad-label">AD · 광고</div>
+    </div>
+  </div>
+  <div class="wait-screen" id="wait-screen" role="progressbar" aria-valuemin="0" aria-valuemax="10" aria-valuenow="10" aria-valuetext="결과 표시까지 10초 남음">
+    <div class="wait-animals">🦎🦁🐑🦉</div>
+    <div class="wait-label">결과를 분석하고 있어요</div>
+    <div class="wait-number" id="wait-number" aria-live="polite">10</div>
+    <div class="wait-sub">초 후 결과가 표시됩니다</div>
+    <div class="wait-progress-wrap"><div class="wait-progress-fill" id="wait-progress" style="width:100%"></div></div>
+  </div>
+</div>
+<div id="screen-result" class="screen">
+  <div class="result-card" id="result-card">
+    <div class="result-banner" id="result-banner">
+      <div class="result-category-chip" id="result-category-chip"></div>
+      <div class="name-tag" id="result-name"></div>
+      <div class="result-emoji" id="result-emoji"></div>
+      <h2 id="result-type"></h2>
+      <div class="result-keywords" id="result-keywords"></div>
+      <div class="result-sub" id="result-sub"></div>
+      <div class="type-tag-row" id="type-tags"></div>
+    </div>
+    <div class="share-row share-row-top">
+      <button class="btn-share-link" id="btn-share-link-top" onclick="copyResultLink()">🔗 링크 복사</button>
+      <button class="btn-share-email" onclick="sendEmail()">📧 이메일 발송</button>
+    </div>
+    <div class="result-body">
+      <div class="score-grid" id="score-grid"></div>
+      <div class="desc-box" id="result-desc"></div>
+      <div class="detail-grid" id="detail-grid"></div>
+      <div class="tip-box" id="tip-box"></div>
+      <div class="other-section" id="other-section"></div>
+      <div class="share-row">
+        <button class="btn-share-link" id="btn-share-link" onclick="copyResultLink()">🔗 링크 복사</button>
+        <button class="btn-share-email" onclick="sendEmail()">📧 이메일 발송</button>
+      </div>
+      <button class="btn-retry" onclick="retryTest()">↩ 다시 검사하기</button>
+    </div>
+  </div>
+</div>
+</main>
+<script>
+const QUIZ_DATA = {
+  CATEGORY_LABEL: '🏠 가족 유형',
+  SESSION_KEY: 'quiz_state_family',
+  questions: [
+    { q: "가족과 함께하는 식사 시간에 나는?", opts: ["대화를 주도하고 분위기를 이끈다","재미있는 이야기를 꺼내 분위기를 즐겁게 만든다","가족 모두의 이야기를 들으며 공감한다","조용히 경청하고 필요할 때만 의미 있는 말을 한다"] },
+    { q: "가족이 나에게 고민을 털어놓을 때 나는?", opts: ["유머로 기분을 풀어주려 한다","공감하고 위로를 먼저 해준다","원인을 분석하고 논리적으로 도와준다","해결책을 먼저 제시한다"] },
+    { q: "가족 행사나 모임을 계획할 때 나는?", opts: ["가족 모두의 의견을 모아 함께 결정한다","철저하게 준비하고 세부 사항까지 챙긴다","내가 주도해서 전체적인 계획을 세운다","즉흥적으로 재미있는 방향으로 이끌어간다"] },
+    { q: "부모님과 의견 충돌이 생겼을 때 나는?", opts: ["근거를 정리해 논리적으로 설명한다","내 의견을 명확하게 말하고 설득한다","분위기를 부드럽게 하며 유연하게 대화한다","일단 맞춰드리고 천천히 내 생각을 전한다"] },
+    { q: "가족이 어려운 상황에 처했을 때 나는?", opts: ["즉시 나서서 문제를 해결한다","기분 전환을 위해 다른 이야기나 활동을 제안한다","따뜻하게 곁에 있어주며 정서적으로 지원한다","상황을 분석하고 실질적인 도움을 제공한다"] },
+    { q: "명절에 가족들과 함께 있을 때 나는?", opts: ["자연스럽게 어울리며 재미있는 이야기를 한다","모든 가족이 편하게 지낼 수 있도록 챙긴다","필요한 일과 동선을 미리 파악해 효율적으로 챙긴다","내가 주도해서 가족 모임의 방향을 이끈다"] },
+    { q: "형제·자매와의 관계에서 나는?", opts: ["항상 편을 들어주고 무조건 믿어준다","서로의 다름을 깊이 이해하고 존중하는 관계를 원한다","자연스럽게 리더 역할을 하게 된다","각자의 개성을 존중하면서 즐겁게 지낸다"] },
+    { q: "가족에게 섭섭한 마음이 생겼을 때 나는?", opts: ["원인을 생각해보고 이해하려 노력한다","직접 말하고 해결한다","다른 것으로 기분 전환하고 넘어간다","참다가 쌓이면 이야기한다"] },
+    { q: "가족 중 누군가 잘못된 판단을 하고 있을 때 나는?", opts: ["직접적으로 말하고 설득한다","간접적으로 다른 방향을 보여준다","부드럽게 걱정을 표현하며 대화한다","충분한 정보와 근거를 제시한다"] },
+    { q: "가족과의 소통에서 가장 중요한 것은?", opts: ["즐거운 분위기와 유쾌한 대화","서로의 감정 공감과 배려","깊은 이해와 신뢰","명확한 의사소통과 실행"] },
+    { q: "부모님의 노후에 대해 나는?", opts: ["가족들과 함께 상의하며 진행한다","꼼꼼하게 현실적인 방안을 리서치한다","적극적으로 계획을 세우고 주도한다","유연하게 상황에 맞게 대응한다"] },
+    { q: "가족 간 갈등이 생겼을 때 나는?", opts: ["원인을 분석하고 합리적인 해결책을 찾는다","직접 나서서 해결한다","분위기를 부드럽게 만들어 자연스럽게 해결한다","중재자 역할을 하며 모두를 배려한다"] },
+    { q: "가족과 여행을 갈 때 나는?", opts: ["효율적인 일정을 짜고 주도한다","새롭고 재미있는 여행지를 제안한다","가족 모두가 즐길 수 있는 코스를 배려해 짠다","철저한 사전 조사로 완벽한 여행을 준비한다"] },
+    { q: "가족과 떨어져 살게 되었을 때 나는?", opts: ["각자 자유롭게 지내며 가끔 만날 때 즐겁게 보낸다","걱정되어 자주 연락하고 안부를 챙긴다","거리감을 두되 중요한 일은 깊이 공유한다","정기적으로 만나는 계획을 세우고 주도한다"] },
+    { q: "가족의 결정에 동의하지 않을 때 나는?", opts: ["가족의 뜻을 존중하며 따른다","데이터와 근거를 제시한다","내 의견을 확실하게 표현하고 설득한다","유연하게 대화하며 접점을 찾는다"] },
+    { q: "가족이 나를 한 단어로 표현한다면?", opts: ["꼼꼼한","든든한","재미있는","따뜻한"] },
+    { q: "가족이 내 진로나 중요한 결정에 반대할 때 나는?", opts: ["내 의지를 분명히 밝히고 끝까지 설득한다","유머와 시간을 두며 자연스럽게 마음을 돌린다","가족 마음 상하게 하지 않으려 일단 양보한다","근거와 자료를 모아 차근차근 설명한다"] },
+    { q: "가족에게 가장 힘든 상황은?", opts: ["가족이 변화를 거부하고 틀에 갇혀 있을 때","가족 사이가 틀어질 때","가족이 비논리적인 결정을 고집할 때","가족이 내 결정을 무시할 때"] },
+    { q: "나에게 가족이란?", opts: ["가장 따뜻하고 안전한 울타리","서로를 가장 깊이 이해하는 존재","함께 성장하고 목표를 이루는 팀","즐거운 추억을 만드는 특별한 사람들"] },
+    { q: "가족과의 이상적인 관계는?", opts: ["서로를 깊이 이해하고 존중하는 관계","서로의 성장을 응원하는 든든한 지원군","함께 있으면 늘 즐겁고 활기찬 관계","언제나 편안하게 기댈 수 있는 존재"] }
+  ],
+  SCORE_MAP: [
+    ['사','카','양','부'],
+    ['카','양','부','사'],
+    ['양','부','사','카'],
+    ['부','사','카','양'],
+    ['사','카','양','부'],
+    ['카','양','부','사'],
+    ['양','부','사','카'],
+    ['부','사','카','양'],
+    ['사','카','양','부'],
+    ['카','양','부','사'],
+    ['양','부','사','카'],
+    ['부','사','카','양'],
+    ['사','카','양','부'],
+    ['카','양','부','사'],
+    ['양','부','사','카'],
+    ['부','사','카','양'],
+    ['사','카','양','부'],
+    ['카','양','부','사'],
+    ['양','부','사','카'],
+    ['부','사','카','양'],
+  ],
+  RESULTS: {
+    '카': {
+      emoji: '🦎', name: '카멜레온형', sub: '일상에도 색을 입히는 가족의 활력소',
+      color: '#1B6CA8', light: '#EBF5FB', mid: '#AED6F1',
+      desc: '무거운 가족 자리도 한 번에 가볍게 만드는 사람. 일상 대화에서 웃음을 만들고, 굳어진 가족 분위기에 새로운 색을 입힙니다. 당신이 있으면 가족 모임이 기다려집니다.',
+      pros: ['가족 모임을 활기차게 만드는 분위기 메이커', '다양한 가족 구성원과 자연스럽게 어울림', '가족 갈등 시 유머로 긴장을 풀어주는 역할', '변화하는 가족 상황에 유연하게 적응'],
+      cons: ['가족과의 관계에 일관성이 부족할 수 있음', '표면적인 유대감에 머물고 깊이 있는 대화를 피하기도 함', '감정 기복이 가족 분위기에 영향을 줄 수 있음', '중요한 가족 문제를 가볍게 넘기는 경향'],
+      tip: '💡 가족과의 즐거운 시간만큼, 깊이 있는 대화와 안정감도 중요합니다. 가족에게 일관된 모습을 보여주세요.',
+      brief: '가족 모임의 에너지형. 유연한 적응력과 유머로 분위기를 만들어요. 함께 있으면 늘 즐거운 가족입니다.',
+      comm: ['가볍고 유쾌한 분위기로 대화하면 잘 통해요', '의견을 강요하기보다 자연스럽게 제안해 주세요', '즐거운 활동을 함께 제안하면 더 가까워질 수 있어요'],
+      keywords: ['활기찬', '유연한', '분위기메이커']
+    },
+    '사': {
+      emoji: '🦁', name: '사자형', sub: '가족이 흔들릴 때 먼저 움직이는 든든한 버팀목',
+      color: '#C00000', light: '#FFF0F0', mid: '#FDDEDE',
+      desc: '가족이 흔들릴 때 가장 먼저 움직이는 사람. 결정을 미루지 않고, 가족이 막힌 길에서 헤맬 때 다음 발걸음을 만들어줍니다. 당신의 든든함이 가족의 안정감이 됩니다.',
+      pros: ['가족이 어려울 때 앞장서 해결하는 추진력', '강한 책임감과 가족을 향한 든든한 보호', '명확한 방향 제시와 결단력', '가족을 위해 기꺼이 나서는 실행력'],
+      cons: ['가족의 감정과 속도를 배려하기 어려운 편', '가족과 상의 없이 혼자 결정하기도 함', '직설적인 표현이 가족에게 상처가 되기도 함', '자존심이 강해 가족에게 먼저 사과하기 어려워함'],
+      tip: '💡 가족을 보호하는 것만큼, 가족의 의견을 충분히 듣고 함께 결정하는 것이 더 강한 가족을 만듭니다.',
+      brief: '가족의 든든한 버팀목. 강한 책임감과 추진력으로 가족을 지켜요. 어려울 때 가장 먼저 나서는 존재입니다.',
+      comm: ['결론부터 간결하게 말하면 효과적이에요', '가족을 위한 노력과 책임감을 인정해주면 관계가 좋아져요', '의견 차이가 있을 때는 근거를 명확히 제시해주세요'],
+      keywords: ['책임감', '든든한', '보호자']
+    },
+    '양': {
+      emoji: '🐑', name: '양형', sub: '가족을 하나로 묶는 따뜻한 중심',
+      color: '#2E8B2E', light: '#F0FFF4', mid: '#A9DFBF',
+      desc: '가족 사이의 가장 따뜻한 자리를 지키는 사람. 누구의 편도 아닌 자리에서 모두를 품고, 말 없는 위로로 가족을 하나로 묶습니다. 당신이 곁에 있다는 것 자체가 가족의 힘입니다.',
+      pros: ['가족을 하나로 묶는 따뜻한 배려', '가족 간 갈등에서 중재자 역할', '언제나 가족의 편이 되는 신뢰감', '가족의 소소한 것까지 기억하고 챙기는 세심함'],
+      cons: ['자신의 감정과 필요를 잘 표현하지 못함', '거절하지 못해 가족의 부탁을 다 떠안는 경향', '가족 갈등을 회피해 문제가 방치되기도 함', '오래 묵힌 서운함이 가족 행사 같은 자리에서 갑자기 터지기도 함'],
+      tip: '💡 가족을 위한 배려만큼, 자신의 감정과 필요도 가족에게 솔직하게 표현해보세요. 가족도 당신의 진심을 알고 싶어합니다.',
+      brief: '가족의 따뜻한 중심. 배려와 공감으로 모두가 편안하게 있을 수 있게 해요. 언제나 가족의 편인 든든한 존재입니다.',
+      comm: ['충분히 경청하고 감정을 먼저 공감해 주세요', '강요보다 부드럽게 제안하는 방식이 효과적이에요', '가족을 위한 노력과 배려를 자주 표현해주세요'],
+      keywords: ['배려심', '화합', '중재자']
+    },
+    '부': {
+      emoji: '🦉', name: '부엉이형', sub: '가족의 균형을 잡아주는 신중한 조언자',
+      color: '#E07B20', light: '#FFF8F0', mid: '#FAD7A0',
+      desc: '가족이 흔들릴 때 중심을 잡아주는 사람. 감정에 휘둘리지 않고 가장 단단한 판단을 내리며, 평소에는 가족 한 명 한 명을 조용히 관찰하며 세심하게 챙깁니다.',
+      pros: ['가족의 중요한 결정에서 냉철한 분석과 조언', '장기적 관점으로 가족을 위한 최선을 생각', '체계적인 계획으로 가족의 안정에 기여', '신뢰할 수 있는 전문성과 지혜'],
+      cons: ['감정 표현이 적어 가족이 차갑게 느낄 수 있음', '완벽주의로 인해 가족에게 부담을 주기도 함', '즉흥적인 가족 활동이나 변화에 적응하기 어려움', '가족이 위로받고 싶은 순간에도 해결책부터 제시해 마음을 놓치기도 함'],
+      tip: '💡 가족에게는 논리적 조언보다 따뜻한 한마디가 더 큰 위안이 될 수 있습니다. 감정 표현도 연습해보세요.',
+      brief: '가족의 지혜로운 조언자. 꼼꼼한 분석과 신중한 판단으로 가족을 이끌어요. 믿음직스러운 든든한 존재입니다.',
+      comm: ['근거와 데이터를 함께 제시하면 신뢰를 얻어요', '생각할 시간과 여유를 충분히 주세요', '즉흥보다 미리 계획을 공유해 준비할 수 있게 해주세요'],
+      keywords: ['분석적', '신중한', '지혜로운']
+    }
+  }
+};
+</script>
+<script src="shared.js"></script>
+</body>
+</html>

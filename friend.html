@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="친구 관계에서 나는 어떤 동물 유형일까? 20개 질문으로 알아보는 우정 속의 나.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="4동물 유형검사 — 친구 유형 | 친구 관계에서 나는?">
+<meta property="og:description" content="친구 관계에서 나는 어떤 동물 유형일까? 20개 질문으로 알아보는 우정 속의 나.">
+<meta property="og:image" content="https://4animal.kr/og-friend.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="4동물 유형검사 — 친구 유형 미리보기">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:site_name" content="4동물 유형검사">
+<meta property="og:url" content="https://4animal.kr/friend.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="4동물 유형검사 — 친구 유형 | 친구 관계에서 나는?">
+<meta name="twitter:description" content="친구 관계에서 나는 어떤 동물 유형일까? 20개 질문으로 알아보는 우정 속의 나.">
+<meta name="twitter:image" content="https://4animal.kr/og-friend.png">
+<meta name="twitter:image:alt" content="4동물 유형검사 — 친구 유형 미리보기">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤝</text></svg>'>
+<title>4동물 유형검사 — 친구 유형</title>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<link rel="stylesheet" href="shared.css">
+<style>
+  :root {
+    --cat-primary: #A04A0A;
+    --cat-mid: #E07B20;
+  }
+</style>
+</head>
+<body>
+<nav class="back-nav"><a href="index.html" class="back-link">← 목록으로</a></nav>
+<button class="btn-admin" onclick="openAdmin()" aria-label="관리자 설정 열기">⚙️</button>
+<div class="admin-overlay" id="admin-overlay" role="dialog" aria-labelledby="admin-modal-title" aria-modal="true">
+  <div class="admin-box">
+    <div class="admin-header"><h3 id="admin-modal-title">⚙️ 관리자 설정</h3><button class="btn-admin-close" onclick="closeAdmin()" aria-label="관리자 패널 닫기">✕</button></div>
+    <div class="admin-pw-screen" id="admin-pw-screen">
+      <div class="lock-icon">🔒</div><h3>관리자 로그인</h3><p>비밀번호를 입력해주세요</p>
+      <input class="admin-pw-input" type="password" id="admin-pw-input" placeholder="••••••••" onkeydown="if(event.key==='Enter') adminLogin()" />
+      <button class="btn-admin-login" onclick="adminLogin()">로그인</button>
+      <div class="admin-pw-error" id="admin-pw-error"></div>
+    </div>
+    <div class="admin-body" id="admin-settings-screen" style="display:none">
+      <div class="admin-section">
+        <div class="admin-section-title">📢 광고 설정</div>
+        <div class="admin-field">
+          <label>광고 이미지</label>
+          <div class="img-upload-area" onclick="document.getElementById('cfg-img-file').click()">
+            <input type="file" id="cfg-img-file" accept="image/*" onchange="handleImgUpload(event)" />
+            <label class="img-upload-label"><span class="upload-icon">🖼️</span><span id="upload-label-text">클릭해서 이미지 파일 업로드</span></label>
+            <img id="img-preview" class="img-preview" alt="미리보기" />
+          </div>
+          <div class="img-or">── 또는 ──</div>
+          <input type="url" id="cfg-image" placeholder="이미지 URL 직접 입력 (https://...)" />
+          <div class="field-hint">⚠️ 모든 기기에서 보이려면 <strong>URL 입력</strong>을 사용하세요.</div>
+        </div>
+        <div class="admin-field"><label>광고 링크 (쿠팡 파트너스)</label><input type="url" id="cfg-link" placeholder="https://link.coupang.com/a/..." /></div>
+        <div class="admin-field"><label>광고 제목</label><input type="text" id="cfg-title" placeholder="지금 인기 상품을 확인해보세요!" /></div>
+        <div class="admin-field"><label>버튼 텍스트</label><input type="text" id="cfg-btntext" placeholder="상품 보고 결과 확인하기" /></div>
+      </div>
+      <div class="admin-section">
+        <div class="admin-section-title">🔐 비밀번호 변경</div>
+        <div class="admin-field"><label>새 비밀번호</label><input type="password" id="cfg-newpw" placeholder="새 비밀번호 입력" /></div>
+        <div class="admin-field"><label>비밀번호 확인</label><input type="password" id="cfg-newpw2" placeholder="다시 입력" /></div>
+      </div>
+      <button class="btn-admin-save" onclick="saveAdminSettings()">💾 저장하기</button>
+      <div class="admin-msg" id="admin-save-msg"></div>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="email-modal" role="dialog" aria-labelledby="email-modal-title" aria-modal="true">
+  <div class="modal-box">
+    <h3 id="email-modal-title">📧 결과를 이메일로 보내기</h3><p>받는 사람의 이메일 주소를 입력해주세요.</p>
+    <input class="modal-input" type="email" id="email-input" placeholder="example@gmail.com" />
+    <div class="modal-btns">
+      <button class="btn-modal-cancel" onclick="closeEmailModal()">취소</button>
+      <button class="btn-modal-send" id="btn-modal-send" onclick="doSendEmail()">📨 보내기</button>
+    </div>
+    <div class="modal-status" id="modal-status"></div>
+  </div>
+</div>
+<main id="main-content">
+<div id="screen-intro" class="screen active">
+  <div class="intro-card">
+    <div class="intro-banner">
+      <div class="animals" aria-label="카멜레온, 사자, 양, 부엉이 4가지 동물 유형">🦎🦁🐑🦉</div>
+      <h1>친구 관계에서 나는 어떤 동물 유형일까?</h1>
+      <p>4동물 유형 성격검사</p>
+      <p style="color:#BED4F0;font-size:0.8rem;margin-top:4px;opacity:.8">🤝 친구 유형</p>
+    </div>
+    <div class="intro-body">
+      <div class="desc">친구 관계 속 20개의 질문에 솔직하게 답해주세요.<br>정답은 없습니다 — 친구 관계에서 가장 나다운 보기를 고르는 것이 가장 정확합니다.<br>소요 시간: 약 <strong>3~5분</strong></div>
+      <div class="name-row">
+        <label>이름</label>
+        <input type="text" id="user-name" placeholder="이름 또는 닉네임을 입력하세요" oninput="document.getElementById('name-error').style.display='none'" />
+        <div class="name-error" id="name-error">⚠️ 이름을 입력해야 검사를 시작할 수 있어요.</div>
+      </div>
+      <div class="animal-pills">
+        <span class="pill ka">🦎 카멜레온형</span><span class="pill sa">🦁 사자형</span><span class="pill yang">🐑 양형</span><span class="pill bu">🦉 부엉이형</span>
+      </div>
+      <button class="btn-start" onclick="startTest()">검사 시작하기 →</button>
+    </div>
+  </div>
+</div>
+<div id="screen-question" class="screen">
+  <div class="q-header"><span class="q-counter" id="q-counter" aria-live="polite" aria-atomic="true">1 / 20</span><span style="font-size:.85rem;color:#888">🦎🦁🐑🦉</span></div>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:5%"></div></div>
+  <div class="q-card">
+    <div class="q-num-bar" id="q-num-bar">Q01</div>
+    <div class="q-text" id="q-text"></div>
+    <div class="q-hint">최대 <strong>2개</strong>까지 선택 가능 &nbsp;<span class="sel-count" id="sel-count" aria-live="polite" aria-atomic="true">0 / 2</span></div>
+    <div class="options" id="options"></div>
+  </div>
+  <div class="q-nav">
+    <button class="btn-prev" id="btn-prev" onclick="prevQ()">← 이전</button>
+    <button class="btn-next" id="btn-next" onclick="nextQ()">다음 →</button>
+  </div>
+  <button class="btn-submit" id="btn-submit" onclick="submitTest()" style="display:none">🎯 결과 확인하기</button>
+</div>
+<div id="screen-ad" class="screen">
+  <div class="ad-card" id="ad-content">
+    <div class="ad-image-wrap" id="ad-image-wrap"><img id="ad-img" src="" alt="쿠팡 파트너스 상품 광고 이미지" onerror="this.parentElement.style.display='none'" onload="this.parentElement.style.display=''" /></div>
+    <div class="ad-body">
+      <div class="ad-title" id="ad-title"></div>
+      <div class="ad-action-info"><span class="info-icon">👇</span><span>버튼을 누르면 <strong>새 창</strong>에서 쿠팡이 열리고,<br>이 화면에서 <strong>10초 후 결과</strong>가 자동으로 표시됩니다.</span></div>
+      <button id="ad-link-btn" class="btn-ad-link" onclick="adLinkClick()">🛒 <span id="ad-btn-text"></span></button>
+    </div>
+    <div class="ad-footer">
+      <div class="ad-disclosure">이 페이지는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</div>
+      <div class="ad-label">AD · 광고</div>
+    </div>
+  </div>
+  <div class="wait-screen" id="wait-screen" role="progressbar" aria-valuemin="0" aria-valuemax="10" aria-valuenow="10" aria-valuetext="결과 표시까지 10초 남음">
+    <div class="wait-animals">🦎🦁🐑🦉</div>
+    <div class="wait-label">결과를 분석하고 있어요</div>
+    <div class="wait-number" id="wait-number" aria-live="polite">10</div>
+    <div class="wait-sub">초 후 결과가 표시됩니다</div>
+    <div class="wait-progress-wrap"><div class="wait-progress-fill" id="wait-progress" style="width:100%"></div></div>
+  </div>
+</div>
+<div id="screen-result" class="screen">
+  <div class="result-card" id="result-card">
+    <div class="result-banner" id="result-banner">
+      <div class="result-category-chip" id="result-category-chip"></div>
+      <div class="name-tag" id="result-name"></div>
+      <div class="result-emoji" id="result-emoji"></div>
+      <h2 id="result-type"></h2>
+      <div class="result-keywords" id="result-keywords"></div>
+      <div class="result-sub" id="result-sub"></div>
+      <div class="type-tag-row" id="type-tags"></div>
+    </div>
+    <div class="share-row share-row-top">
+      <button class="btn-share-link" id="btn-share-link-top" onclick="copyResultLink()">🔗 링크 복사</button>
+      <button class="btn-share-email" onclick="sendEmail()">📧 이메일 발송</button>
+    </div>
+    <div class="result-body">
+      <div class="score-grid" id="score-grid"></div>
+      <div class="desc-box" id="result-desc"></div>
+      <div class="detail-grid" id="detail-grid"></div>
+      <div class="tip-box" id="tip-box"></div>
+      <div class="other-section" id="other-section"></div>
+      <div class="share-row">
+        <button class="btn-share-link" id="btn-share-link" onclick="copyResultLink()">🔗 링크 복사</button>
+        <button class="btn-share-email" onclick="sendEmail()">📧 이메일 발송</button>
+      </div>
+      <button class="btn-retry" onclick="retryTest()">↩ 다시 검사하기</button>
+    </div>
+  </div>
+</div>
+</main>
+<script>
+const QUIZ_DATA = {
+  CATEGORY_LABEL: '🤝 친구 유형',
+  SESSION_KEY: 'quiz_state_friend',
+  questions: [
+    { q: "새로운 친구를 사귈 때 나는?", opts: ["먼저 적극적으로 다가가 대화를 시작한다","재미있는 이야기로 자연스럽게 친해진다","상대가 먼저 다가오면 따뜻하게 받아준다","천천히 상대를 파악하며 신중하게 가까워진다"] },
+    { q: "친구가 비밀을 털어놓을 때 나는?", opts: ["가볍게 웃으며 기분을 풀어준다","공감하고 충분히 위로해준다","문제를 분석하고 조언해준다","해결책을 먼저 제시해준다"] },
+    { q: "친구와 약속을 잡을 때 나는?", opts: ["친구가 편한 시간과 장소에 맞춘다","여러 가지를 고려해 신중하게 잡는다","빠르게 결정하고 바로 잡는다","내가 먼저 재미있는 장소를 제안한다"] },
+    { q: "친구 무리에서 나는 어떤 역할?", opts: ["정보를 모아 현명한 판단을 돕는다","자연스럽게 의사결정을 주도한다","분위기 메이커, 재미를 만드는 역할","모두를 챙기고 소외된 사람이 없도록 배려한다"] },
+    { q: "오랜만에 만나는 친구에게 나는?", opts: ["먼저 다가가 안부 묻고 다음 만남을 제안한다","신나게 재미있는 이야기를 쏟아낸다","그 사이 어떻게 지냈는지 따뜻하게 물어본다","편하게 이야기하되 상대를 잘 관찰한다"] },
+    { q: "친구가 나를 서운하게 했을 때 나는?", opts: ["가볍게 농담으로 표현한다","참다가 나중에 조심스럽게 말한다","넘어가려 하지만 오래 기억한다","즉시 말하고 해결한다"] },
+    { q: "친구들과의 모임에서 나는?", opts: ["모든 사람이 즐거운지 살핀다","대화의 깊이를 높이는 질문을 한다","주제를 정하고 대화의 방향을 주도한다","농담과 새로운 이야기로 분위기를 띄운다"] },
+    { q: "친구가 힘들다고 연락할 때 나는?", opts: ["어떤 도움이 필요한지 파악하고 현실적인 조언을 한다","바로 만나자고 하거나 즉시 도울 방법을 찾는다","재미있는 것을 보내주며 기분 전환을 돕는다","충분히 이야기를 들어주고 곁에 있어준다"] },
+    { q: "친구 사이에서 가장 싫은 것은?", opts: ["결단 없이 우유부단한 것","재미없고 틀에 박힌 분위기","차갑고 배려 없는 태도","근거 없이 감정적으로만 이야기하는 것"] },
+    { q: "내가 힘들 때 친구에게 원하는 것은?", opts: ["함께 기분 전환할 활동","아무 말 없이 곁에 있어주는 것","냉철하지만 진심 어린 분석과 조언","직접적인 조언과 해결책"] },
+    { q: "친구와 취미를 공유할 때 나는?", opts: ["친구가 좋아하는 것을 함께 해주길 좋아한다","하나를 깊이 파고드는 걸 함께 하길 좋아한다","함께 도전적인 활동을 해보길 좋아한다","새로운 것을 함께 탐험하는 걸 좋아한다"] },
+    { q: "오랜 친구가 내 단점을 지적할 때 나는?", opts: ["충분히 생각하고 이해한 후 받아들인다","인정하고 빠르게 고치려 한다","가볍게 받아들이고 농담으로 넘긴다","상처를 받지만 소중한 말로 받아들인다"] },
+    { q: "친구들과 의견이 맞지 않을 때 나는?", opts: ["내 의견을 명확하게 말하고 설득한다","재미있게 토론하며 즐긴다","서로의 의견 중 좋은 점을 찾는다","논리적으로 분석하고 최선을 제안한다"] },
+    { q: "친구가 다른 친구와 더 친해진 것 같을 때 나는?", opts: ["내 친구 관계를 다양하게 넓히며 크게 신경 쓰지 않는다","서운하지만 표현하지 않고 마음에 담아둔다","관계의 변화를 관찰하며 거리를 조절한다","직접 친구에게 말하고 관계를 분명히 확인한다"] },
+    { q: "친구의 실수를 봤을 때 나는?", opts: ["조심스럽게 말하거나 모른 척 넘어간다","나중에 적절한 타이밍에 조용히 말해준다","직접적으로 말해준다","재치 있게 지적하고 넘어간다"] },
+    { q: "친구와 함께 보내는 이상적인 시간은?", opts: ["깊은 이야기와 서로의 생각을 공유하는 시간","함께 무언가를 이루거나 도전하는 시간","새로운 곳을 탐험하거나 재미있는 활동","서로의 일상을 나누는 편안한 대화"] },
+    { q: "단톡방에서 친구들 의견이 나뉠 때 나는?", opts: ["내 의견을 명확히 말하고 빠르게 결론을 낸다","분위기 봐서 유머로 풀며 토론을 즐긴다","양쪽 의견을 살피며 중재하려 한다","근거를 정리한 후 신중하게 의견을 낸다"] },
+    { q: "친구에게 가장 듣고 싶은 말은?", opts: ["\"너랑 있으면 늘 즐거워!\"","\"너 정말 고마워, 항상 내 편이야.\"","\"너처럼 깊이 생각하는 사람 없어.\"","\"너랑 함께면 뭐든 할 수 있어!\""] },
+    { q: "오래된 친구 관계가 흐려질 때 나는?", opts: ["먼저 연락하고 상대방을 챙긴다","관계를 돌아본 후 의미가 있다면 신중히 다시 연락한다","직접 연락하고 만남을 주도한다","재미있는 이유를 만들어 자연스럽게 만난다"] },
+    { q: "나에게 좋은 친구란?", opts: ["나를 깊이 이해하고 진심 어린 조언을 해주는 사람","함께 성장하고 서로 자극을 주는 사람","함께 있으면 늘 즐겁고 에너지가 넘치는 사람","언제나 내 편이 되어주고 따뜻한 사람"] }
+  ],
+  SCORE_MAP: [
+    ['사','카','양','부'],
+    ['카','양','부','사'],
+    ['양','부','사','카'],
+    ['부','사','카','양'],
+    ['사','카','양','부'],
+    ['카','양','부','사'],
+    ['양','부','사','카'],
+    ['부','사','카','양'],
+    ['사','카','양','부'],
+    ['카','양','부','사'],
+    ['양','부','사','카'],
+    ['부','사','카','양'],
+    ['사','카','양','부'],
+    ['카','양','부','사'],
+    ['양','부','사','카'],
+    ['부','사','카','양'],
+    ['사','카','양','부'],
+    ['카','양','부','사'],
+    ['양','부','사','카'],
+    ['부','사','카','양'],
+  ],
+  RESULTS: {
+    '카': {
+      emoji: '🦎', name: '카멜레온형', sub: '함께 있으면 늘 즐거운 활기찬 친구',
+      color: '#1B6CA8', light: '#EBF5FB', mid: '#AED6F1',
+      desc: '어떤 자리도 즐거운 자리로 만드는 사람. 새 친구를 만들기에 두려움이 없고, 익숙한 친구에게도 늘 새로운 이야기를 가져다줍니다. 당신이 있는 자리는 절대 지루하지 않습니다.',
+      pros: ['누구와도 금방 친해지는 자연스러운 사교성', '유머와 표현력으로 친구들에게 즐거움을 줌', '새로운 경험과 활동으로 우정을 활기차게 유지', '다양한 사람들과 폭넓게 어울리는 능력'],
+      cons: ['깊이 있는 관계보다 표면적 유대감에 머물기도 함', '감정 기복이 친구 관계에 영향을 줄 수 있음', '일관성이 부족해 친구가 혼란스러울 수 있음', '여러 친구 관계를 유지하다 중요한 관계를 소홀히 하기도 함'],
+      tip: '💡 폭넓은 관계만큼, 진짜 소중한 친구와 깊이 있는 관계를 만들어보세요. 깊이도 당신의 매력이 될 수 있어요.',
+      brief: '함께 있으면 늘 즐거운 활기형. 유머와 사교성으로 어디서든 분위기를 만들어요. 새로운 경험으로 우정을 더욱 특별하게 합니다.',
+      comm: ['가볍고 유쾌한 분위기로 대화하면 잘 통해요', '아이디어와 감정에 충분히 공감해 주세요', '새로운 활동을 함께 제안하면 더 가까워질 수 있어요'],
+      keywords: ['활기찬', '유머러스', '사교적']
+    },
+    '사': {
+      emoji: '🦁', name: '사자형', sub: '함께 있을수록 단단해지는 친구',
+      color: '#C00000', light: '#FFF0F0', mid: '#FDDEDE',
+      desc: '친구가 흔들릴 때 가장 먼저 행동하는 사람. 말로 위로하기보다 함께 움직이고, 어려운 일이 생기면 누구보다 먼저 나섭니다. 당신과 함께 있으면 친구는 더 단단해집니다.',
+      pros: ['친구가 어려울 때 앞장서 도우는 의리', '말보다 행동으로 우정을 표현하는 실행력', '함께 성장하고 더 나아가게 하는 자극', '친구를 위해 주저하지 않는 결단력'],
+      cons: ['친구가 감정을 정리할 시간을 기다려주지 못하는 편', '직설적인 표현이 친구에게 상처가 되기도 함', '자기 방식을 강요하거나 독단적으로 결정하기도 함', '자존심이 강해 먼저 사과하기 어려워함'],
+      tip: '💡 친구를 위한 행동만큼, 친구의 감정도 충분히 들어주는 것이 깊은 우정의 비결입니다. 경청도 큰 힘이에요.',
+      brief: '든든한 의리형. 말보다 행동으로 우정을 표현해요. 함께하면 더 강해지는 자극을 주는 친구입니다.',
+      comm: ['결론부터 간결하게 말하면 효과적이에요', '친구를 위한 노력과 의리를 인정해주면 관계가 좋아져요', '의견 차이가 있을 때는 명확한 이유를 전달하세요'],
+      keywords: ['의리있는', '든든한', '행동파']
+    },
+    '양': {
+      emoji: '🐑', name: '양형', sub: '오래 곁에 머무는 진심의 친구',
+      color: '#2E8B2E', light: '#F0FFF4', mid: '#A9DFBF',
+      desc: '오래 곁에 머무는 진심의 친구. 화려하지 않지만 가장 깊은 우정을 만들고, 친구가 가장 약해진 순간 가장 가까이에 있습니다. 당신의 곁은 안전한 자리입니다.',
+      pros: ['힘들 때 말없이 곁에 있어주는 따뜻함', '친구의 이야기를 끝까지 들어주는 공감 능력', '오래도록 변하지 않는 신뢰와 진심', '친구를 먼저 챙기는 섬세한 배려'],
+      cons: ['자신의 감정과 어려움을 잘 표현하지 못함', '거절하지 못해 친구의 부탁을 다 들어주는 경향', '갈등 회피로 오해가 쌓이기도 함', '참던 마음이 어느 날 갑자기 폭발해 친구가 영문 모를 때가 있음'],
+      tip: '💡 친구를 위한 배려만큼, 자신의 힘든 부분도 친구에게 솔직하게 털어놓으세요. 진정한 우정은 양방향이에요.',
+      brief: '마음의 안식처가 되는 친구. 공감과 배려로 친구 곁에 늘 있어줘요. 오래갈수록 더 빛나는 진심 어린 우정을 만듭니다.',
+      comm: ['충분히 경청하고 감정을 먼저 공감해 주세요', '강요보다 부드럽게 원하는 것을 표현해주세요', '친구를 위한 노력과 배려를 자주 인정해주세요'],
+      keywords: ['따뜻한', '공감형', '진심']
+    },
+    '부': {
+      emoji: '🦉', name: '부엉이형', sub: '솔직한 한마디로 길을 비춰주는 친구',
+      color: '#E07B20', light: '#FFF8F0', mid: '#FAD7A0',
+      desc: '친구에게 가장 솔직한 한 마디를 건네는 사람. 듣기 좋은 말보다 진짜 필요한 조언을 하고, 친구가 길을 잃었을 때 가장 신뢰할 수 있는 나침반이 됩니다.',
+      pros: ['친구의 상황을 냉철하게 분석하는 통찰력', '겉치레 없는 솔직하고 진실한 조언', '어려운 상황에서 실질적인 도움을 제공', '깊이 있는 대화로 진정한 우정을 만드는 능력'],
+      cons: ['감정 표현이 적어 친구가 차갑게 느낄 수 있음', '기대 수준이 높아 친구가 부담을 느낄 때도 있음', '즉흥적인 친구 모임에 적응하기 어려울 때 있음', '친구가 공감받고 싶을 때 분석부터 시작해 거리감을 만들기도 함'],
+      tip: '💡 진심 어린 조언만큼, 따뜻한 공감의 말도 친구에게 큰 힘이 됩니다. 감정 표현을 더 자주 해보세요.',
+      brief: '냉철하지만 진심인 조언형. 깊이 있는 분석과 솔직한 조언으로 진짜 우정을 만들어요. 어려울 때 더 빛나는 친구입니다.',
+      comm: ['근거와 분석을 함께 나누면 잘 통해요', '생각할 시간과 여유를 주세요', '즉흥보다 미리 계획을 공유해 준비할 수 있게 해주세요'],
+      keywords: ['통찰력', '솔직한', '진심조언']
+    }
+  }
+};
+</script>
+<script src="shared.js"></script>
+</body>
+</html>

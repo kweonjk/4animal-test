@@ -357,11 +357,11 @@ function injectResultRecommendBtn() {
 // ==================== 통계 카운터 (Abacus) ====================
 const STATS_NAMESPACE = '4animal-test';
 const STATS_CAT_MAP = {
-  'quiz_state_일반': 'general',
-  'quiz_state_직장': 'work',
-  'quiz_state_연인': 'love',
-  'quiz_state_가족': 'family',
-  'quiz_state_친구': 'friend'
+  'quiz_state_general': 'general',
+  'quiz_state_work': 'work',
+  'quiz_state_love': 'love',
+  'quiz_state_family': 'family',
+  'quiz_state_friend': 'friend'
 };
 const STATS_ANIMAL_MAP = { '사': 'sa', '카': 'ka', '양': 'yang', '부': 'bu' };
 
