@@ -3,213 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="연인 관계에서 나는 어떤 동물 유형일까? 20개 질문으로 알아보는 사랑할 때의 나.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="4동물 유형검사 — 연인 유형 | 연인 관계에서 나는?">
+<meta property="og:description" content="연인 관계에서 나는 어떤 동물 유형일까? 20개 질문으로 알아보는 사랑할 때의 나.">
+<meta property="og:image" content="https://kweonjk.github.io/4animal-test/og-연인.png">
+<meta property="og:url" content="https://kweonjk.github.io/4animal-test/연인.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="4동물 유형검사 — 연인 유형 | 연인 관계에서 나는?">
+<meta name="twitter:description" content="연인 관계에서 나는 어떤 동물 유형일까? 20개 질문으로 알아보는 사랑할 때의 나.">
+<meta name="twitter:image" content="https://kweonjk.github.io/4animal-test/og-연인.png">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💕</text></svg>'>
 <title>4동물 유형검사 — 연인 유형</title>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<link rel="stylesheet" href="shared.css">
 <style>
   :root {
-    --ka: #1B6CA8; --ka-light: #EBF5FB; --ka-mid: #AED6F1;
-    --sa: #C00000; --sa-light: #FFF0F0; --sa-mid: #FDDEDE;
-    --yang: #2E8B2E; --yang-light: #F0FFF4; --yang-mid: #A9DFBF;
-    --bu: #E07B20; --bu-light: #FFF8F0; --bu-mid: #FAD7A0;
-    --primary: #1F3864;
-    --radius: 14px;
-    --shadow: 0 4px 20px rgba(0,0,0,0.10);
+    --cat-primary: #8B0000;
+    --cat-mid: #C00000;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
-    background: #F4F7FB;
-    color: #333;
-    min-height: 100vh;
-    padding-top: 44px;
-  }
-  .screen { display: none; max-width: 720px; margin: 0 auto; padding: 24px 16px 40px; }
-  .screen.active { display: block; }
-  .intro-card { background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
-  .intro-banner { background: linear-gradient(135deg, #1F3864 0%, #2E75B6 100%); padding: 48px 32px 40px; text-align: center; }
-  .intro-banner .animals { font-size: 2.6rem; margin-bottom: 12px; }
-  .intro-banner h1 { color: white; font-size: 1.7rem; font-weight: 700; line-height: 1.4; }
-  .intro-banner p  { color: #BED4F0; font-size: 0.95rem; margin-top: 8px; }
-  .intro-body { padding: 32px; }
-  .intro-body .desc { background: #F0F4FB; border-left: 4px solid var(--primary); border-radius: 0 8px 8px 0; padding: 14px 18px; font-size: 0.95rem; line-height: 1.7; color: #555; margin-bottom: 24px; }
-  .name-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px; }
-  .name-row label { font-weight: 600; color: var(--primary); font-size: 0.95rem; }
-  .name-row input { width: 100%; border: 2px solid #D0DCF0; border-radius: 8px; padding: 12px 14px; font-size: 1rem; font-family: inherit; transition: border-color .2s; }
-  .name-row input:focus { outline: none; border-color: var(--primary); }
-  .name-error { font-size: 0.82rem; color: #C00000; margin-top: 2px; display: none; }
-  .animal-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
-  .pill { padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; color: white; }
-  .pill.ka { background: var(--ka); } .pill.sa { background: var(--sa); } .pill.yang { background: var(--yang); } .pill.bu { background: var(--bu); }
-  .btn-start { width: 100%; padding: 16px; border: none; border-radius: 10px; background: linear-gradient(135deg, var(--primary), #2E75B6); color: white; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: transform .15s, box-shadow .15s; font-family: inherit; }
-  .btn-start:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(31,56,100,.3); }
-  .q-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-  .q-counter { font-size: 0.9rem; color: #888; font-weight: 500; }
-  .progress-bar { background: #E0E7F0; border-radius: 8px; height: 8px; margin-bottom: 24px; overflow: hidden; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), #2E75B6); border-radius: 8px; transition: width .4s ease; }
-  .q-card { background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
-  .q-num-bar { background: var(--primary); color: white; padding: 12px 24px; font-size: 0.95rem; font-weight: 700; }
-  .q-text { padding: 22px 24px 18px; font-size: 1.05rem; font-weight: 600; line-height: 1.5; color: #1F3864; }
-  .q-hint { padding: 6px 16px 10px; font-size: 0.85rem; color: #888; display: flex; align-items: center; gap: 6px; }
-  .sel-count { display: inline-flex; align-items: center; justify-content: center; background: #E0E7F0; color: var(--primary); border-radius: 20px; padding: 2px 10px; font-size: 0.82rem; font-weight: 700; transition: background .2s, color .2s; }
-  .sel-count.full { background: var(--primary); color: white; }
-  .options { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 10px; }
-  .option-btn { display: flex; align-items: center; gap: 14px; padding: 14px 18px; border: 2px solid #E0E7F0; border-radius: 10px; background: white; cursor: pointer; font-family: inherit; font-size: 0.97rem; color: #333; text-align: left; transition: all .18s; width: 100%; }
-  .option-btn:hover:not(.dimmed) { border-color: var(--primary); background: #F0F4FB; }
-  .option-btn.selected { border-color: var(--primary); background: #EBF3FB; }
-  .option-btn.dimmed { opacity: 0.35; cursor: not-allowed; }
-  .option-label { min-width: 30px; height: 30px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; flex-shrink: 0; }
-  .option-btn.selected .option-label { background: #1F3864; }
-  .q-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; gap: 12px; }
-  .btn-prev, .btn-next { padding: 12px 28px; border-radius: 8px; border: none; font-family: inherit; font-size: 0.97rem; font-weight: 600; cursor: pointer; transition: all .15s; }
-  .btn-prev { background: #F0F4FB; color: var(--primary); border: 2px solid #D0DCF0; }
-  .btn-prev:hover { background: #E0E7F0; }
-  .btn-next { background: var(--primary); color: white; flex: 1; max-width: 220px; }
-  .btn-next:hover { background: #2E75B6; }
-  .btn-next:disabled { background: #B0B8C8; cursor: not-allowed; }
-  .btn-submit { width: 100%; padding: 15px; border: none; border-radius: 10px; background: linear-gradient(135deg, #2E8B2E, #1A5C1A); color: white; font-size: 1.1rem; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: 20px; transition: transform .15s; }
-  .btn-submit:hover { transform: translateY(-2px); }
-  .btn-submit:disabled { background: #B0B8C8; cursor: not-allowed; transform: none; }
-  .result-card { background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
-  .result-banner { padding: 40px 28px 28px; text-align: center; }
-  .result-emoji { font-size: 4rem; margin-bottom: 8px; }
-  .result-banner h2 { font-size: 1.6rem; font-weight: 700; margin-bottom: 6px; }
-  .result-banner .result-sub { font-size: 1rem; opacity: .85; }
-  .result-banner .name-tag { font-size: 1.1rem; margin-bottom: 14px; opacity: .9; }
-  .type-tag-row { display: flex; gap: 10px; justify-content: center; margin-top: 18px; }
-  .type-tag { display: flex; flex-direction: column; align-items: center; padding: 10px 18px; border-radius: 12px; min-width: 120px; }
-  .main-tag { background: rgba(255,255,255,0.25); border: 2px solid rgba(255,255,255,0.7); }
-  .sub-tag  { background: rgba(0,0,0,0.12); border: 2px solid rgba(255,255,255,0.3); }
-  .tag-label { font-size: 0.75rem; font-weight: 700; opacity: .8; letter-spacing: .06em; margin-bottom: 4px; }
-  .main-tag .tag-label::before { content: '🎯 '; }
-  .sub-tag  .tag-label::before { content: '✨ '; }
-  .tag-animal { font-size: 0.95rem; font-weight: 700; }
-  .tag-pct { font-size: 1.3rem; font-weight: 900; margin-top: 2px; }
-  .main-tag .tag-pct { color: white; }
-  .sub-tag  .tag-pct { color: rgba(255,255,255,0.85); }
-  .result-keywords { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin: 8px 0 6px; }
-  .result-keywords .kw-tag { font-size: 0.82rem; font-weight: 700; padding: 3px 12px; border-radius: 20px; background: rgba(255,255,255,0.25); border: 1.5px solid rgba(255,255,255,0.6); color: white; }
-  .result-body { padding: 28px; }
-  .score-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
-  .score-item { border-radius: 10px; padding: 12px 16px; display: flex; flex-direction: column; gap: 6px; }
-  .score-item-top { display: flex; align-items: center; justify-content: space-between; }
-  .score-item .s-label { font-weight: 600; font-size: 0.95rem; }
-  .score-item .s-bar-wrap { flex: 1; margin: 0 10px; }
-  .score-bar { height: 8px; border-radius: 4px; background: rgba(255,255,255,.5); overflow: hidden; }
-  .score-bar-fill { height: 100%; border-radius: 4px; background: rgba(255,255,255,.9); }
-  .score-item .s-num { font-weight: 700; font-size: 1.1rem; min-width: 36px; text-align: right; }
-  .kw-row { display: flex; gap: 5px; flex-wrap: wrap; }
-  .kw-tag { font-size: 0.75rem; font-weight: 600; padding: 2px 9px; border-radius: 20px; background: rgba(255,255,255,0.65); border: 1px solid rgba(0,0,0,0.08); }
-  .desc-box { background: #F8F9FF; border-radius: 10px; padding: 18px 20px; margin-bottom: 20px; line-height: 1.75; font-size: 0.97rem; color: #444; }
-  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
-  .detail-box { border-radius: 10px; padding: 16px; }
-  .detail-box h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 8px; }
-  .detail-box ul { padding-left: 18px; }
-  .detail-box ul li { font-size: 0.88rem; line-height: 1.65; color: #444; margin-bottom: 2px; }
-  .tip-box { background: #FFFDF0; border: 1.5px solid #F0D060; border-radius: 10px; padding: 14px 18px; font-size: 0.93rem; color: #664400; line-height: 1.65; margin-bottom: 24px; }
-  .tip-box strong { color: #AA6600; }
-  .btn-retry { width: 100%; padding: 14px; border: 2px solid var(--primary); border-radius: 10px; background: white; color: var(--primary); font-family: inherit; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all .15s; }
-  .btn-retry:hover { background: #EBF3FB; }
-  .share-row { display: flex; gap: 10px; margin-bottom: 12px; }
-  .share-row-top { padding: 16px 20px 4px; background: transparent; }
-  .btn-share-link, .btn-share-email { flex: 1; padding: 13px; border-radius: 10px; font-family: inherit; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all .15s; }
-  .btn-share-link { background: #1F3864; color: white; border: none; }
-  .btn-share-link:hover { background: #2E75B6; }
-  .btn-share-email { background: #F0F4FB; color: var(--primary); border: 2px solid #D0DCF0; }
-  .btn-share-email:hover { background: #E0E7F0; }
-  .other-section { margin-bottom: 24px; }
-  .other-section h3 { font-size: 1rem; font-weight: 700; color: #1F3864; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #E0E7F0; }
-  .other-cards { display: flex; flex-direction: column; gap: 12px; }
-  .other-card { border-radius: 12px; border: 1.5px solid #E0E7F0; overflow: hidden; }
-  .other-card-header { display: flex; align-items: center; gap: 10px; padding: 12px 16px; }
-  .other-card-header .o-emoji { font-size: 1.5rem; }
-  .other-card-header .o-name { font-weight: 700; font-size: 0.97rem; }
-  .o-kw-row { display: flex; gap: 4px; flex-wrap: wrap; margin: 4px 0 5px; }
-  .o-kw-tag { font-size: 0.75rem; font-weight: 600; padding: 1px 8px; border-radius: 20px; background: white; border: 1.5px solid; }
-  .other-card-header .o-brief { font-size: 0.85rem; color: #666; line-height: 1.5; }
-  .other-card-body { background: white; padding: 12px 16px 14px; border-top: 1px solid #F0F0F0; }
-  .other-card-body .comm-title { font-size: 0.82rem; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 8px; }
-  .other-card-body ul { padding-left: 0; list-style: none; }
-  .other-card-body ul li { font-size: 0.88rem; color: #444; line-height: 1.6; padding: 3px 0 3px 18px; position: relative; }
-  .other-card-body ul li::before { content: '✔'; position: absolute; left: 0; color: #2E8B2E; font-size: 0.78rem; top: 4px; }
-  .btn-admin { position: fixed; top: 56px; right: 16px; z-index: 500; width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.85); border: 1.5px solid #D0DCF0; font-size: 1rem; cursor: pointer; transition: all .2s; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.10); }
-  .btn-admin:hover { background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-  .img-upload-area { border: 2px dashed #D0DCF0; border-radius: 10px; padding: 16px; text-align: center; cursor: pointer; transition: border-color .2s; background: #FAFBFF; margin-bottom: 8px; }
-  .img-upload-area:hover { border-color: var(--primary); }
-  .img-upload-area input[type=file] { display: none; }
-  .img-upload-label { font-size: 0.88rem; color: #888; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; }
-  .img-upload-label .upload-icon { font-size: 1.8rem; }
-  .img-preview { width: 100%; border-radius: 8px; margin-top: 10px; max-height: 160px; object-fit: cover; display: none; }
-  .img-or { text-align: center; font-size: 0.8rem; color: #BBB; margin: 8px 0; }
-  .admin-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 2000; align-items: flex-start; justify-content: center; padding: 20px; overflow-y: auto; }
-  .admin-overlay.open { display: flex; }
-  .admin-box { background: white; border-radius: 16px; width: 100%; max-width: 460px; box-shadow: 0 8px 40px rgba(0,0,0,0.25); overflow: hidden; margin: auto; }
-  .admin-header { background: var(--primary); color: white; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; }
-  .admin-header h3 { font-size: 1rem; font-weight: 700; margin: 0; }
-  .btn-admin-close { background: none; border: none; color: white; font-size: 1.3rem; cursor: pointer; padding: 0; line-height: 1; }
-  .admin-body { padding: 24px; }
-  .admin-section { border: 1.5px solid #E0E7F0; border-radius: 10px; padding: 16px; margin-bottom: 16px; }
-  .admin-section-title { font-size: 0.82rem; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 12px; }
-  .admin-field { margin-bottom: 12px; }
-  .admin-field label { display: block; font-size: 0.85rem; font-weight: 600; color: #555; margin-bottom: 5px; }
-  .admin-field input, .admin-field textarea { width: 100%; border: 1.5px solid #D0DCF0; border-radius: 8px; padding: 9px 12px; font-size: 0.92rem; font-family: inherit; transition: border-color .2s; resize: vertical; }
-  .admin-field input:focus, .admin-field textarea:focus { outline: none; border-color: var(--primary); }
-  .admin-field .field-hint { font-size: 0.78rem; color: #AAA; margin-top: 4px; }
-  .btn-admin-save { width: 100%; padding: 13px; border: none; border-radius: 10px; background: var(--primary); color: white; font-family: inherit; font-size: 1rem; font-weight: 700; cursor: pointer; transition: background .15s; margin-bottom: 10px; }
-  .btn-admin-save:hover { background: #2E75B6; }
-  .admin-msg { text-align: center; font-size: 0.88rem; min-height: 20px; margin-top: 6px; }
-  .admin-pw-screen { padding: 32px 24px; text-align: center; }
-  .admin-pw-screen .lock-icon { font-size: 2.5rem; margin-bottom: 12px; }
-  .admin-pw-screen h3 { font-size: 1.1rem; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
-  .admin-pw-screen p { font-size: 0.88rem; color: #888; margin-bottom: 20px; }
-  .admin-pw-input { width: 100%; border: 2px solid #D0DCF0; border-radius: 10px; padding: 12px 16px; font-size: 1rem; font-family: inherit; margin-bottom: 12px; text-align: center; letter-spacing: .1em; transition: border-color .2s; }
-  .admin-pw-input:focus { outline: none; border-color: var(--primary); }
-  .btn-admin-login { width: 100%; padding: 13px; border: none; border-radius: 10px; background: var(--primary); color: white; font-family: inherit; font-size: 1rem; font-weight: 700; cursor: pointer; }
-  .admin-pw-error { color: #C00000; font-size: 0.88rem; margin-top: 8px; min-height: 20px; }
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
-  .modal-overlay.open { display: flex; }
-  .modal-box { background: white; border-radius: 16px; padding: 32px 28px; width: 100%; max-width: 420px; box-shadow: 0 8px 40px rgba(0,0,0,0.2); }
-  .modal-box h3 { font-size: 1.15rem; font-weight: 700; color: #1F3864; margin-bottom: 6px; }
-  .modal-box p { font-size: 0.9rem; color: #888; margin-bottom: 20px; }
-  .modal-input { width: 100%; border: 2px solid #D0DCF0; border-radius: 10px; padding: 12px 16px; font-size: 1rem; font-family: inherit; margin-bottom: 14px; transition: border-color .2s; }
-  .modal-input:focus { outline: none; border-color: #1F3864; }
-  .modal-btns { display: flex; gap: 10px; }
-  .btn-modal-cancel { flex: 1; padding: 12px; border-radius: 8px; border: 2px solid #D0DCF0; background: white; color: #888; font-family: inherit; font-size: 0.95rem; font-weight: 600; cursor: pointer; }
-  .btn-modal-send { flex: 2; padding: 12px; border-radius: 8px; border: none; background: #1F3864; color: white; font-family: inherit; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: background .15s; }
-  .btn-modal-send:hover { background: #2E75B6; }
-  .btn-modal-send:disabled { background: #B0B8C8; cursor: not-allowed; }
-  .modal-status { font-size: 0.9rem; text-align: center; margin-top: 12px; min-height: 20px; }
-  .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); background: #1F3864; color: white; padding: 12px 28px; border-radius: 30px; font-size: 0.95rem; font-weight: 600; box-shadow: 0 4px 16px rgba(0,0,0,0.2); opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 999; }
-  .toast.show { opacity: 1; }
-  #screen-ad { padding: 0; }
-  #screen-ad.active { display: flex; flex-direction: column; min-height: 100vh; }
-  .ad-card { background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; }
-  .ad-footer { margin: 0 24px 20px; background: #F5F5F5; border: 1px solid #DDDDDD; border-radius: 8px; padding: 10px 14px; display: flex; flex-direction: column; gap: 3px; }
-  .ad-label { color: #888; font-size: 0.72rem; letter-spacing: .05em; }
-  .ad-disclosure { font-size: 0.78rem; color: #888; line-height: 1.5; }
-  .ad-image-wrap { width: 100%; position: relative; cursor: pointer; overflow: hidden; background: #f5f5f5; }
-  .ad-image-wrap img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block; transition: transform .3s; }
-  .ad-image-wrap:hover img { transform: scale(1.02); }
-  .ad-body { padding: 20px 24px 24px; }
-  .ad-title { font-size: 1.1rem; font-weight: 700; color: #1F3864; margin-bottom: 6px; line-height: 1.4; }
-  .ad-action-info { display: flex; align-items: flex-start; gap: 8px; background: #FFF5F5; border: 1px solid #FFD0D0; border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; font-size: 0.83rem; color: #C00000; line-height: 1.5; }
-  .ad-action-info .info-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
-  .btn-ad-link { width: 100%; padding: 15px; border: none; border-radius: 10px; background: #C4031C; color: white; font-family: inherit; font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: background .15s, transform .15s; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
-  .btn-ad-link:hover { background: #A50218; transform: translateY(-2px); }
-  .wait-screen { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 40px 24px; text-align: center; }
-  .wait-screen.active { display: flex; }
-  .wait-animals { font-size: 2.4rem; margin-bottom: 24px; animation: bounce 1.2s infinite; }
-  @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-  .wait-label { font-size: 1rem; color: #888; margin-bottom: 16px; font-weight: 500; }
-  .wait-number { font-size: 6rem; font-weight: 900; color: var(--primary); line-height: 1; margin-bottom: 12px; animation: pulse 1s infinite; }
-  @keyframes pulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.08); opacity: .85; } }
-  .wait-sub { font-size: 0.95rem; color: #AAA; margin-bottom: 32px; }
-  .wait-progress-wrap { width: 100%; max-width: 300px; height: 6px; background: #E0E7F0; border-radius: 4px; overflow: hidden; }
-  .wait-progress-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--primary), #2E75B6); transition: width 1s linear; }
-  .back-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(255,255,255,0.95); backdrop-filter: blur(8px); border-bottom: 1px solid #E0E7F0; padding: 10px 16px; }
-  .back-link { color: #1F3864; text-decoration: none; font-size: 0.9rem; font-weight: 600; }
-  .back-link:hover { color: #2E75B6; }
-  @media (max-width: 500px) { .score-grid, .detail-grid { grid-template-columns: 1fr; } .intro-banner { padding: 36px 20px 28px; } .intro-banner h1 { font-size: 1.4rem; } .q-text { padding: 18px 18px 14px; font-size: 1rem; } .options { padding: 0 10px 12px; } }
-  .result-category-chip { display: inline-block; background: rgba(255,255,255,0.22); border: 1.5px solid rgba(255,255,255,0.55); color: white; font-size: 0.8rem; font-weight: 700; padding: 4px 14px; border-radius: 20px; margin-bottom: 8px; letter-spacing: 0.02em; }
 </style>
 </head>
 <body>
@@ -351,147 +163,101 @@
   </div>
 </div>
 <script>
-const questions = [
-  { q: "처음 좋아하는 사람이 생겼을 때 나는?", opts: ["타이밍을 봐서 직접 고백한다","관심사와 성향을 충분히 파악하고 신중하게 접근한다","먼저 친한 친구가 된 후 자연스럽게 이어지길 기다린다","재밌고 자연스러운 분위기 속에서 표현한다"] },
-  { q: "연인과 데이트 코스를 정할 때 나는?", opts: ["내가 먼저 멋진 코스를 짜서 제안한다","상대가 좋아할 것을 꼼꼼히 리서치해 준비한다","상대의 의견을 존중해 원하는 곳을 물어본다","즉흥적으로 함께 탐험하듯 다닌다"] },
-  { q: "연인과 싸웠을 때 나는?", opts: ["바로 해결하고 싶어 즉시 대화를 요구한다","차분히 원인을 분석하고 이성적으로 대화한다","속상해도 먼저 맞춰주거나 사과한다","분위기가 풀릴 방법을 찾으며 기다린다"] },
-  { q: "연인에게 가장 듣고 싶은 말은?", opts: ["\"너 덕분에 내가 더 나은 사람이 된 것 같아\"","\"네가 항상 내 편이어서 너무 고마워\"","\"너랑 있으면 늘 새롭고 재밌어\"","\"네가 이렇게까지 준비했는지 몰랐어, 정말 감동받았어\""] },
-  { q: "연인이 힘들어할 때 나는?", opts: ["해결책을 먼저 제시하려 한다","말없이 곁에 있어주고 필요하면 말해달라 한다","원인을 분석하고 논리적으로 도와준다","기분 전환이 될 것을 함께 하자고 제안한다"] },
-  { q: "기념일에 나는?", opts: ["깜짝 이벤트를 준비하거나 적극적으로 축하한다","미리 완벽하게 준비하고 의미 있는 선물을 준비한다","서로에게 편한 방식으로 소중히 챙긴다","창의적이고 재미있는 방식으로 특별하게 기념한다"] },
-  { q: "연인과 연락하는 패턴은?", opts: ["바쁠 때는 간결하게, 필요할 때 확실하게 연락한다","자주 연락하며 일상을 나누는 걸 좋아한다","상대 속도에 맞추고 늘 답장을 빠르게 한다","깊고 의미 있는 대화를 주고받는 것을 선호한다"] },
-  { q: "연인의 단점을 발견했을 때 나는?", opts: ["직접 말하고 고쳐지길 기대한다","있는 그대로 받아들이고 함께 성장하려 한다","분석하고 이해하려 노력한다","가볍게 언급하고 유머로 풀어간다"] },
-  { q: "연인과의 관계에서 가장 중요한 것은?", opts: ["서로를 더 나은 사람으로 자극하는 성장","즐거움과 설렘","깊은 신뢰와 안정감","가치관의 공유와 깊은 이해"] },
-  { q: "오래 사귄 연인과의 관계에서 나는?", opts: ["더 큰 목표(미래 계획 등)로 함께 나아가길 원한다","늘 새로운 경험을 함께 해 설렘을 유지하길 원한다","편안하고 따뜻한 안식처 같은 관계를 원한다","서로를 깊이 이해하는 든든한 관계를 원한다"] },
-  { q: "질투가 날 때 나는?", opts: ["직접 말하고 확실하게 확인한다","솔직하게 표현하되 가볍게 유머로 풀어간다","그냥 내색하지 않으려 노력한다","조용히 분석하며 혼자 생각한다"] },
-  { q: "연인에게 사랑을 표현할 때 나는?", opts: ["행동으로 확실하게 표현한다 (선물, 이벤트)","따뜻한 말과 공감으로 표현한다","세심하게 준비하고 깊이 있게 표현한다","재치 있는 말과 스킨십으로 표현한다"] },
-  { q: "연인과 미래를 이야기할 때 나는?", opts: ["구체적인 계획을 제시하고 실행하려 한다","상대의 바람과 나의 바람을 함께 그려나간다","다양한 가능성을 함께 탐색하며 설레는 대화를 한다","현실적으로 분석하고 신중하게 이야기한다"] },
-  { q: "연인과 취미 활동을 할 때 나는?", opts: ["활동적이고 도전적인 것을 함께 하길 좋아한다","새롭고 다양한 것을 함께 경험하길 좋아한다","상대가 좋아하는 것을 함께 하는 걸 즐긴다","깊이 있게 하나를 함께 파고드는 것을 좋아한다"] },
-  { q: "헤어질 위기가 왔을 때 나는?", opts: ["문제를 정면으로 맞서고 해결책을 찾는다","상대의 감정을 배려하며 조심스럽게 대화한다","원인을 분석하고 이성적으로 판단한다","분위기를 바꿔 좋은 추억을 만들며 극복하려 한다"] },
-  { q: "연인에게 가장 받고 싶은 것은?", opts: ["나를 향한 확실한 의지와 행동","내 감정에 충분히 공감해주는 것","항상 새롭게 설레는 경험","나를 깊이 이해하고 신뢰하는 것"] },
-  { q: "연인이 내 생일에 해주면 가장 행복한 것은?", opts: ["깜짝 이벤트나 파티","두 사람만의 조용하고 따뜻한 시간","재미있고 즐거운 활동","정성스럽게 준비한 특별한 선물"] },
-  { q: "사귀기 전 썸 단계에서 나는?", opts: ["빠르게 감정을 확인하고 결론 내고 싶다","상대를 잘 알아가며 자연스럽게 가까워진다","다양한 활동으로 즐거운 시간을 만든다","상대의 성향과 가치관을 신중하게 파악한다"] },
-  { q: "연인과 장거리 연애를 하게 된다면?", opts: ["확실한 미래 계획을 세우고 극복한다","힘들더라도 감정을 솔직히 나누며 유지한다","상황을 유연하게 받아들이고 즐길 방법을 찾는다","현실적으로 분석하고 최선의 방법을 찾는다"] },
-  { q: "연인과의 이상적인 관계는?", opts: ["서로가 서로의 성장을 응원하는 파트너","매일이 설레고 즐거운 연인","가장 편안하고 든든한 내 편","서로를 깊이 이해하고 신뢰하는 동반자"] }
-];
-const AD_CONFIG = {
-  image:   'https://thumbnail.coupangcdn.com/thumbnails/remote/492x492ex/image/vendor_inventory/9000/bdebac18f2de858ad4eb360b8e195ab0e50d69cee429dfb9d734dda81ffe.jpg',
-  link:    'https://link.coupang.com/a/dZh5anXH7Q',
-  title:   '지금 인기 상품을 확인해보세요!',
-  btnText: '상품 보고 결과 확인하기',
-};
-const CATEGORY_LABEL = '💕 연인 유형';
-const SCORE_MAP = [
-  ['사','부','양','카'],
-  ['사','부','양','카'],
-  ['사','부','양','카'],
-  ['사','양','카','부'],
-  ['사','양','부','카'],
-  ['사','부','양','카'],
-  ['사','카','양','부'],
-  ['사','양','부','카'],
-  ['사','카','양','부'],
-  ['사','카','양','부'],
-  ['사','카','양','부'],
-  ['사','양','부','카'],
-  ['사','양','카','부'],
-  ['사','카','양','부'],
-  ['사','양','부','카'],
-  ['사','양','카','부'],
-  ['사','양','카','부'],
-  ['사','양','카','부'],
-  ['사','양','카','부'],
-  ['사','카','양','부'],
-];
-const RESULTS = {
-  '카': {
-    emoji: '🦎', name: '카멜레온형', sub: '연인 관계를 늘 새롭고 설레게 만드는 사람',
-    color: '#1B6CA8', light: '#EBF5FB', mid: '#AED6F1',
-    desc: '연인 관계에서 늘 새로운 에너지와 즐거움을 가져옵니다. 상대의 감정을 잘 읽고 분위기에 맞게 자신을 조절하며, 다양한 경험을 함께 하길 즐깁니다. 함께 있으면 매일이 다르게 느껴지는 활기찬 연인입니다.',
-    pros: ['풍부한 감수성으로 상대의 감정을 잘 읽음', '매일 새로운 경험을 만들어 설렘 유지', '상황에 유연하게 적응하는 배려심', '표현력이 풍부해 사랑 표현이 자연스러움'],
-    cons: ['감정 기복이 관계에 영향을 줄 수 있음', '일관성 없는 모습에 상대가 혼란스러울 수 있음', '깊이 있는 관계보다 새로움을 추구하는 경향', '한 가지에 오래 집중하기 어려운 편'],
-    tip: '💡 설렘도 중요하지만, 상대에게 일관된 모습을 보여주는 것이 깊은 신뢰로 이어집니다. 안정감도 매력이에요.',
-    brief: '늘 새롭고 즐거운 에너지형. 풍부한 감수성과 표현력으로 관계를 설레게 해요. 함께하면 매일이 특별한 연인입니다.',
-    comm: ['가볍고 유쾌한 분위기로 대화하면 잘 통해요', '감정과 표현에 충분히 공감해 주세요', '새로운 경험을 함께 제안하면 더 가까워질 수 있어요'],
-    keywords: ['설렘유발', '표현력', '유연한']
-  },
-  '사': {
-    emoji: '🦁', name: '사자형', sub: '관계를 이끄는 열정적인 연인',
-    color: '#C00000', light: '#FFF0F0', mid: '#FDDEDE',
-    desc: '연인 관계에서 강한 열정과 결단력으로 관계를 이끕니다. 좋아하는 사람에게 직접적으로 표현하고 적극적으로 행동합니다. 문제가 생겼을 때 회피하지 않고 정면으로 맞서 해결하려는 의지가 강합니다.',
-    pros: ['강한 열정과 직접적인 사랑 표현', '관계의 문제를 회피하지 않고 해결하려는 의지', '연인을 위해 적극적으로 행동하는 실행력', '분명한 의사 표현으로 오해가 적음'],
-    cons: ['상대의 감정 속도를 배려하기 어려운 편', '자기 방식을 강요하거나 독단적으로 결정하기도 함', '직설적 표현이 상대에게 상처가 되기도 함', '자존심이 강해 먼저 사과하기 어려워함'],
-    tip: '💡 상대방의 속도와 감정을 존중하는 것이 더 강한 관계를 만듭니다. 열정만큼 배려도 사랑입니다.',
-    brief: '관계를 이끄는 열정형. 강한 추진력과 직접적인 표현으로 사랑을 전해요. 문제 앞에서 도망치지 않는 믿음직한 연인입니다.',
-    comm: ['결론과 감정을 직접적으로 표현해주면 잘 통해요', '노력과 행동을 인정해주면 관계가 좋아져요', '의견 차이가 있을 때는 감정보다 명확한 이유를 전달하세요'],
-    keywords: ['열정적', '직접적', '실행력']
-  },
-  '양': {
-    emoji: '🐑', name: '양형', sub: '가장 편안하고 따뜻한 내 편',
-    color: '#2E8B2E', light: '#F0FFF4', mid: '#A9DFBF',
-    desc: '연인 관계에서 진심 어린 배려와 따뜻한 공감으로 상대를 감싸줍니다. 항상 상대방 편에 서서 안정감을 주며, 갈등보다 화합을 중시합니다. 오랫동안 깊고 신뢰할 수 있는 관계를 유지하는 능력이 뛰어납니다.',
-    pros: ['상대의 감정을 잘 읽는 깊은 공감 능력', '항상 내 편이 되어주는 든든한 신뢰감', '안정적이고 편안한 관계 분위기 조성', '오래도록 깊은 관계를 유지하는 능력'],
-    cons: ['자신의 감정과 필요를 잘 표현하지 못함', '거절하지 못해 상대 요구를 다 받아들이는 경향', '쌓인 불만이 한꺼번에 폭발하는 패턴', '갈등 회피로 중요한 문제가 해결되지 않기도 함'],
-    tip: '💡 상대를 위한 배려만큼, 자신의 감정과 필요도 솔직하게 표현하세요. 당신의 진심을 상대도 알고 싶어합니다.',
-    brief: '가장 편안한 내 편. 따뜻한 공감과 배려로 상대를 감싸줘요. 신뢰와 안정감으로 오래가는 관계를 만듭니다.',
-    comm: ['충분히 경청하고 감정을 먼저 공감해 주세요', '강요보다 부드럽게 원하는 것을 표현해주세요', '노력과 배려를 자주 인정해주면 더 가까워질 수 있어요'],
-    keywords: ['배려심', '신뢰감', '안정감']
-  },
-  '부': {
-    emoji: '🦉', name: '부엉이형', sub: '깊이 이해하고 신중하게 사랑하는 연인',
-    color: '#E07B20', light: '#FFF8F0', mid: '#FAD7A0',
-    desc: '연인 관계에서 상대를 깊이 이해하고 신중하게 접근합니다. 감정보다 신뢰와 가치관의 공유를 중시하며, 오랫동안 서로를 진심으로 이해하는 관계를 원합니다. 작은 것도 기억하고 준비하는 세심함이 있습니다.',
-    pros: ['상대를 깊이 이해하려는 진지함', '세심한 준비와 기억력으로 감동을 줌', '신뢰와 가치관을 중시하는 깊은 관계', '감정보다 이성적으로 문제를 해결하는 능력'],
-    cons: ['감정 표현이 적어 상대가 차갑게 느낄 수 있음', '완벽주의로 인해 관계에 부담을 주기도 함', '즉흥적인 상황이나 감정 변화에 적응하기 어려움', '지나친 분석이 관계를 어렵게 만들기도 함'],
-    tip: '💡 완벽한 이해보다 따뜻한 감정 표현이 연인에게 더 큰 위안이 될 수 있습니다. 감정도 자주 표현해보세요.',
-    brief: '깊이 이해하는 진지형. 신중한 접근과 세심한 배려로 신뢰를 쌓아요. 오래갈수록 더 깊어지는 관계를 만듭니다.',
-    comm: ['근거보다 감정을 먼저 공유해주면 더 편해요', '생각할 시간과 여유를 주세요', '즉흥보다 미리 소통하고 준비할 수 있게 해주세요'],
-    keywords: ['신중한', '세심한', '신뢰중시']
+const QUIZ_DATA = {
+  CATEGORY_LABEL: '💕 연인 유형',
+  SESSION_KEY: 'quiz_state_연인',
+  questions: [
+    { q: "처음 좋아하는 사람이 생겼을 때 나는?", opts: ["타이밍을 봐서 직접 고백한다","재밌고 자연스러운 분위기 속에서 표현한다","먼저 친한 친구가 된 후 자연스럽게 이어지길 기다린다","관심사와 성향을 충분히 파악하고 신중하게 접근한다"] },
+    { q: "연인과 데이트 코스를 정할 때 나는?", opts: ["즉흥적으로 함께 탐험하듯 다닌다","상대의 의견을 존중해 원하는 곳을 물어본다","상대가 좋아할 것을 꼼꼼히 리서치해 준비한다","내가 먼저 멋진 코스를 짜서 제안한다"] },
+    { q: "연인과 싸웠을 때 나는?", opts: ["속상해도 먼저 맞춰주거나 사과한다","차분히 원인을 분석하고 이성적으로 대화한다","바로 해결하고 싶어 즉시 대화를 요구한다","분위기가 풀릴 방법을 찾으며 기다린다"] },
+    { q: "연인이 약속에 늦거나 연락이 안 될 때 나는?", opts: ["혼자 차분히 기다리며 무슨 일이 있는지 곰곰이 생각한다","바로 연락해서 상황을 확인하고 분명히 의사를 전한다","기다리는 동안 다른 즐길 거리를 찾으며 가볍게 넘긴다","걱정되지만 괜찮다고 말하며 마음을 잘 드러내지 않는다"] },
+    { q: "연인이 힘들어할 때 나는?", opts: ["해결책을 먼저 제시하려 한다","기분 전환이 될 것을 함께 하자고 제안한다","말없이 곁에 있어주고 필요하면 말해달라 한다","원인을 분석하고 논리적으로 도와준다"] },
+    { q: "기념일에 나는?", opts: ["창의적이고 재미있는 방식으로 특별하게 기념한다","서로에게 편한 방식으로 소중히 챙긴다","미리 완벽하게 준비하고 의미 있는 선물을 준비한다","깜짝 이벤트를 준비하거나 적극적으로 축하한다"] },
+    { q: "연인과 연락하는 패턴은?", opts: ["상대 속도에 맞추고 늘 답장을 빠르게 한다","깊고 의미 있는 대화를 주고받는 것을 선호한다","바쁠 때는 간결하게, 필요할 때 확실하게 연락한다","자주 연락하며 일상을 나누는 걸 좋아한다"] },
+    { q: "연인의 단점을 발견했을 때 나는?", opts: ["분석하고 이해하려 노력한다","직접 말하고 고쳐지길 기대한다","가볍게 언급하고 유머로 풀어간다","있는 그대로 받아들이고 함께 성장하려 한다"] },
+    { q: "연인과의 관계에서 가장 중요한 것은?", opts: ["서로를 더 나은 사람으로 자극하는 성장","즐거움과 설렘","깊은 신뢰와 안정감","가치관의 공유와 깊은 이해"] },
+    { q: "오래 사귄 연인과의 관계에서 나는?", opts: ["늘 새로운 경험을 함께 해 설렘을 유지하길 원한다","편안하고 따뜻한 안식처 같은 관계를 원한다","서로를 깊이 이해하는 든든한 관계를 원한다","더 큰 목표(미래 계획 등)로 함께 나아가길 원한다"] },
+    { q: "질투가 날 때 나는?", opts: ["그냥 내색하지 않으려 노력한다","조용히 분석하며 혼자 생각한다","직접 말하고 확실하게 확인한다","솔직하게 표현하되 가볍게 유머로 풀어간다"] },
+    { q: "연인에게 사랑을 표현할 때 나는?", opts: ["세심하게 준비하고 깊이 있게 표현한다","행동으로 확실하게 표현한다 (선물, 이벤트)","재치 있는 말과 스킨십으로 표현한다","따뜻한 말과 공감으로 표현한다"] },
+    { q: "연인과 미래를 이야기할 때 나는?", opts: ["구체적인 계획을 제시하고 실행하려 한다","다양한 가능성을 함께 탐색하며 설레는 대화를 한다","상대의 바람과 나의 바람을 함께 그려나간다","현실적으로 분석하고 신중하게 이야기한다"] },
+    { q: "연인과 취미 활동을 할 때 나는?", opts: ["새롭고 다양한 것을 함께 경험하길 좋아한다","상대가 좋아하는 것을 함께 하는 걸 즐긴다","깊이 있게 하나를 함께 파고드는 것을 좋아한다","활동적이고 도전적인 것을 함께 하길 좋아한다"] },
+    { q: "헤어질 위기가 왔을 때 나는?", opts: ["상대의 감정을 배려하며 조심스럽게 대화한다","원인을 분석하고 이성적으로 판단한다","문제를 정면으로 맞서고 해결책을 찾는다","분위기를 바꿔 좋은 추억을 만들며 극복하려 한다"] },
+    { q: "연인에게 가장 받고 싶은 것은?", opts: ["나를 깊이 이해하고 신뢰하는 것","나를 향한 확실한 의지와 행동","항상 새롭게 설레는 경험","내 감정에 충분히 공감해주는 것"] },
+    { q: "연인의 친구·가족 모임에 처음 갈 때 나는?", opts: ["주도적으로 인사하고 적극적으로 대화에 참여한다","자연스럽게 어울리며 분위기에 빠르게 녹아든다","조용히 따뜻하게 인사하며 상대 분위기에 맞춘다","사전에 모임 구성과 분위기를 미리 파악하고 간다"] },
+    { q: "사귀기 전 썸 단계에서 나는?", opts: ["다양한 활동으로 즐거운 시간을 만든다","상대를 잘 알아가며 자연스럽게 가까워진다","상대의 성향과 가치관을 신중하게 파악한다","빠르게 감정을 확인하고 결론 내고 싶다"] },
+    { q: "연인과 장거리 연애를 하게 된다면?", opts: ["힘들더라도 감정을 솔직히 나누며 유지한다","현실적으로 분석하고 최선의 방법을 찾는다","확실한 미래 계획을 세우고 극복한다","상황을 유연하게 받아들이고 즐길 방법을 찾는다"] },
+    { q: "연인과의 이상적인 관계는?", opts: ["서로를 깊이 이해하고 신뢰하는 동반자","서로가 서로의 성장을 응원하는 파트너","매일이 설레고 즐거운 연인","가장 편안하고 든든한 내 편"] }
+  ],
+  SCORE_MAP: [
+    ['사','카','양','부'],
+    ['카','양','부','사'],
+    ['양','부','사','카'],
+    ['부','사','카','양'],
+    ['사','카','양','부'],
+    ['카','양','부','사'],
+    ['양','부','사','카'],
+    ['부','사','카','양'],
+    ['사','카','양','부'],
+    ['카','양','부','사'],
+    ['양','부','사','카'],
+    ['부','사','카','양'],
+    ['사','카','양','부'],
+    ['카','양','부','사'],
+    ['양','부','사','카'],
+    ['부','사','카','양'],
+    ['사','카','양','부'],
+    ['카','양','부','사'],
+    ['양','부','사','카'],
+    ['부','사','카','양'],
+  ],
+  RESULTS: {
+    '카': {
+      emoji: '🦎', name: '카멜레온형', sub: '연인 관계를 늘 새롭고 설레게 만드는 사람',
+      color: '#1B6CA8', light: '#EBF5FB', mid: '#AED6F1',
+      desc: '함께 있을 때마다 새로운 설렘을 만드는 사람. 익숙해질 만하면 새로운 무언가로 두근거리게 하고, 무거운 분위기도 한 마디로 가볍게 바꿉니다. 당신과의 시간은 절대 지루하지 않습니다.',
+      pros: ['풍부한 감수성으로 상대의 감정을 잘 읽음', '매일 새로운 경험을 만들어 설렘 유지', '상황에 유연하게 적응하는 배려심', '표현력이 풍부해 사랑 표현이 자연스러움'],
+      cons: ['감정 기복이 관계에 영향을 줄 수 있음', '혼자만의 시간이 갑자기 필요해질 때 상대가 거리감을 느낄 수 있음', '깊이 있는 관계보다 새로움을 추구하는 경향', '한 가지에 오래 집중하기 어려운 편'],
+      tip: '💡 설렘도 중요하지만, 상대에게 일관된 모습을 보여주는 것이 깊은 신뢰로 이어집니다. 안정감도 매력이에요.',
+      brief: '늘 새롭고 즐거운 에너지형. 풍부한 감수성과 표현력으로 관계를 설레게 해요. 함께하면 매일이 특별한 연인입니다.',
+      comm: ['가볍고 유쾌한 분위기로 대화하면 잘 통해요', '감정과 표현에 충분히 공감해 주세요', '새로운 경험을 함께 제안하면 더 가까워질 수 있어요'],
+      keywords: ['설렘', '표현력', '유연한']
+    },
+    '사': {
+      emoji: '🦁', name: '사자형', sub: '관계를 이끄는 열정적인 연인',
+      color: '#C00000', light: '#FFF0F0', mid: '#FDDEDE',
+      desc: '사랑에도 망설이지 않는 사람. 좋아하는 마음을 숨기지 않고, 관계가 흔들릴 때 가장 먼저 정면으로 부딪칩니다. 당신의 사랑은 단단하고 솔직합니다.',
+      pros: ['강한 열정과 직접적인 사랑 표현', '관계의 문제를 회피하지 않고 해결하려는 의지', '연인을 위해 적극적으로 행동하는 실행력', '마음을 숨기지 않아 관계가 단순하고 분명함'],
+      cons: ['상대의 감정 속도를 배려하기 어려운 편', '자기 방식을 강요하거나 독단적으로 결정하기도 함', '직설적 표현이 상대에게 상처가 되기도 함', '자존심이 강해 먼저 사과하기 어려워함'],
+      tip: '💡 상대방의 속도와 감정을 존중하는 것이 더 강한 관계를 만듭니다. 열정만큼 배려도 사랑입니다.',
+      brief: '관계를 이끄는 열정형. 강한 추진력과 직접적인 표현으로 사랑을 전해요. 문제 앞에서 도망치지 않는 믿음직한 연인입니다.',
+      comm: ['결론과 감정을 직접적으로 표현해주면 잘 통해요', '노력과 행동을 인정해주면 관계가 좋아져요', '의견 차이가 있을 때는 감정보다 명확한 이유를 전달하세요'],
+      keywords: ['열정적', '직접적', '실행력']
+    },
+    '양': {
+      emoji: '🐑', name: '양형', sub: '가장 편안하고 따뜻한 내 편',
+      color: '#2E8B2E', light: '#F0FFF4', mid: '#A9DFBF',
+      desc: '곁에 있는 것만으로 안심이 되는 사람. 상대의 작은 변화까지 알아차리고, 말없이도 마음을 전합니다. 당신의 사랑은 요란하지 않지만 가장 깊고 따뜻합니다.',
+      pros: ['상대의 감정을 잘 읽는 깊은 공감 능력', '항상 내 편이 되어주는 든든한 신뢰감', '안정적이고 편안한 관계 분위기 조성', '오래도록 깊은 관계를 유지하는 능력'],
+      cons: ['자신의 감정과 필요를 잘 표현하지 못함', '거절하지 못해 상대 요구를 다 받아들이는 경향', '참던 서운함이 사소한 일에 한꺼번에 터져 상대를 당황시키기도 함', '헌신이 당연시되어 상대가 노력하지 않게 만들기도 함'],
+      tip: '💡 상대를 위한 배려만큼, 자신의 감정과 필요도 솔직하게 표현하세요. 당신의 진심을 상대도 알고 싶어합니다.',
+      brief: '가장 편안한 내 편. 따뜻한 공감과 배려로 상대를 감싸줘요. 신뢰와 안정감으로 오래가는 관계를 만듭니다.',
+      comm: ['충분히 경청하고 감정을 먼저 공감해 주세요', '강요보다 부드럽게 원하는 것을 표현해주세요', '노력과 배려를 자주 인정해주면 더 가까워질 수 있어요'],
+      keywords: ['배려심', '신뢰감', '안정감']
+    },
+    '부': {
+      emoji: '🦉', name: '부엉이형', sub: '깊이 이해하고 신중하게 사랑하는 연인',
+      color: '#E07B20', light: '#FFF8F0', mid: '#FAD7A0',
+      desc: '천천히 알아가며 단단해지는 사랑을 하는 사람. 감정에 휘둘리지 않고 신뢰를 쌓아 올리며, 깊이 이해한 뒤 마음을 줍니다. 당신의 사랑은 시간이 지날수록 더 단단해집니다.',
+      pros: ['상대를 깊이 이해하려는 진지함', '세심한 준비와 기억력으로 감동을 줌', '신뢰와 가치관을 중시하는 깊은 관계', '감정에 휘둘리지 않고 차분히 갈등을 풀어가는 안정감'],
+      cons: ['감정 표현이 적어 상대가 차갑게 느낄 수 있음', '완벽주의로 인해 관계에 부담을 주기도 함', '즉흥적인 상황이나 감정 변화에 적응하기 어려움', '지나친 분석이 관계를 어렵게 만들기도 함'],
+      tip: '💡 완벽한 이해보다 따뜻한 감정 표현이 연인에게 더 큰 위안이 될 수 있습니다. 감정도 자주 표현해보세요.',
+      brief: '깊이 이해하는 진지형. 신중한 접근과 세심한 배려로 신뢰를 쌓아요. 오래갈수록 더 깊어지는 관계를 만듭니다.',
+      comm: ['근거보다 감정을 먼저 공유해주면 더 편해요', '생각할 시간과 여유를 주세요', '즉흥보다 미리 소통하고 준비할 수 있게 해주세요'],
+      keywords: ['신중한', '세심한', '신뢰중시']
+    }
   }
 };
-let current = 0, answers = Array.from({length: 20}, () => []), userName = '', currentTop = '', currentScores = {};
-function saveSession(extra) { try { sessionStorage.setItem('quiz_state_연인', JSON.stringify(Object.assign({ current, answers, userName }, extra))); } catch(e) {} }
-function clearSession() { try { sessionStorage.removeItem('quiz_state_연인'); } catch(e) {} }
-function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo(0, 0); }
-function startTest() { const nameVal = document.getElementById('user-name').value.trim(); if (!nameVal) { const errEl = document.getElementById('name-error'); errEl.style.display = 'block'; document.getElementById('user-name').focus(); return; } userName = nameVal; saveSession(); showScreen('screen-question'); renderQ(); }
-function renderQ() { const q = questions[current]; const total = questions.length; const sel = answers[current]; document.getElementById('q-counter').textContent = `${current+1} / ${total}`; document.getElementById('q-num-bar').textContent = `Q${String(current+1).padStart(2,'0')}`; document.getElementById('q-text').textContent = q.q; document.getElementById('progress-fill').style.width = `${((current+1)/total)*100}%`; const opts = document.getElementById('options'); opts.innerHTML = ''; q.opts.forEach((txt, i) => { const btn = document.createElement('button'); const isSelected = sel.includes(i); const isDimmed = !isSelected && sel.length >= 2; btn.className = 'option-btn' + (isSelected ? ' selected' : '') + (isDimmed ? ' dimmed' : ''); btn.innerHTML = `<span class="option-label">${['A','B','C','D'][i]}</span><span>${txt}</span>`; btn.onclick = () => selectOpt(i); opts.appendChild(btn); }); updateSelCount(); document.getElementById('btn-prev').style.visibility = current === 0 ? 'hidden' : 'visible'; document.getElementById('btn-next').style.display = current < total-1 ? 'block' : 'none'; document.getElementById('btn-next').disabled = sel.length === 0; document.getElementById('btn-submit').style.display = current === total-1 ? 'block' : 'none'; document.getElementById('btn-submit').disabled = sel.length === 0; }
-function updateSelCount() { const count = answers[current].length; const el = document.getElementById('sel-count'); el.textContent = `${count} / 2`; el.classList.toggle('full', count >= 2); }
-function selectOpt(i) { const sel = answers[current]; const idx = sel.indexOf(i); if (idx > -1) { sel.splice(idx, 1); } else if (sel.length < 2) { sel.push(i); } else { return; } document.querySelectorAll('.option-btn').forEach((btn, idx) => { const isSelected = sel.includes(idx); const isDimmed = !isSelected && sel.length >= 2; btn.classList.toggle('selected', isSelected); btn.classList.toggle('dimmed', isDimmed); }); updateSelCount(); saveSession(); const hasAny = sel.length > 0; document.getElementById('btn-next').disabled = !hasAny; document.getElementById('btn-submit').disabled = !hasAny; }
-function nextQ() { if (answers[current].length === 0) return; current++; saveSession(); renderQ(); }
-function prevQ() { if (current > 0) { current--; saveSession(); renderQ(); } }
-let pendingScores = null, adTimer = null;
-function submitTest() { if (answers[current].length === 0) return; const scores = { '카':0, '사':0, '양':0, '부':0 }; answers.forEach((sel, i) => { sel.forEach(ans => { scores[SCORE_MAP[i][ans]] += 0.5; }); }); pendingScores = scores; showAd(); }
-function showAd() { document.getElementById('ad-content').style.display = ''; document.getElementById('wait-screen').classList.remove('active'); const adImg = document.getElementById('ad-img'); const adWrap = document.getElementById('ad-image-wrap'); if (AD_CONFIG.image) { adImg.src = AD_CONFIG.image; adWrap.style.display = ''; adWrap.onclick = adLinkClick; } else { adWrap.style.display = 'none'; } document.getElementById('ad-title').textContent = AD_CONFIG.title; document.getElementById('ad-btn-text').textContent = AD_CONFIG.btnText; adTimer = null; saveSession({ screen: 'ad', scores: pendingScores }); showScreen('screen-ad'); }
-function adLinkClick() { saveSession({ screen: 'ad', scores: pendingScores, adClicked: true }); window.open(AD_CONFIG.link, '_blank', 'noopener,noreferrer'); document.getElementById('ad-content').style.display = 'none'; const waitScreen = document.getElementById('wait-screen'); waitScreen.classList.add('active'); const WAIT = 10; let remain = WAIT; document.getElementById('wait-number').textContent = remain; document.getElementById('wait-progress').style.width = '100%'; adTimer = setInterval(() => { remain--; document.getElementById('wait-number').textContent = remain; document.getElementById('wait-progress').style.width = `${(remain / WAIT) * 100}%`; if (remain <= 0) { clearInterval(adTimer); adTimer = null; waitScreen.classList.remove('active'); showResult(pendingScores); } }, 1000); }
-function encodeResult(name, top, scores) { const data = { n: name, t: top, s: scores }; return btoa(unescape(encodeURIComponent(JSON.stringify(data)))); }
-function decodeResult(encoded) { try { return JSON.parse(decodeURIComponent(escape(atob(encoded)))); } catch(e) { return null; } }
-function showResult(scores) { clearSession(); const total = Object.values(scores).reduce((a, b) => a + b, 0); const sorted = ['카','사','양','부'].sort((a, b) => scores[b] - scores[a]); const top = sorted[0]; const second = sorted[1]; const pcts = {}; if (total > 0) { let sum = 0; ['카','사','양','부'].forEach(k => { pcts[k] = Math.floor(scores[k] / total * 100); sum += pcts[k]; }); const remainder = 100 - sum; const keys = ['카','사','양','부'].sort((a, b) => (scores[b] / total * 100 - Math.floor(scores[b] / total * 100)) - (scores[a] / total * 100 - Math.floor(scores[a] / total * 100))); for (let i = 0; i < remainder; i++) pcts[keys[i]]++; } else { ['카','사','양','부'].forEach(k => { pcts[k] = 0; }); } currentTop = top; currentScores = scores; const r = RESULTS[top]; const r2 = RESULTS[second]; const encoded = encodeResult(userName, top, scores); history.pushState(null, '', location.pathname + '?r=' + encoded); const banner = document.getElementById('result-banner'); banner.style.background = `linear-gradient(135deg, ${r.color} 0%, ${r.mid} 100%)`; banner.style.color = 'white'; document.getElementById('result-name').textContent = `${userName}님의 결과`;
-  document.getElementById('result-category-chip').textContent = CATEGORY_LABEL; document.getElementById('result-emoji').textContent = r.emoji; document.getElementById('result-type').textContent = r.name; document.getElementById('result-keywords').innerHTML = r.keywords.map(k => `<span class="kw-tag">#${k}</span>`).join(''); document.getElementById('result-sub').textContent = `「${r.sub}」`; document.getElementById('type-tags').innerHTML = `<div class="type-tag main-tag"><span class="tag-label">주 유형</span><span class="tag-animal">${r.emoji} ${r.name}</span><span class="tag-pct">${pcts[top]}%</span></div><div class="type-tag sub-tag"><span class="tag-label">부 유형</span><span class="tag-animal">${r2.emoji} ${r2.name}</span><span class="tag-pct">${pcts[second]}%</span></div>`; const sg = document.getElementById('score-grid'); sg.innerHTML = ''; ['카','사','양','부'].forEach(ak => { const rv = RESULTS[ak]; const isTop = (ak === top); const isSecond = (ak === second); const border = isTop ? rv.color : (isSecond ? rv.color + '88' : '#eee'); sg.innerHTML += `<div class="score-item" style="background:${rv.light};border:2px solid ${border}"><div class="score-item-top"><span class="s-label" style="color:${rv.color}">${rv.emoji} ${rv.name}</span><div class="s-bar-wrap"><div class="score-bar" style="background:#E0E0E0"><div class="score-bar-fill" style="width:${pcts[ak]}%;background:${rv.color}"></div></div></div><span class="s-num" style="color:${rv.color}">${pcts[ak]}%</span></div></div>`; }); document.getElementById('result-desc').textContent = r.desc; const dg = document.getElementById('detail-grid'); dg.innerHTML = `<div class="detail-box" style="background:${r.light};border:1.5px solid ${r.mid}"><h4 style="color:${r.color}">✅ 주요 강점</h4><ul>${r.pros.map(p=>`<li>${p}</li>`).join('')}</ul></div><div class="detail-box" style="background:#FFF8F8;border:1.5px solid #FFD0D0"><h4 style="color:#C00000">⚠️ 성장 포인트</h4><ul>${r.cons.map(c=>`<li>${c}</li>`).join('')}</ul></div>`; document.getElementById('tip-box').innerHTML = r.tip; const others = ['카','사','양','부'].filter(k => k !== top); const os = document.getElementById('other-section'); os.innerHTML = `<h3>🤝 다른 유형과 소통하는 법</h3><div class="other-cards">` + others.map(k => { const ov = RESULTS[k]; return `<div class="other-card"><div class="other-card-header" style="background:${ov.light}"><span class="o-emoji">${ov.emoji}</span><div><div class="o-name" style="color:${ov.color}">${ov.name}</div><div class="o-kw-row">${ov.keywords.map(k=>`<span class="o-kw-tag" style="color:${ov.color};border-color:${ov.color}40">${k}</span>`).join('')}</div><div class="o-brief">${ov.brief}</div></div></div><div class="other-card-body"><div class="comm-title">💬 이렇게 소통하세요</div><ul>${ov.comm.map(c => `<li>${c}</li>`).join('')}</ul></div></div>`; }).join('') + `</div>`; showScreen('screen-result'); }
-function retryTest() { current = 0; answers = Array.from({length: 20}, () => []); currentTop = ''; currentScores = {}; clearSession(); history.pushState(null, '', location.pathname); showScreen('screen-intro'); }
-function copyResultLink() { const url = location.href; const updateBtns = () => { showToast('✅ 링크가 복사됐어요!'); ['btn-share-link', 'btn-share-link-top'].forEach(id => { const btn = document.getElementById(id); if (btn) { btn.textContent = '✅ 복사됨!'; setTimeout(() => { btn.textContent = '🔗 링크 복사'; }, 2500); } }); }; navigator.clipboard.writeText(url).then(updateBtns).catch(() => { const ta = document.createElement('textarea'); ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); updateBtns(); }); }
-const EJS_PUBLIC_KEY = 'hKIxH-TLR18w4HQun', EJS_SERVICE_ID = 'service_0moj8bs', EJS_TEMPLATE_ID = 'template_9buriby';
-emailjs.init(EJS_PUBLIC_KEY);
-function sendEmail() { document.getElementById('email-input').value = ''; document.getElementById('modal-status').textContent = ''; document.getElementById('btn-modal-send').disabled = false; document.getElementById('btn-modal-send').textContent = '📨 보내기'; document.getElementById('email-modal').classList.add('open'); setTimeout(() => document.getElementById('email-input').focus(), 100); }
-function closeEmailModal() { document.getElementById('email-modal').classList.remove('open'); }
-function doSendEmail() { const toEmail = document.getElementById('email-input').value.trim(); if (!toEmail || !toEmail.includes('@')) { document.getElementById('modal-status').innerHTML = '<span style="color:#C00000">올바른 이메일 주소를 입력해주세요.</span>'; return; } const r = RESULTS[currentTop]; const total = Object.values(currentScores).reduce((a, b) => a + b, 0); const sorted = ['카','사','양','부'].sort((a,b) => currentScores[b] - currentScores[a]); const scoreLines = sorted.map(k => { const pct = total > 0 ? Math.round(currentScores[k] / total * 100) : 0; const mark = k === sorted[0] ? ' ★주' : (k === sorted[1] ? ' ☆부' : ''); return `${RESULTS[k].emoji} ${RESULTS[k].name}: ${pct}%${mark}`; }).join('\n'); const btn = document.getElementById('btn-modal-send'); btn.disabled = true; btn.textContent = '전송 중...'; document.getElementById('modal-status').textContent = ''; emailjs.send(EJS_SERVICE_ID, EJS_TEMPLATE_ID, { to_email: toEmail, user_name: userName, animal_type: r.name, animal_emoji: r.emoji, animal_sub: r.sub, scores: scoreLines, result_link: location.href }).then(() => { document.getElementById('modal-status').innerHTML = '✅ <span style="color:#2E8B2E">이메일이 성공적으로 전송됐어요!</span>'; btn.textContent = '✅ 전송 완료'; setTimeout(() => closeEmailModal(), 2000); }).catch((err) => { document.getElementById('modal-status').innerHTML = '<span style="color:#C00000">전송 실패. 잠시 후 다시 시도해주세요.</span>'; btn.disabled = false; btn.textContent = '📨 보내기'; console.error('EmailJS error:', err); }); }
-function showToast(msg) { let toast = document.getElementById('toast'); if (!toast) { toast = document.createElement('div'); toast.id = 'toast'; toast.className = 'toast'; document.body.appendChild(toast); } toast.textContent = msg; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2500); }
-const DEFAULT_ADMIN_PW = '4animal';
-function loadAdConfig() { try { const saved = localStorage.getItem('ad_config'); if (saved) Object.assign(AD_CONFIG, JSON.parse(saved)); } catch(e) {} }
-let uploadedImageBase64 = null;
-function handleImgUpload(e) { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(ev) { uploadedImageBase64 = ev.target.result; const preview = document.getElementById('img-preview'); preview.src = uploadedImageBase64; preview.style.display = 'block'; document.getElementById('upload-label-text').textContent = file.name; document.getElementById('cfg-image').value = ''; }; reader.readAsDataURL(file); }
-function openAdmin() { uploadedImageBase64 = null; document.getElementById('admin-pw-input').value = ''; document.getElementById('admin-pw-error').textContent = ''; document.getElementById('admin-pw-screen').style.display = ''; document.getElementById('admin-settings-screen').style.display = 'none'; document.getElementById('admin-overlay').classList.add('open'); setTimeout(() => document.getElementById('admin-pw-input').focus(), 100); }
-function closeAdmin() { document.getElementById('admin-overlay').classList.remove('open'); }
-function adminLogin() { const pw = document.getElementById('admin-pw-input').value; const stored = localStorage.getItem('admin_pw') || DEFAULT_ADMIN_PW; if (pw === stored) { document.getElementById('admin-pw-screen').style.display = 'none'; document.getElementById('admin-settings-screen').style.display = ''; document.getElementById('admin-save-msg').textContent = ''; const currentImg = AD_CONFIG.image || ''; const preview = document.getElementById('img-preview'); if (currentImg) { preview.src = currentImg; preview.style.display = 'block'; document.getElementById('upload-label-text').textContent = currentImg.startsWith('data:') ? '업로드된 이미지' : '현재 이미지'; document.getElementById('cfg-image').value = currentImg.startsWith('data:') ? '' : currentImg; } else { preview.style.display = 'none'; document.getElementById('upload-label-text').textContent = '클릭해서 이미지 파일 업로드'; document.getElementById('cfg-image').value = ''; } document.getElementById('cfg-link').value = AD_CONFIG.link || ''; document.getElementById('cfg-title').value = AD_CONFIG.title || ''; document.getElementById('cfg-btntext').value = AD_CONFIG.btnText || ''; document.getElementById('cfg-newpw').value = ''; document.getElementById('cfg-newpw2').value = ''; document.getElementById('cfg-img-file').value = ''; } else { const err = document.getElementById('admin-pw-error'); err.textContent = '비밀번호가 틀렸어요.'; document.getElementById('admin-pw-input').value = ''; document.getElementById('admin-pw-input').focus(); setTimeout(() => { err.textContent = ''; }, 2500); } }
-function saveAdminSettings() { const newpw = document.getElementById('cfg-newpw').value.trim(); const newpw2 = document.getElementById('cfg-newpw2').value.trim(); const msg = document.getElementById('admin-save-msg'); if (newpw || newpw2) { if (newpw !== newpw2) { msg.innerHTML = '<span style="color:#C00000">비밀번호가 일치하지 않아요.</span>'; return; } if (newpw.length < 4) { msg.innerHTML = '<span style="color:#C00000">비밀번호는 4자리 이상이어야 해요.</span>'; return; } localStorage.setItem('admin_pw', newpw); } AD_CONFIG.image = uploadedImageBase64 || document.getElementById('cfg-image').value.trim(); AD_CONFIG.link = document.getElementById('cfg-link').value.trim(); AD_CONFIG.title = document.getElementById('cfg-title').value.trim() || '지금 인기 상품을 확인해보세요!'; AD_CONFIG.btnText = document.getElementById('cfg-btntext').value.trim() || '상품 보고 결과 확인하기'; localStorage.setItem('ad_config', JSON.stringify({ image: AD_CONFIG.image, link: AD_CONFIG.link, title: AD_CONFIG.title, btnText: AD_CONFIG.btnText })); msg.innerHTML = '✅ <span style="color:#2E8B2E">저장됐어요!</span>'; setTimeout(() => { msg.textContent = ''; closeAdmin(); }, 1500); }
-window.addEventListener('DOMContentLoaded', () => {
-  loadAdConfig();
-  const params = new URLSearchParams(location.search);
-  const encoded = params.get('r');
-  if (encoded) { const data = decodeResult(encoded); if (data && data.n && data.t && data.s) { userName = data.n; currentTop = data.t; currentScores = data.s; showResult(data.s); return; } }
-  try {
-    const saved = sessionStorage.getItem('quiz_state_연인');
-    if (saved) { const state = JSON.parse(saved); if (!state) return; userName = state.userName || '익명'; document.getElementById('user-name').value = userName; if (state.screen === 'ad' && state.scores) { current = state.current; answers = state.answers || Array.from({length:20}, () => []); pendingScores = state.scores; if (state.adClicked) { showResult(pendingScores); } else { showAd(); } return; } if (typeof state.current === 'number' && Array.isArray(state.answers)) { current = state.current; answers = state.answers; showScreen('screen-question'); renderQ(); } }
-  } catch(e) {}
-});
 </script>
+<script src="shared.js"></script>
 </body>
 </html>

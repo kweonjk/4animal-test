@@ -3,213 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="직장에서 나는 어떤 동물 유형일까? 20개 질문으로 알아보는 일할 때의 나.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="4동물 유형검사 — 직장 유형 | 일할 때 나는 어떤 동물?">
+<meta property="og:description" content="직장에서 나는 어떤 동물 유형일까? 20개 질문으로 알아보는 일할 때의 나.">
+<meta property="og:image" content="https://kweonjk.github.io/4animal-test/og-직장.png">
+<meta property="og:url" content="https://kweonjk.github.io/4animal-test/직장.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="4동물 유형검사 — 직장 유형 | 일할 때 나는 어떤 동물?">
+<meta name="twitter:description" content="직장에서 나는 어떤 동물 유형일까? 20개 질문으로 알아보는 일할 때의 나.">
+<meta name="twitter:image" content="https://kweonjk.github.io/4animal-test/og-직장.png">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💼</text></svg>'>
 <title>4동물 유형검사 — 직장 유형</title>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<link rel="stylesheet" href="shared.css">
 <style>
   :root {
-    --ka: #1B6CA8; --ka-light: #EBF5FB; --ka-mid: #AED6F1;
-    --sa: #C00000; --sa-light: #FFF0F0; --sa-mid: #FDDEDE;
-    --yang: #2E8B2E; --yang-light: #F0FFF4; --yang-mid: #A9DFBF;
-    --bu: #E07B20; --bu-light: #FFF8F0; --bu-mid: #FAD7A0;
-    --primary: #1F3864;
-    --radius: 14px;
-    --shadow: 0 4px 20px rgba(0,0,0,0.10);
+    --cat-primary: #1B4F72;
+    --cat-mid: #2E75B6;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
-    background: #F4F7FB;
-    color: #333;
-    min-height: 100vh;
-    padding-top: 44px;
-  }
-  .screen { display: none; max-width: 720px; margin: 0 auto; padding: 24px 16px 40px; }
-  .screen.active { display: block; }
-  .intro-card { background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
-  .intro-banner { background: linear-gradient(135deg, #1F3864 0%, #2E75B6 100%); padding: 48px 32px 40px; text-align: center; }
-  .intro-banner .animals { font-size: 2.6rem; margin-bottom: 12px; }
-  .intro-banner h1 { color: white; font-size: 1.7rem; font-weight: 700; line-height: 1.4; }
-  .intro-banner p  { color: #BED4F0; font-size: 0.95rem; margin-top: 8px; }
-  .intro-body { padding: 32px; }
-  .intro-body .desc { background: #F0F4FB; border-left: 4px solid var(--primary); border-radius: 0 8px 8px 0; padding: 14px 18px; font-size: 0.95rem; line-height: 1.7; color: #555; margin-bottom: 24px; }
-  .name-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px; }
-  .name-row label { font-weight: 600; color: var(--primary); font-size: 0.95rem; }
-  .name-row input { width: 100%; border: 2px solid #D0DCF0; border-radius: 8px; padding: 12px 14px; font-size: 1rem; font-family: inherit; transition: border-color .2s; }
-  .name-row input:focus { outline: none; border-color: var(--primary); }
-  .name-error { font-size: 0.82rem; color: #C00000; margin-top: 2px; display: none; }
-  .animal-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
-  .pill { padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; color: white; }
-  .pill.ka { background: var(--ka); } .pill.sa { background: var(--sa); } .pill.yang { background: var(--yang); } .pill.bu { background: var(--bu); }
-  .btn-start { width: 100%; padding: 16px; border: none; border-radius: 10px; background: linear-gradient(135deg, var(--primary), #2E75B6); color: white; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: transform .15s, box-shadow .15s; font-family: inherit; }
-  .btn-start:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(31,56,100,.3); }
-  .q-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-  .q-counter { font-size: 0.9rem; color: #888; font-weight: 500; }
-  .progress-bar { background: #E0E7F0; border-radius: 8px; height: 8px; margin-bottom: 24px; overflow: hidden; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), #2E75B6); border-radius: 8px; transition: width .4s ease; }
-  .q-card { background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
-  .q-num-bar { background: var(--primary); color: white; padding: 12px 24px; font-size: 0.95rem; font-weight: 700; }
-  .q-text { padding: 22px 24px 18px; font-size: 1.05rem; font-weight: 600; line-height: 1.5; color: #1F3864; }
-  .q-hint { padding: 6px 16px 10px; font-size: 0.85rem; color: #888; display: flex; align-items: center; gap: 6px; }
-  .sel-count { display: inline-flex; align-items: center; justify-content: center; background: #E0E7F0; color: var(--primary); border-radius: 20px; padding: 2px 10px; font-size: 0.82rem; font-weight: 700; transition: background .2s, color .2s; }
-  .sel-count.full { background: var(--primary); color: white; }
-  .options { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 10px; }
-  .option-btn { display: flex; align-items: center; gap: 14px; padding: 14px 18px; border: 2px solid #E0E7F0; border-radius: 10px; background: white; cursor: pointer; font-family: inherit; font-size: 0.97rem; color: #333; text-align: left; transition: all .18s; width: 100%; }
-  .option-btn:hover:not(.dimmed) { border-color: var(--primary); background: #F0F4FB; }
-  .option-btn.selected { border-color: var(--primary); background: #EBF3FB; }
-  .option-btn.dimmed { opacity: 0.35; cursor: not-allowed; }
-  .option-label { min-width: 30px; height: 30px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; flex-shrink: 0; }
-  .option-btn.selected .option-label { background: #1F3864; }
-  .q-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; gap: 12px; }
-  .btn-prev, .btn-next { padding: 12px 28px; border-radius: 8px; border: none; font-family: inherit; font-size: 0.97rem; font-weight: 600; cursor: pointer; transition: all .15s; }
-  .btn-prev { background: #F0F4FB; color: var(--primary); border: 2px solid #D0DCF0; }
-  .btn-prev:hover { background: #E0E7F0; }
-  .btn-next { background: var(--primary); color: white; flex: 1; max-width: 220px; }
-  .btn-next:hover { background: #2E75B6; }
-  .btn-next:disabled { background: #B0B8C8; cursor: not-allowed; }
-  .btn-submit { width: 100%; padding: 15px; border: none; border-radius: 10px; background: linear-gradient(135deg, #2E8B2E, #1A5C1A); color: white; font-size: 1.1rem; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: 20px; transition: transform .15s; }
-  .btn-submit:hover { transform: translateY(-2px); }
-  .btn-submit:disabled { background: #B0B8C8; cursor: not-allowed; transform: none; }
-  .result-card { background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
-  .result-banner { padding: 40px 28px 28px; text-align: center; }
-  .result-emoji { font-size: 4rem; margin-bottom: 8px; }
-  .result-banner h2 { font-size: 1.6rem; font-weight: 700; margin-bottom: 6px; }
-  .result-banner .result-sub { font-size: 1rem; opacity: .85; }
-  .result-banner .name-tag { font-size: 1.1rem; margin-bottom: 14px; opacity: .9; }
-  .type-tag-row { display: flex; gap: 10px; justify-content: center; margin-top: 18px; }
-  .type-tag { display: flex; flex-direction: column; align-items: center; padding: 10px 18px; border-radius: 12px; min-width: 120px; }
-  .main-tag { background: rgba(255,255,255,0.25); border: 2px solid rgba(255,255,255,0.7); }
-  .sub-tag  { background: rgba(0,0,0,0.12); border: 2px solid rgba(255,255,255,0.3); }
-  .tag-label { font-size: 0.75rem; font-weight: 700; opacity: .8; letter-spacing: .06em; margin-bottom: 4px; }
-  .main-tag .tag-label::before { content: '🎯 '; }
-  .sub-tag  .tag-label::before { content: '✨ '; }
-  .tag-animal { font-size: 0.95rem; font-weight: 700; }
-  .tag-pct { font-size: 1.3rem; font-weight: 900; margin-top: 2px; }
-  .main-tag .tag-pct { color: white; }
-  .sub-tag  .tag-pct { color: rgba(255,255,255,0.85); }
-  .result-keywords { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin: 8px 0 6px; }
-  .result-keywords .kw-tag { font-size: 0.82rem; font-weight: 700; padding: 3px 12px; border-radius: 20px; background: rgba(255,255,255,0.25); border: 1.5px solid rgba(255,255,255,0.6); color: white; }
-  .result-body { padding: 28px; }
-  .score-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
-  .score-item { border-radius: 10px; padding: 12px 16px; display: flex; flex-direction: column; gap: 6px; }
-  .score-item-top { display: flex; align-items: center; justify-content: space-between; }
-  .score-item .s-label { font-weight: 600; font-size: 0.95rem; }
-  .score-item .s-bar-wrap { flex: 1; margin: 0 10px; }
-  .score-bar { height: 8px; border-radius: 4px; background: rgba(255,255,255,.5); overflow: hidden; }
-  .score-bar-fill { height: 100%; border-radius: 4px; background: rgba(255,255,255,.9); }
-  .score-item .s-num { font-weight: 700; font-size: 1.1rem; min-width: 36px; text-align: right; }
-  .kw-row { display: flex; gap: 5px; flex-wrap: wrap; }
-  .kw-tag { font-size: 0.75rem; font-weight: 600; padding: 2px 9px; border-radius: 20px; background: rgba(255,255,255,0.65); border: 1px solid rgba(0,0,0,0.08); }
-  .desc-box { background: #F8F9FF; border-radius: 10px; padding: 18px 20px; margin-bottom: 20px; line-height: 1.75; font-size: 0.97rem; color: #444; }
-  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
-  .detail-box { border-radius: 10px; padding: 16px; }
-  .detail-box h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 8px; }
-  .detail-box ul { padding-left: 18px; }
-  .detail-box ul li { font-size: 0.88rem; line-height: 1.65; color: #444; margin-bottom: 2px; }
-  .tip-box { background: #FFFDF0; border: 1.5px solid #F0D060; border-radius: 10px; padding: 14px 18px; font-size: 0.93rem; color: #664400; line-height: 1.65; margin-bottom: 24px; }
-  .tip-box strong { color: #AA6600; }
-  .btn-retry { width: 100%; padding: 14px; border: 2px solid var(--primary); border-radius: 10px; background: white; color: var(--primary); font-family: inherit; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all .15s; }
-  .btn-retry:hover { background: #EBF3FB; }
-  .share-row { display: flex; gap: 10px; margin-bottom: 12px; }
-  .share-row-top { padding: 16px 20px 4px; background: transparent; }
-  .btn-share-link, .btn-share-email { flex: 1; padding: 13px; border-radius: 10px; font-family: inherit; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all .15s; }
-  .btn-share-link { background: #1F3864; color: white; border: none; }
-  .btn-share-link:hover { background: #2E75B6; }
-  .btn-share-email { background: #F0F4FB; color: var(--primary); border: 2px solid #D0DCF0; }
-  .btn-share-email:hover { background: #E0E7F0; }
-  .other-section { margin-bottom: 24px; }
-  .other-section h3 { font-size: 1rem; font-weight: 700; color: #1F3864; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #E0E7F0; }
-  .other-cards { display: flex; flex-direction: column; gap: 12px; }
-  .other-card { border-radius: 12px; border: 1.5px solid #E0E7F0; overflow: hidden; }
-  .other-card-header { display: flex; align-items: center; gap: 10px; padding: 12px 16px; }
-  .other-card-header .o-emoji { font-size: 1.5rem; }
-  .other-card-header .o-name { font-weight: 700; font-size: 0.97rem; }
-  .o-kw-row { display: flex; gap: 4px; flex-wrap: wrap; margin: 4px 0 5px; }
-  .o-kw-tag { font-size: 0.75rem; font-weight: 600; padding: 1px 8px; border-radius: 20px; background: white; border: 1.5px solid; }
-  .other-card-header .o-brief { font-size: 0.85rem; color: #666; line-height: 1.5; }
-  .other-card-body { background: white; padding: 12px 16px 14px; border-top: 1px solid #F0F0F0; }
-  .other-card-body .comm-title { font-size: 0.82rem; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 8px; }
-  .other-card-body ul { padding-left: 0; list-style: none; }
-  .other-card-body ul li { font-size: 0.88rem; color: #444; line-height: 1.6; padding: 3px 0 3px 18px; position: relative; }
-  .other-card-body ul li::before { content: '✔'; position: absolute; left: 0; color: #2E8B2E; font-size: 0.78rem; top: 4px; }
-  .btn-admin { position: fixed; top: 56px; right: 16px; z-index: 500; width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.85); border: 1.5px solid #D0DCF0; font-size: 1rem; cursor: pointer; transition: all .2s; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.10); }
-  .btn-admin:hover { background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-  .img-upload-area { border: 2px dashed #D0DCF0; border-radius: 10px; padding: 16px; text-align: center; cursor: pointer; transition: border-color .2s; background: #FAFBFF; margin-bottom: 8px; }
-  .img-upload-area:hover { border-color: var(--primary); }
-  .img-upload-area input[type=file] { display: none; }
-  .img-upload-label { font-size: 0.88rem; color: #888; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; }
-  .img-upload-label .upload-icon { font-size: 1.8rem; }
-  .img-preview { width: 100%; border-radius: 8px; margin-top: 10px; max-height: 160px; object-fit: cover; display: none; }
-  .img-or { text-align: center; font-size: 0.8rem; color: #BBB; margin: 8px 0; }
-  .admin-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 2000; align-items: flex-start; justify-content: center; padding: 20px; overflow-y: auto; }
-  .admin-overlay.open { display: flex; }
-  .admin-box { background: white; border-radius: 16px; width: 100%; max-width: 460px; box-shadow: 0 8px 40px rgba(0,0,0,0.25); overflow: hidden; margin: auto; }
-  .admin-header { background: var(--primary); color: white; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; }
-  .admin-header h3 { font-size: 1rem; font-weight: 700; margin: 0; }
-  .btn-admin-close { background: none; border: none; color: white; font-size: 1.3rem; cursor: pointer; padding: 0; line-height: 1; }
-  .admin-body { padding: 24px; }
-  .admin-section { border: 1.5px solid #E0E7F0; border-radius: 10px; padding: 16px; margin-bottom: 16px; }
-  .admin-section-title { font-size: 0.82rem; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 12px; }
-  .admin-field { margin-bottom: 12px; }
-  .admin-field label { display: block; font-size: 0.85rem; font-weight: 600; color: #555; margin-bottom: 5px; }
-  .admin-field input, .admin-field textarea { width: 100%; border: 1.5px solid #D0DCF0; border-radius: 8px; padding: 9px 12px; font-size: 0.92rem; font-family: inherit; transition: border-color .2s; resize: vertical; }
-  .admin-field input:focus, .admin-field textarea:focus { outline: none; border-color: var(--primary); }
-  .admin-field .field-hint { font-size: 0.78rem; color: #AAA; margin-top: 4px; }
-  .btn-admin-save { width: 100%; padding: 13px; border: none; border-radius: 10px; background: var(--primary); color: white; font-family: inherit; font-size: 1rem; font-weight: 700; cursor: pointer; transition: background .15s; margin-bottom: 10px; }
-  .btn-admin-save:hover { background: #2E75B6; }
-  .admin-msg { text-align: center; font-size: 0.88rem; min-height: 20px; margin-top: 6px; }
-  .admin-pw-screen { padding: 32px 24px; text-align: center; }
-  .admin-pw-screen .lock-icon { font-size: 2.5rem; margin-bottom: 12px; }
-  .admin-pw-screen h3 { font-size: 1.1rem; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
-  .admin-pw-screen p { font-size: 0.88rem; color: #888; margin-bottom: 20px; }
-  .admin-pw-input { width: 100%; border: 2px solid #D0DCF0; border-radius: 10px; padding: 12px 16px; font-size: 1rem; font-family: inherit; margin-bottom: 12px; text-align: center; letter-spacing: .1em; transition: border-color .2s; }
-  .admin-pw-input:focus { outline: none; border-color: var(--primary); }
-  .btn-admin-login { width: 100%; padding: 13px; border: none; border-radius: 10px; background: var(--primary); color: white; font-family: inherit; font-size: 1rem; font-weight: 700; cursor: pointer; }
-  .admin-pw-error { color: #C00000; font-size: 0.88rem; margin-top: 8px; min-height: 20px; }
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
-  .modal-overlay.open { display: flex; }
-  .modal-box { background: white; border-radius: 16px; padding: 32px 28px; width: 100%; max-width: 420px; box-shadow: 0 8px 40px rgba(0,0,0,0.2); }
-  .modal-box h3 { font-size: 1.15rem; font-weight: 700; color: #1F3864; margin-bottom: 6px; }
-  .modal-box p { font-size: 0.9rem; color: #888; margin-bottom: 20px; }
-  .modal-input { width: 100%; border: 2px solid #D0DCF0; border-radius: 10px; padding: 12px 16px; font-size: 1rem; font-family: inherit; margin-bottom: 14px; transition: border-color .2s; }
-  .modal-input:focus { outline: none; border-color: #1F3864; }
-  .modal-btns { display: flex; gap: 10px; }
-  .btn-modal-cancel { flex: 1; padding: 12px; border-radius: 8px; border: 2px solid #D0DCF0; background: white; color: #888; font-family: inherit; font-size: 0.95rem; font-weight: 600; cursor: pointer; }
-  .btn-modal-send { flex: 2; padding: 12px; border-radius: 8px; border: none; background: #1F3864; color: white; font-family: inherit; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: background .15s; }
-  .btn-modal-send:hover { background: #2E75B6; }
-  .btn-modal-send:disabled { background: #B0B8C8; cursor: not-allowed; }
-  .modal-status { font-size: 0.9rem; text-align: center; margin-top: 12px; min-height: 20px; }
-  .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); background: #1F3864; color: white; padding: 12px 28px; border-radius: 30px; font-size: 0.95rem; font-weight: 600; box-shadow: 0 4px 16px rgba(0,0,0,0.2); opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 999; }
-  .toast.show { opacity: 1; }
-  #screen-ad { padding: 0; }
-  #screen-ad.active { display: flex; flex-direction: column; min-height: 100vh; }
-  .ad-card { background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; }
-  .ad-footer { margin: 0 24px 20px; background: #F5F5F5; border: 1px solid #DDDDDD; border-radius: 8px; padding: 10px 14px; display: flex; flex-direction: column; gap: 3px; }
-  .ad-label { color: #888; font-size: 0.72rem; letter-spacing: .05em; }
-  .ad-disclosure { font-size: 0.78rem; color: #888; line-height: 1.5; }
-  .ad-image-wrap { width: 100%; position: relative; cursor: pointer; overflow: hidden; background: #f5f5f5; }
-  .ad-image-wrap img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block; transition: transform .3s; }
-  .ad-image-wrap:hover img { transform: scale(1.02); }
-  .ad-body { padding: 20px 24px 24px; }
-  .ad-title { font-size: 1.1rem; font-weight: 700; color: #1F3864; margin-bottom: 6px; line-height: 1.4; }
-  .ad-action-info { display: flex; align-items: flex-start; gap: 8px; background: #FFF5F5; border: 1px solid #FFD0D0; border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; font-size: 0.83rem; color: #C00000; line-height: 1.5; }
-  .ad-action-info .info-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
-  .btn-ad-link { width: 100%; padding: 15px; border: none; border-radius: 10px; background: #C4031C; color: white; font-family: inherit; font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: background .15s, transform .15s; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
-  .btn-ad-link:hover { background: #A50218; transform: translateY(-2px); }
-  .wait-screen { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 40px 24px; text-align: center; }
-  .wait-screen.active { display: flex; }
-  .wait-animals { font-size: 2.4rem; margin-bottom: 24px; animation: bounce 1.2s infinite; }
-  @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-  .wait-label { font-size: 1rem; color: #888; margin-bottom: 16px; font-weight: 500; }
-  .wait-number { font-size: 6rem; font-weight: 900; color: var(--primary); line-height: 1; margin-bottom: 12px; animation: pulse 1s infinite; }
-  @keyframes pulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.08); opacity: .85; } }
-  .wait-sub { font-size: 0.95rem; color: #AAA; margin-bottom: 32px; }
-  .wait-progress-wrap { width: 100%; max-width: 300px; height: 6px; background: #E0E7F0; border-radius: 4px; overflow: hidden; }
-  .wait-progress-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--primary), #2E75B6); transition: width 1s linear; }
-  .back-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(255,255,255,0.95); backdrop-filter: blur(8px); border-bottom: 1px solid #E0E7F0; padding: 10px 16px; }
-  .back-link { color: #1F3864; text-decoration: none; font-size: 0.9rem; font-weight: 600; }
-  .back-link:hover { color: #2E75B6; }
-  @media (max-width: 500px) { .score-grid, .detail-grid { grid-template-columns: 1fr; } .intro-banner { padding: 36px 20px 28px; } .intro-banner h1 { font-size: 1.4rem; } .q-text { padding: 18px 18px 14px; font-size: 1rem; } .options { padding: 0 10px 12px; } }
-  .result-category-chip { display: inline-block; background: rgba(255,255,255,0.22); border: 1.5px solid rgba(255,255,255,0.55); color: white; font-size: 0.8rem; font-weight: 700; padding: 4px 14px; border-radius: 20px; margin-bottom: 8px; letter-spacing: 0.02em; }
 </style>
 </head>
 <body>
@@ -351,147 +163,101 @@
   </div>
 </div>
 <script>
-const questions = [
-  { q: "상사로부터 새 프로젝트를 맡았을 때 나는?", opts: ["목표와 기한을 먼저 정하고 바로 실행한다","자료와 선행 사례를 꼼꼼히 조사하고 계획을 세운다","팀원들과 역할을 나누고 함께 진행한다","참신한 접근 방법을 먼저 구상해 본다"] },
-  { q: "직장 동료와 의견 충돌이 생겼을 때 나는?", opts: ["데이터와 근거를 들어 내 의견을 논리적으로 설명한다","서로 타협점을 찾으며 조율한다","단호하게 내 의견을 밀어붙인다","유머로 분위기를 풀고 대화를 이어간다"] },
-  { q: "마감 기한이 촉박할 때 나는?", opts: ["가장 중요한 것부터 처리하고 나머지는 과감히 줄인다","팀원에게 도움을 요청하고 역할을 나눈다","끝까지 완성도를 유지하기 위해 꼼꼼하게 마무리한다","에너지를 쥐어짜 창의적으로 빠르게 해결한다"] },
-  { q: "보고서를 작성할 때 나의 스타일은?", opts: ["핵심만 간결하게, 결론부터 쓴다","보기 좋게 구성하고 필요한 내용을 적당히 담는다","분량을 상황에 맞게 조절하고 읽기 편하게 쓴다","빠짐없이 근거와 데이터를 첨부해 완성도를 높인다"] },
-  { q: "팀장이나 리더가 된다면 어떤 스타일?", opts: ["비전을 제시하고 팀을 강하게 이끈다","팀원들의 의견을 모아 합의 기반으로 진행한다","체계적인 계획과 명확한 역할 분담으로 이끈다","자유로운 분위기를 만들어 창의성을 끌어낸다"] },
-  { q: "회사에서 갑자기 발표를 요청받으면?", opts: ["즉흥적으로도 잘 해낼 자신이 있다","짧게 핵심을 전달하고 자신 있게 한다","자료를 최대한 준비하고 철저히 연습한다","걱정되지만 동료들의 반응을 살피며 차분하게 한다"] },
-  { q: "업무 중 실수를 했을 때 나는?", opts: ["즉시 인정하고 빠르게 수습 방법을 찾는다","같은 실수가 반복되지 않도록 원인을 철저히 분석한다","주변에 영향을 줄까봐 먼저 알리고 사과한다","당황하지 않고 유연하게 상황을 수습한다"] },
-  { q: "직장에서 인정받고 싶은 모습은?", opts: ["탁월한 성과로 주목받는 것","창의적인 아이디어로 인정받는 것","팀의 화합을 이끄는 사람으로 알려지는 것","전문성과 꼼꼼함으로 신뢰받는 것"] },
-  { q: "새로운 아이디어를 제안할 때 나는?", opts: ["아이디어를 자유롭게 쏟아내고 토론을 유도한다","실현 가능성을 충분히 검토한 후 제안한다","팀원들이 공감할지 먼저 살펴본 후 제안한다","성과와 효과를 강조하며 강하게 밀어붙인다"] },
-  { q: "직장 내 분위기가 안 좋을 때 나는?", opts: ["직접적으로 문제를 파악하고 해결에 나선다","분위기를 풀 수 있도록 유머나 가벼운 대화를 시도한다","갈등의 원인이 무엇인지 조용히 분석한다","힘들어하는 동료를 먼저 챙기고 위로한다"] },
-  { q: "업무 중 가장 힘든 상황은?", opts: ["성과 없이 똑같은 일만 반복될 때","창의성을 발휘하지 못하고 틀에 갇혀 있을 때","동료들과의 관계가 틀어질 때","근거 없이 결정이 내려지거나 일이 대충 처리될 때"] },
-  { q: "야근을 해야 할 때 나는?", opts: ["효율적으로 처리해 야근을 최소화한다","팀원이 힘들면 함께 남아 돕는다","완성도를 위해 필요하다면 기꺼이 한다","야근도 나름 재미있게 만든다"] },
-  { q: "상사의 피드백을 받을 때 나는?", opts: ["바로 받아들이고 빠르게 수정한다","충분히 이해한 후 더 나은 방향으로 개선한다","감사히 받아들이며 관계를 소중히 여긴다","새로운 시각으로 재해석해 창의적으로 발전시킨다"] },
-  { q: "직장 동료에 대해 어떻게 생각하나?", opts: ["함께 성과를 낼 동반자","서로 돕고 배려하는 따뜻한 관계를 원한다","서로에게 배울 점이 있는 존재","에너지를 주고받는 활기찬 관계를 원한다"] },
-  { q: "업무에서 가장 중요한 것은?", opts: ["명확한 목표와 실행력","창의적인 아이디어와 새로운 시도","팀워크와 화합","정확성과 완성도"] },
-  { q: "회식 자리에서 나는?", opts: ["리드하며 분위기를 이끈다","다양한 사람들과 두루두루 어울린다","조용히 들으면서 필요한 사람 곁에 있어준다","적당히 어울리다 일찍 자리를 뜨는 편이다"] },
-  { q: "연봉 협상을 할 때 나는?", opts: ["내 성과를 강하게 어필하고 원하는 금액을 명확히 말한다","충분한 자료와 근거를 바탕으로 논리적으로 진행한다","회사 상황도 감안해 조율하며 진행한다","분위기를 파악하며 유연하게 대화한다"] },
-  { q: "직장에서 불합리한 일이 생겼을 때 나는?", opts: ["즉시 결정권자에게 직접 말한다","원인을 분석하고 개선안을 만들어 제안한다","동료들과 함께 의논하고 공감을 구한다","상황에 따라 유연하게 대처한다"] },
-  { q: "일이 잘 풀릴 때 가장 기분 좋은 것은?", opts: ["큰 성과를 달성했을 때","팀원들이 행복하게 일할 때","완벽하게 완성된 결과물을 볼 때","새로운 아이디어가 성공했을 때"] },
-  { q: "이상적인 직장 생활은?", opts: ["명확한 목표를 향해 빠르게 성장하는 환경","자유롭고 창의적으로 일할 수 있는 환경","좋은 동료들과 함께하는 따뜻한 조직","체계적이고 전문성을 키울 수 있는 환경"] }
-];
-const AD_CONFIG = {
-  image:   'https://thumbnail.coupangcdn.com/thumbnails/remote/492x492ex/image/vendor_inventory/9000/bdebac18f2de858ad4eb360b8e195ab0e50d69cee429dfb9d734dda81ffe.jpg',
-  link:    'https://link.coupang.com/a/dZh5anXH7Q',
-  title:   '지금 인기 상품을 확인해보세요!',
-  btnText: '상품 보고 결과 확인하기',
-};
-const CATEGORY_LABEL = '💼 직장 유형';
-const SCORE_MAP = [
-  ['사','부','양','카'],
-  ['부','양','사','카'],
-  ['사','양','부','카'],
-  ['사','카','양','부'],
-  ['사','양','부','카'],
-  ['카','사','부','양'],
-  ['사','부','양','카'],
-  ['사','카','양','부'],
-  ['카','부','양','사'],
-  ['사','카','부','양'],
-  ['사','카','양','부'],
-  ['사','양','부','카'],
-  ['사','부','양','카'],
-  ['사','양','부','카'],
-  ['사','카','양','부'],
-  ['사','카','양','부'],
-  ['사','부','양','카'],
-  ['사','부','양','카'],
-  ['사','양','부','카'],
-  ['사','카','양','부'],
-];
-const RESULTS = {
-  '카': {
-    emoji: '🦎', name: '카멜레온형', sub: '직장의 분위기를 이끄는 창의적 적응자',
-    color: '#1B6CA8', light: '#EBF5FB', mid: '#AED6F1',
-    desc: '직장에서 어떤 환경에도 유연하게 적응하며 다양한 동료들과 쉽게 어울립니다. 창의적인 아이디어와 표현력으로 회의를 활기차게 만들고 팀의 분위기 메이커 역할을 자처합니다. 변화하는 업무 환경에서 특히 빛을 발합니다.',
-    pros: ['팀 분위기를 살리는 사교성과 풍부한 표현력', '창의적인 아이디어로 새로운 돌파구 제시', '변화하는 업무 환경에 빠르게 적응', '다양한 부서·직원들과 원활한 협업 능력'],
-    cons: ['업무의 일관성과 마무리가 부족한 편', '여러 일을 동시에 진행하다 집중력이 분산됨', '감정 기복이 팀 분위기에 영향을 줄 수 있음', '세부 사항보다 큰 그림에만 집중하는 경향'],
-    tip: '💡 창의적인 아이디어를 실행 계획으로 연결하는 습관이 직장에서의 진정한 강점이 됩니다. 시작만큼 마무리도 중요해요.',
-    brief: '팀의 에너지를 높이는 창의형. 유연한 적응력과 아이디어로 활기를 만들어요. 변화에 강하고 협업에 능한 동료입니다.',
-    comm: ['자유롭고 유연한 분위기에서 대화하면 잘 통해요', '아이디어와 기여를 충분히 인정해 주세요', '세부 지시보다 큰 방향과 목표를 제시하는 게 효과적이에요'],
-    keywords: ['창의적', '유연한', '사교적']
-  },
-  '사': {
-    emoji: '🦁', name: '사자형', sub: '성과를 만드는 직장의 리더',
-    color: '#C00000', light: '#FFF0F0', mid: '#FDDEDE',
-    desc: '직장에서 강한 추진력과 결단력으로 목표를 향해 돌진합니다. 도전적인 프로젝트를 즐기고 결과 중심으로 팀을 이끄는 힘이 있습니다. 명확한 방향 제시와 빠른 실행으로 성과를 만들어냅니다.',
-    pros: ['강한 리더십과 목표 지향적 추진력', '빠른 결단과 실행으로 성과 창출', '도전적인 상황에서도 흔들리지 않는 용기', '명확한 방향 제시로 팀을 이끄는 능력'],
-    cons: ['동료의 감정과 속도를 배려하기 어려운 편', '독단적인 결정으로 팀의 공감을 잃을 수 있음', '직설적인 표현이 동료에게 상처가 되기도 함', '실수나 패배를 인정하기 어려워하는 경향'],
-    tip: '💡 결과만큼 팀원들의 과정과 감정도 중요합니다. 배려하는 리더십이 더 큰 성과와 신뢰로 이어집니다.',
-    brief: '목표를 향해 돌진하는 리더형. 강한 추진력과 결단력으로 성과를 만들어요. 도전을 즐기고 팀을 이끄는 힘이 있습니다.',
-    comm: ['결론부터 간결하게 말하면 효과적이에요', '성과와 기여를 명확히 인정해 주면 관계가 좋아져요', '의견 충돌 시 근거와 데이터를 명확히 제시하세요'],
-    keywords: ['주도적', '결단력', '성과지향']
-  },
-  '양': {
-    emoji: '🐑', name: '양형', sub: '팀을 하나로 묶는 직장의 따뜻한 연결고리',
-    color: '#2E8B2E', light: '#F0FFF4', mid: '#A9DFBF',
-    desc: '직장에서 따뜻한 배려와 공감으로 팀을 하나로 묶는 역할을 합니다. 동료 간 갈등을 중재하고 안정적인 팀 분위기를 만드는 데 탁월합니다. 신뢰를 바탕으로 오래도록 함께하는 든든한 동료입니다.',
-    pros: ['팀 화합을 이끄는 배려와 공감 능력', '갈등 중재와 안정적인 분위기 조성', '신뢰할 수 있는 든든한 팀원', '동료의 상황을 먼저 챙기는 따뜻함'],
-    cons: ['거절하지 못해 업무를 다 떠안는 경향', '자기 의견을 표현하지 못해 손해를 보기도 함', '갈등 회피로 중요한 문제가 방치되기도 함', '쌓인 불만이 한꺼번에 폭발하는 패턴'],
-    tip: '💡 직장에서 "아니오"라고 말하는 것도 팀을 위한 배려입니다. 자신의 업무 범위와 한계를 명확히 표현해 보세요.',
-    brief: '팀을 하나로 묶는 배려형. 따뜻한 공감으로 팀 분위기를 안정시켜요. 신뢰할 수 있는 든든한 동료입니다.',
-    comm: ['충분히 경청하고 감정을 먼저 공감해 주세요', '강요보다 부드럽게 제안하는 방식이 효과적이에요', '팀 기여와 노력을 진심으로 인정해 표현해 주세요'],
-    keywords: ['배려심', '화합', '신뢰감']
-  },
-  '부': {
-    emoji: '🦉', name: '부엉이형', sub: '꼼꼼한 분석으로 팀의 완성도를 높이는 전문가',
-    color: '#E07B20', light: '#FFF8F0', mid: '#FAD7A0',
-    desc: '직장에서 꼼꼼한 분석과 논리적 사고로 최선의 결과를 만들어냅니다. 완벽을 추구하며 체계적으로 계획하고 실행하는 전문가입니다. 신뢰할 수 있는 정보와 근거를 바탕으로 팀의 오류를 방지하고 품질을 높입니다.',
-    pros: ['뛰어난 분석력과 꼼꼼한 완벽주의', '체계적인 계획과 철저한 실행력', '신뢰할 수 있는 전문성과 품질 관리', '근거 기반 의사결정으로 리스크 최소화'],
-    cons: ['완벽주의로 인한 결정 지연과 업무 병목', '감정 표현이 적어 동료에게 차갑게 오해받기도 함', '즉흥적 변화와 빠른 업무 전환에 적응하기 어려움', '기준이 높아 팀원들에게 부담을 줄 수 있음'],
-    tip: '💡 완벽한 결과보다 80%의 완성으로 빠르게 피드백을 받는 것이 직장에서 더 효과적일 때가 많습니다. 속도와 완성도의 균형을 찾아보세요.',
-    brief: '깊이 분석하는 전문가형. 꼼꼼한 분석과 논리로 팀의 완성도를 높여요. 체계적이고 신뢰할 수 있는 동료입니다.',
-    comm: ['근거와 데이터를 함께 제시하면 신뢰를 얻어요', '생각할 시간과 충분한 정보를 먼저 주세요', '즉흥 결정보다 미리 공유해 준비할 수 있게 해주세요'],
-    keywords: ['분석적', '꼼꼼한', '전문적']
+const QUIZ_DATA = {
+  CATEGORY_LABEL: '💼 직장 유형',
+  SESSION_KEY: 'quiz_state_직장',
+  questions: [
+    { q: "상사로부터 새 프로젝트를 맡았을 때 나는?", opts: ["목표와 기한을 먼저 정하고 바로 실행한다","참신한 접근 방법을 먼저 구상해 본다","팀원들과 역할을 나누고 함께 진행한다","자료와 선행 사례를 꼼꼼히 조사하고 계획을 세운다"] },
+    { q: "직장 동료와 의견 충돌이 생겼을 때 나는?", opts: ["유머로 분위기를 풀고 대화를 이어간다","서로 타협점을 찾으며 조율한다","데이터와 근거를 들어 내 의견을 논리적으로 설명한다","단호하게 내 의견을 밀어붙인다"] },
+    { q: "마감 기한이 촉박할 때 나는?", opts: ["팀원에게 도움을 요청하고 역할을 나눈다","끝까지 완성도를 유지하기 위해 꼼꼼하게 마무리한다","가장 중요한 것부터 처리하고 나머지는 과감히 줄인다","에너지를 쥐어짜 창의적으로 빠르게 해결한다"] },
+    { q: "보고서를 작성할 때 나의 스타일은?", opts: ["빠짐없이 근거와 데이터를 첨부해 완성도를 높인다","핵심만 간결하게, 결론부터 쓴다","보기 좋게 구성하고 필요한 내용을 적당히 담는다","분량을 상황에 맞게 조절하고 읽기 편하게 쓴다"] },
+    { q: "팀장이나 리더가 된다면 어떤 스타일?", opts: ["비전을 제시하고 팀을 강하게 이끈다","자유로운 분위기를 만들어 창의성을 끌어낸다","팀원들의 의견을 모아 합의 기반으로 진행한다","체계적인 계획과 명확한 역할 분담으로 이끈다"] },
+    { q: "회사에서 갑자기 발표를 요청받으면?", opts: ["즉흥적으로도 잘 해낼 자신이 있다","걱정되지만 동료들의 반응을 살피며 차분하게 한다","자료를 최대한 준비하고 철저히 연습한다","짧게 핵심을 전달하고 자신 있게 한다"] },
+    { q: "업무 중 실수를 했을 때 나는?", opts: ["주변에 영향을 줄까봐 먼저 알리고 사과한다","같은 실수가 반복되지 않도록 원인을 철저히 분석한다","즉시 인정하고 빠르게 수습 방법을 찾는다","당황하지 않고 유연하게 상황을 수습한다"] },
+    { q: "직장에서 인정받고 싶은 모습은?", opts: ["전문성과 꼼꼼함으로 신뢰받는 것","탁월한 성과로 주목받는 것","창의적인 아이디어로 인정받는 것","팀의 화합을 이끄는 사람으로 알려지는 것"] },
+    { q: "새로운 아이디어를 제안할 때 나는?", opts: ["성과와 효과를 강조하며 강하게 밀어붙인다","아이디어를 자유롭게 쏟아내고 토론을 유도한다","팀원들이 공감할지 먼저 살펴본 후 제안한다","실현 가능성을 충분히 검토한 후 제안한다"] },
+    { q: "직장 내 분위기가 안 좋을 때 나는?", opts: ["분위기를 풀 수 있도록 유머나 가벼운 대화를 시도한다","힘들어하는 동료를 먼저 챙기고 위로한다","갈등의 원인이 무엇인지 조용히 분석한다","직접적으로 문제를 파악하고 해결에 나선다"] },
+    { q: "업무 중 가장 힘든 상황은?", opts: ["동료들과의 관계가 틀어질 때","근거 없이 결정이 내려지거나 일이 대충 처리될 때","성과 없이 똑같은 일만 반복될 때","창의성을 발휘하지 못하고 틀에 갇혀 있을 때"] },
+    { q: "야근을 해야 할 때 나는?", opts: ["완성도를 위해 필요하다면 기꺼이 한다","효율적으로 처리해 야근을 최소화한다","야근도 나름 재미있게 만든다","팀원이 힘들면 함께 남아 돕는다"] },
+    { q: "상사의 피드백을 받을 때 나는?", opts: ["수긍할 부분만 빠르게 인정하고 결과로 보여준다","새로운 시각으로 재해석해 창의적으로 발전시킨다","감사히 받아들이며 관계를 소중히 여긴다","충분히 이해한 후 더 나은 방향으로 개선한다"] },
+    { q: "신입 동료가 들어왔을 때 나는?", opts: ["재미있는 농담과 가벼운 대화로 자연스럽게 친해진다","필요한 것을 챙겨주고 따뜻하게 환영해준다","필요한 자료와 매뉴얼을 정리해 전달한다","먼저 다가가 업무 흐름을 빠르게 알려주고 적응을 돕는다"] },
+    { q: "업무에서 가장 중요한 것은?", opts: ["팀워크와 화합","정확성과 완성도","명확한 목표와 실행력","창의적인 아이디어와 새로운 시도"] },
+    { q: "회식 자리에서 나는?", opts: ["적당히 어울리다 일찍 자리를 뜨는 편이다","리드하며 분위기를 이끈다","다양한 사람들과 두루두루 어울린다","조용히 들으면서 필요한 사람 곁에 있어준다"] },
+    { q: "연봉 협상을 할 때 나는?", opts: ["내 성과를 강하게 어필하고 원하는 금액을 명확히 말한다","분위기를 파악하며 유연하게 대화한다","회사 상황도 감안해 조율하며 진행한다","충분한 자료와 근거를 바탕으로 논리적으로 진행한다"] },
+    { q: "직장에서 불합리한 일이 생겼을 때 나는?", opts: ["상황에 따라 유연하게 대처한다","동료들과 함께 의논하고 공감을 구한다","원인을 분석하고 개선안을 만들어 제안한다","즉시 결정권자에게 직접 말한다"] },
+    { q: "일이 잘 풀릴 때 가장 기분 좋은 것은?", opts: ["팀원들이 행복하게 일할 때","완벽하게 완성된 결과물을 볼 때","큰 성과를 달성했을 때","새로운 아이디어가 성공했을 때"] },
+    { q: "이상적인 직장 생활은?", opts: ["체계적이고 전문성을 키울 수 있는 환경","명확한 목표를 향해 빠르게 성장하는 환경","자유롭고 창의적으로 일할 수 있는 환경","좋은 동료들과 함께하는 따뜻한 조직"] }
+  ],
+  SCORE_MAP: [
+    ['사','카','양','부'],
+    ['카','양','부','사'],
+    ['양','부','사','카'],
+    ['부','사','카','양'],
+    ['사','카','양','부'],
+    ['카','양','부','사'],
+    ['양','부','사','카'],
+    ['부','사','카','양'],
+    ['사','카','양','부'],
+    ['카','양','부','사'],
+    ['양','부','사','카'],
+    ['부','사','카','양'],
+    ['사','카','양','부'],
+    ['카','양','부','사'],
+    ['양','부','사','카'],
+    ['부','사','카','양'],
+    ['사','카','양','부'],
+    ['카','양','부','사'],
+    ['양','부','사','카'],
+    ['부','사','카','양'],
+  ],
+  RESULTS: {
+    '카': {
+      emoji: '🦎', name: '카멜레온형', sub: '정체된 흐름을 다시 굴리는 사람',
+      color: '#1B6CA8', light: '#EBF5FB', mid: '#AED6F1',
+      desc: '낯선 팀, 새로운 클라이언트, 갑작스러운 조직 개편에도 빠르게 적응합니다. 회의가 막힐 때 엉뚱한 한 마디로 흐름을 바꾸고, 부서 간 경계를 넘어 사람을 연결합니다.',
+      pros: ['팀 분위기를 살리는 사교성과 풍부한 표현력', '창의적인 아이디어로 새로운 돌파구 제시', '변화하는 업무 환경에 빠르게 적응', '다양한 부서·직원들과 원활한 협업 능력'],
+      cons: ['업무의 일관성과 마무리가 부족한 편', '여러 일을 동시에 진행하다 집중력이 분산됨', '그날 컨디션에 따라 업무 몰입도 편차가 큰 편', '세부 사항보다 큰 그림에만 집중하는 경향'],
+      tip: '💡 아이디어 회의 직후 5분만 더 써서 다음 액션과 담당자를 못 박아 두세요. 말한 것이 한 일로 남는 순간 평가가 달라집니다.',
+      brief: '팀의 에너지를 높이는 창의형. 유연한 적응력과 아이디어로 활기를 만들어요. 변화에 강하고 협업에 능한 동료입니다.',
+      comm: ['자유롭고 유연한 분위기에서 대화하면 잘 통해요', '아이디어와 기여를 충분히 인정해 주세요', '세부 지시보다 큰 방향과 목표를 제시하는 게 효과적이에요'],
+      keywords: ['창의적', '유연한', '사교적']
+    },
+    '사': {
+      emoji: '🦁', name: '사자형', sub: '성과를 만드는 직장의 리더',
+      color: '#C00000', light: '#FFF0F0', mid: '#FDDEDE',
+      desc: '직장에서 강한 추진력과 결단력으로 목표를 향해 돌진합니다. 도전적인 프로젝트를 즐기고 결과 중심으로 팀을 이끄는 힘이 있습니다. 명확한 방향 제시와 빠른 실행으로 성과를 만들어냅니다.',
+      pros: ['강한 리더십과 목표 지향적 추진력', '빠른 결단과 실행으로 성과 창출', '도전적인 상황에서도 흔들리지 않는 용기', '위기 상황에서도 빠르게 판단하는 결정력'],
+      cons: ['동료의 감정과 속도를 배려하기 어려운 편', '독단적인 결정으로 팀의 공감을 잃을 수 있음', '직설적인 표현이 동료에게 상처가 되기도 함', '실수나 패배를 인정하기 어려워하는 경향'],
+      tip: '💡 결과만큼 팀원들의 과정과 감정도 중요합니다. 배려하는 리더십이 더 큰 성과와 신뢰로 이어집니다.',
+      brief: '회의실에서 가장 먼저 결론을 내는 사람. 결과로 말하는 리더형.',
+      comm: ['결론부터 간결하게 말하면 효과적이에요', '성과와 기여를 명확히 인정해 주면 관계가 좋아져요', '의견 충돌 시 근거와 데이터를 명확히 제시하세요'],
+      keywords: ['주도적', '결단력', '성과지향']
+    },
+    '양': {
+      emoji: '🐑', name: '양형', sub: '팀을 하나로 묶는 따뜻한 중재자',
+      color: '#2E8B2E', light: '#F0FFF4', mid: '#A9DFBF',
+      desc: '팀이 흔들릴 때 가장 먼저 분위기를 챙기는 사람. 갈등이 생기면 누구의 편도 아닌 자리에서 가장 부드러운 해법을 찾아냅니다. 사람들이 당신 옆에서 편안함을 느끼는 이유입니다.',
+      pros: ['팀 화합을 이끄는 배려와 공감 능력', '갈등 중재와 안정적인 분위기 조성', '신뢰할 수 있는 든든한 팀원', '동료의 상황을 먼저 챙기는 따뜻함'],
+      cons: ['거절하지 못해 업무를 다 떠안는 경향', '자기 의견을 표현하지 못해 손해를 보기도 함', '공로를 드러내지 않아 평가에서 손해 보기도 함', '참다가 한순간에 폭발해 평소 이미지와 달라 보일 때가 있음'],
+      tip: '💡 직장에서 "아니오"라고 말하는 것도 팀을 위한 배려입니다. 자신의 업무 범위와 한계를 명확히 표현해 보세요.',
+      brief: '팀을 하나로 묶는 배려형. 따뜻한 공감으로 팀 분위기를 안정시켜요. 신뢰할 수 있는 든든한 동료입니다.',
+      comm: ['충분히 경청하고 감정을 먼저 공감해 주세요', '강요보다 부드럽게 제안하는 방식이 효과적이에요', '팀 기여와 노력을 진심으로 인정해 표현해 주세요'],
+      keywords: ['배려심', '화합', '신뢰감']
+    },
+    '부': {
+      emoji: '🦉', name: '부엉이형', sub: '디테일로 팀의 완성도를 끌어올리는 전문가',
+      color: '#E07B20', light: '#FFF8F0', mid: '#FAD7A0',
+      desc: '결정 전 한 번 더 검토하는 사람. 표면 아래 숨겨진 리스크를 먼저 발견하고, 흔들리지 않는 결론을 만들어 팀의 신뢰를 얻습니다. 당신의 한 마디는 가장 늦지만 가장 정확합니다.',
+      pros: ['디테일을 놓치지 않는 꼼꼼함과 정확성', '체계적인 계획과 철저한 실행력', '신뢰할 수 있는 전문성과 품질 관리', '근거 기반 의사결정으로 리스크 최소화'],
+      cons: ['완벽주의로 인한 결정 지연과 업무 병목', '감정 표현이 적어 동료에게 차갑게 오해받기도 함', '즉흥적 변화와 빠른 업무 전환에 적응하기 어려움', '기준이 높아 팀원들에게 부담을 줄 수 있음'],
+      tip: '💡 완벽한 결과보다 80%의 완성으로 빠르게 피드백을 받는 것이 직장에서 더 효과적일 때가 많습니다. 속도와 완성도의 균형을 찾아보세요.',
+      brief: '깊이 분석하는 전문가형. 꼼꼼한 분석과 논리로 팀의 완성도를 높여요. 체계적이고 신뢰할 수 있는 동료입니다.',
+      comm: ['근거와 데이터를 함께 제시하면 신뢰를 얻어요', '생각할 시간과 충분한 정보를 먼저 주세요', '즉흥 결정보다 미리 공유해 준비할 수 있게 해주세요'],
+      keywords: ['분석적', '꼼꼼한', '전문적']
+    }
   }
 };
-let current = 0, answers = Array.from({length: 20}, () => []), userName = '', currentTop = '', currentScores = {};
-function saveSession(extra) { try { sessionStorage.setItem('quiz_state_직장', JSON.stringify(Object.assign({ current, answers, userName }, extra))); } catch(e) {} }
-function clearSession() { try { sessionStorage.removeItem('quiz_state_직장'); } catch(e) {} }
-function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo(0, 0); }
-function startTest() { const nameVal = document.getElementById('user-name').value.trim(); if (!nameVal) { const errEl = document.getElementById('name-error'); errEl.style.display = 'block'; document.getElementById('user-name').focus(); return; } userName = nameVal; saveSession(); showScreen('screen-question'); renderQ(); }
-function renderQ() { const q = questions[current]; const total = questions.length; const sel = answers[current]; document.getElementById('q-counter').textContent = `${current+1} / ${total}`; document.getElementById('q-num-bar').textContent = `Q${String(current+1).padStart(2,'0')}`; document.getElementById('q-text').textContent = q.q; document.getElementById('progress-fill').style.width = `${((current+1)/total)*100}%`; const opts = document.getElementById('options'); opts.innerHTML = ''; q.opts.forEach((txt, i) => { const btn = document.createElement('button'); const isSelected = sel.includes(i); const isDimmed = !isSelected && sel.length >= 2; btn.className = 'option-btn' + (isSelected ? ' selected' : '') + (isDimmed ? ' dimmed' : ''); btn.innerHTML = `<span class="option-label">${['A','B','C','D'][i]}</span><span>${txt}</span>`; btn.onclick = () => selectOpt(i); opts.appendChild(btn); }); updateSelCount(); document.getElementById('btn-prev').style.visibility = current === 0 ? 'hidden' : 'visible'; document.getElementById('btn-next').style.display = current < total-1 ? 'block' : 'none'; document.getElementById('btn-next').disabled = sel.length === 0; document.getElementById('btn-submit').style.display = current === total-1 ? 'block' : 'none'; document.getElementById('btn-submit').disabled = sel.length === 0; }
-function updateSelCount() { const count = answers[current].length; const el = document.getElementById('sel-count'); el.textContent = `${count} / 2`; el.classList.toggle('full', count >= 2); }
-function selectOpt(i) { const sel = answers[current]; const idx = sel.indexOf(i); if (idx > -1) { sel.splice(idx, 1); } else if (sel.length < 2) { sel.push(i); } else { return; } document.querySelectorAll('.option-btn').forEach((btn, idx) => { const isSelected = sel.includes(idx); const isDimmed = !isSelected && sel.length >= 2; btn.classList.toggle('selected', isSelected); btn.classList.toggle('dimmed', isDimmed); }); updateSelCount(); saveSession(); const hasAny = sel.length > 0; document.getElementById('btn-next').disabled = !hasAny; document.getElementById('btn-submit').disabled = !hasAny; }
-function nextQ() { if (answers[current].length === 0) return; current++; saveSession(); renderQ(); }
-function prevQ() { if (current > 0) { current--; saveSession(); renderQ(); } }
-let pendingScores = null, adTimer = null;
-function submitTest() { if (answers[current].length === 0) return; const scores = { '카':0, '사':0, '양':0, '부':0 }; answers.forEach((sel, i) => { sel.forEach(ans => { scores[SCORE_MAP[i][ans]] += 0.5; }); }); pendingScores = scores; showAd(); }
-function showAd() { document.getElementById('ad-content').style.display = ''; document.getElementById('wait-screen').classList.remove('active'); const adImg = document.getElementById('ad-img'); const adWrap = document.getElementById('ad-image-wrap'); if (AD_CONFIG.image) { adImg.src = AD_CONFIG.image; adWrap.style.display = ''; adWrap.onclick = adLinkClick; } else { adWrap.style.display = 'none'; } document.getElementById('ad-title').textContent = AD_CONFIG.title; document.getElementById('ad-btn-text').textContent = AD_CONFIG.btnText; adTimer = null; saveSession({ screen: 'ad', scores: pendingScores }); showScreen('screen-ad'); }
-function adLinkClick() { saveSession({ screen: 'ad', scores: pendingScores, adClicked: true }); window.open(AD_CONFIG.link, '_blank', 'noopener,noreferrer'); document.getElementById('ad-content').style.display = 'none'; const waitScreen = document.getElementById('wait-screen'); waitScreen.classList.add('active'); const WAIT = 10; let remain = WAIT; document.getElementById('wait-number').textContent = remain; document.getElementById('wait-progress').style.width = '100%'; adTimer = setInterval(() => { remain--; document.getElementById('wait-number').textContent = remain; document.getElementById('wait-progress').style.width = `${(remain / WAIT) * 100}%`; if (remain <= 0) { clearInterval(adTimer); adTimer = null; waitScreen.classList.remove('active'); showResult(pendingScores); } }, 1000); }
-function encodeResult(name, top, scores) { const data = { n: name, t: top, s: scores }; return btoa(unescape(encodeURIComponent(JSON.stringify(data)))); }
-function decodeResult(encoded) { try { return JSON.parse(decodeURIComponent(escape(atob(encoded)))); } catch(e) { return null; } }
-function showResult(scores) { clearSession(); const total = Object.values(scores).reduce((a, b) => a + b, 0); const sorted = ['카','사','양','부'].sort((a, b) => scores[b] - scores[a]); const top = sorted[0]; const second = sorted[1]; const pcts = {}; if (total > 0) { let sum = 0; ['카','사','양','부'].forEach(k => { pcts[k] = Math.floor(scores[k] / total * 100); sum += pcts[k]; }); const remainder = 100 - sum; const keys = ['카','사','양','부'].sort((a, b) => (scores[b] / total * 100 - Math.floor(scores[b] / total * 100)) - (scores[a] / total * 100 - Math.floor(scores[a] / total * 100))); for (let i = 0; i < remainder; i++) pcts[keys[i]]++; } else { ['카','사','양','부'].forEach(k => { pcts[k] = 0; }); } currentTop = top; currentScores = scores; const r = RESULTS[top]; const r2 = RESULTS[second]; const encoded = encodeResult(userName, top, scores); history.pushState(null, '', location.pathname + '?r=' + encoded); const banner = document.getElementById('result-banner'); banner.style.background = `linear-gradient(135deg, ${r.color} 0%, ${r.mid} 100%)`; banner.style.color = 'white'; document.getElementById('result-name').textContent = `${userName}님의 결과`;
-  document.getElementById('result-category-chip').textContent = CATEGORY_LABEL; document.getElementById('result-emoji').textContent = r.emoji; document.getElementById('result-type').textContent = r.name; document.getElementById('result-keywords').innerHTML = r.keywords.map(k => `<span class="kw-tag">#${k}</span>`).join(''); document.getElementById('result-sub').textContent = `「${r.sub}」`; document.getElementById('type-tags').innerHTML = `<div class="type-tag main-tag"><span class="tag-label">주 유형</span><span class="tag-animal">${r.emoji} ${r.name}</span><span class="tag-pct">${pcts[top]}%</span></div><div class="type-tag sub-tag"><span class="tag-label">부 유형</span><span class="tag-animal">${r2.emoji} ${r2.name}</span><span class="tag-pct">${pcts[second]}%</span></div>`; const sg = document.getElementById('score-grid'); sg.innerHTML = ''; ['카','사','양','부'].forEach(ak => { const rv = RESULTS[ak]; const isTop = (ak === top); const isSecond = (ak === second); const border = isTop ? rv.color : (isSecond ? rv.color + '88' : '#eee'); sg.innerHTML += `<div class="score-item" style="background:${rv.light};border:2px solid ${border}"><div class="score-item-top"><span class="s-label" style="color:${rv.color}">${rv.emoji} ${rv.name}</span><div class="s-bar-wrap"><div class="score-bar" style="background:#E0E0E0"><div class="score-bar-fill" style="width:${pcts[ak]}%;background:${rv.color}"></div></div></div><span class="s-num" style="color:${rv.color}">${pcts[ak]}%</span></div></div>`; }); document.getElementById('result-desc').textContent = r.desc; const dg = document.getElementById('detail-grid'); dg.innerHTML = `<div class="detail-box" style="background:${r.light};border:1.5px solid ${r.mid}"><h4 style="color:${r.color}">✅ 주요 강점</h4><ul>${r.pros.map(p=>`<li>${p}</li>`).join('')}</ul></div><div class="detail-box" style="background:#FFF8F8;border:1.5px solid #FFD0D0"><h4 style="color:#C00000">⚠️ 성장 포인트</h4><ul>${r.cons.map(c=>`<li>${c}</li>`).join('')}</ul></div>`; document.getElementById('tip-box').innerHTML = r.tip; const others = ['카','사','양','부'].filter(k => k !== top); const os = document.getElementById('other-section'); os.innerHTML = `<h3>🤝 다른 유형과 소통하는 법</h3><div class="other-cards">` + others.map(k => { const ov = RESULTS[k]; return `<div class="other-card"><div class="other-card-header" style="background:${ov.light}"><span class="o-emoji">${ov.emoji}</span><div><div class="o-name" style="color:${ov.color}">${ov.name}</div><div class="o-kw-row">${ov.keywords.map(k=>`<span class="o-kw-tag" style="color:${ov.color};border-color:${ov.color}40">${k}</span>`).join('')}</div><div class="o-brief">${ov.brief}</div></div></div><div class="other-card-body"><div class="comm-title">💬 이렇게 소통하세요</div><ul>${ov.comm.map(c => `<li>${c}</li>`).join('')}</ul></div></div>`; }).join('') + `</div>`; showScreen('screen-result'); }
-function retryTest() { current = 0; answers = Array.from({length: 20}, () => []); currentTop = ''; currentScores = {}; clearSession(); history.pushState(null, '', location.pathname); showScreen('screen-intro'); }
-function copyResultLink() { const url = location.href; const updateBtns = () => { showToast('✅ 링크가 복사됐어요!'); ['btn-share-link', 'btn-share-link-top'].forEach(id => { const btn = document.getElementById(id); if (btn) { btn.textContent = '✅ 복사됨!'; setTimeout(() => { btn.textContent = '🔗 링크 복사'; }, 2500); } }); }; navigator.clipboard.writeText(url).then(updateBtns).catch(() => { const ta = document.createElement('textarea'); ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); updateBtns(); }); }
-const EJS_PUBLIC_KEY = 'hKIxH-TLR18w4HQun', EJS_SERVICE_ID = 'service_0moj8bs', EJS_TEMPLATE_ID = 'template_9buriby';
-emailjs.init(EJS_PUBLIC_KEY);
-function sendEmail() { document.getElementById('email-input').value = ''; document.getElementById('modal-status').textContent = ''; document.getElementById('btn-modal-send').disabled = false; document.getElementById('btn-modal-send').textContent = '📨 보내기'; document.getElementById('email-modal').classList.add('open'); setTimeout(() => document.getElementById('email-input').focus(), 100); }
-function closeEmailModal() { document.getElementById('email-modal').classList.remove('open'); }
-function doSendEmail() { const toEmail = document.getElementById('email-input').value.trim(); if (!toEmail || !toEmail.includes('@')) { document.getElementById('modal-status').innerHTML = '<span style="color:#C00000">올바른 이메일 주소를 입력해주세요.</span>'; return; } const r = RESULTS[currentTop]; const total = Object.values(currentScores).reduce((a, b) => a + b, 0); const sorted = ['카','사','양','부'].sort((a,b) => currentScores[b] - currentScores[a]); const scoreLines = sorted.map(k => { const pct = total > 0 ? Math.round(currentScores[k] / total * 100) : 0; const mark = k === sorted[0] ? ' ★주' : (k === sorted[1] ? ' ☆부' : ''); return `${RESULTS[k].emoji} ${RESULTS[k].name}: ${pct}%${mark}`; }).join('\n'); const btn = document.getElementById('btn-modal-send'); btn.disabled = true; btn.textContent = '전송 중...'; document.getElementById('modal-status').textContent = ''; emailjs.send(EJS_SERVICE_ID, EJS_TEMPLATE_ID, { to_email: toEmail, user_name: userName, animal_type: r.name, animal_emoji: r.emoji, animal_sub: r.sub, scores: scoreLines, result_link: location.href }).then(() => { document.getElementById('modal-status').innerHTML = '✅ <span style="color:#2E8B2E">이메일이 성공적으로 전송됐어요!</span>'; btn.textContent = '✅ 전송 완료'; setTimeout(() => closeEmailModal(), 2000); }).catch((err) => { document.getElementById('modal-status').innerHTML = '<span style="color:#C00000">전송 실패. 잠시 후 다시 시도해주세요.</span>'; btn.disabled = false; btn.textContent = '📨 보내기'; console.error('EmailJS error:', err); }); }
-function showToast(msg) { let toast = document.getElementById('toast'); if (!toast) { toast = document.createElement('div'); toast.id = 'toast'; toast.className = 'toast'; document.body.appendChild(toast); } toast.textContent = msg; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2500); }
-const DEFAULT_ADMIN_PW = '4animal';
-function loadAdConfig() { try { const saved = localStorage.getItem('ad_config'); if (saved) Object.assign(AD_CONFIG, JSON.parse(saved)); } catch(e) {} }
-let uploadedImageBase64 = null;
-function handleImgUpload(e) { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(ev) { uploadedImageBase64 = ev.target.result; const preview = document.getElementById('img-preview'); preview.src = uploadedImageBase64; preview.style.display = 'block'; document.getElementById('upload-label-text').textContent = file.name; document.getElementById('cfg-image').value = ''; }; reader.readAsDataURL(file); }
-function openAdmin() { uploadedImageBase64 = null; document.getElementById('admin-pw-input').value = ''; document.getElementById('admin-pw-error').textContent = ''; document.getElementById('admin-pw-screen').style.display = ''; document.getElementById('admin-settings-screen').style.display = 'none'; document.getElementById('admin-overlay').classList.add('open'); setTimeout(() => document.getElementById('admin-pw-input').focus(), 100); }
-function closeAdmin() { document.getElementById('admin-overlay').classList.remove('open'); }
-function adminLogin() { const pw = document.getElementById('admin-pw-input').value; const stored = localStorage.getItem('admin_pw') || DEFAULT_ADMIN_PW; if (pw === stored) { document.getElementById('admin-pw-screen').style.display = 'none'; document.getElementById('admin-settings-screen').style.display = ''; document.getElementById('admin-save-msg').textContent = ''; const currentImg = AD_CONFIG.image || ''; const preview = document.getElementById('img-preview'); if (currentImg) { preview.src = currentImg; preview.style.display = 'block'; document.getElementById('upload-label-text').textContent = currentImg.startsWith('data:') ? '업로드된 이미지' : '현재 이미지'; document.getElementById('cfg-image').value = currentImg.startsWith('data:') ? '' : currentImg; } else { preview.style.display = 'none'; document.getElementById('upload-label-text').textContent = '클릭해서 이미지 파일 업로드'; document.getElementById('cfg-image').value = ''; } document.getElementById('cfg-link').value = AD_CONFIG.link || ''; document.getElementById('cfg-title').value = AD_CONFIG.title || ''; document.getElementById('cfg-btntext').value = AD_CONFIG.btnText || ''; document.getElementById('cfg-newpw').value = ''; document.getElementById('cfg-newpw2').value = ''; document.getElementById('cfg-img-file').value = ''; } else { const err = document.getElementById('admin-pw-error'); err.textContent = '비밀번호가 틀렸어요.'; document.getElementById('admin-pw-input').value = ''; document.getElementById('admin-pw-input').focus(); setTimeout(() => { err.textContent = ''; }, 2500); } }
-function saveAdminSettings() { const newpw = document.getElementById('cfg-newpw').value.trim(); const newpw2 = document.getElementById('cfg-newpw2').value.trim(); const msg = document.getElementById('admin-save-msg'); if (newpw || newpw2) { if (newpw !== newpw2) { msg.innerHTML = '<span style="color:#C00000">비밀번호가 일치하지 않아요.</span>'; return; } if (newpw.length < 4) { msg.innerHTML = '<span style="color:#C00000">비밀번호는 4자리 이상이어야 해요.</span>'; return; } localStorage.setItem('admin_pw', newpw); } AD_CONFIG.image = uploadedImageBase64 || document.getElementById('cfg-image').value.trim(); AD_CONFIG.link = document.getElementById('cfg-link').value.trim(); AD_CONFIG.title = document.getElementById('cfg-title').value.trim() || '지금 인기 상품을 확인해보세요!'; AD_CONFIG.btnText = document.getElementById('cfg-btntext').value.trim() || '상품 보고 결과 확인하기'; localStorage.setItem('ad_config', JSON.stringify({ image: AD_CONFIG.image, link: AD_CONFIG.link, title: AD_CONFIG.title, btnText: AD_CONFIG.btnText })); msg.innerHTML = '✅ <span style="color:#2E8B2E">저장됐어요!</span>'; setTimeout(() => { msg.textContent = ''; closeAdmin(); }, 1500); }
-window.addEventListener('DOMContentLoaded', () => {
-  loadAdConfig();
-  const params = new URLSearchParams(location.search);
-  const encoded = params.get('r');
-  if (encoded) { const data = decodeResult(encoded); if (data && data.n && data.t && data.s) { userName = data.n; currentTop = data.t; currentScores = data.s; showResult(data.s); return; } }
-  try {
-    const saved = sessionStorage.getItem('quiz_state_직장');
-    if (saved) { const state = JSON.parse(saved); if (!state) return; userName = state.userName || '익명'; document.getElementById('user-name').value = userName; if (state.screen === 'ad' && state.scores) { current = state.current; answers = state.answers || Array.from({length:20}, () => []); pendingScores = state.scores; if (state.adClicked) { showResult(pendingScores); } else { showAd(); } return; } if (typeof state.current === 'number' && Array.isArray(state.answers)) { current = state.current; answers = state.answers; showScreen('screen-question'); renderQ(); } }
-  } catch(e) {}
-});
 </script>
+<script src="shared.js"></script>
 </body>
 </html>
