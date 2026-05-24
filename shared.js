@@ -95,6 +95,7 @@ function showResult(scores) { clearSession(); const total = Object.values(scores
   }
   injectShareImgButtons();
   injectResultRecommendBtn();
+  recordResultStats(top);
   showScreen('screen-result'); }
 function retryTest() { current = 0; answers = Array.from({length: questions.length}, () => []); currentTop = ''; currentScores = {}; clearSession(); history.pushState(null, '', location.pathname); showScreen('screen-intro'); }
 function copyResultLink() { const url = location.href; const updateBtns = () => { showToast('✅ 링크가 복사됐어요!'); ['btn-share-link', 'btn-share-link-top'].forEach(id => { const btn = document.getElementById(id); if (btn) { btn.textContent = '✅ 복사됨!'; setTimeout(() => { btn.textContent = '🔗 링크 복사'; }, 2500); } }); }; navigator.clipboard.writeText(url).then(updateBtns).catch(() => { const ta = document.createElement('textarea'); ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); updateBtns(); }); }
@@ -214,7 +215,7 @@ async function downloadShareCard() {
           <div class="share-card-score-pct">${pcts[second]}%</div>
         </div>
       </div>
-      <div class="share-card-footer"><span class="brand">4동물 유형검사</span> · kweonjk.github.io/4animal-test</div>
+      <div class="share-card-footer"><span class="brand">4동물 유형검사</span> · 4animal.kr</div>
     `;
     document.body.appendChild(card);
 
@@ -351,4 +352,42 @@ function injectResultRecommendBtn() {
   row.className = 'share-row-recommend';
   row.innerHTML = '<button class="btn-recommend-result" type="button" onclick="shareTestLink()">📨 이 검사 친구에게도 추천하기</button>';
   shareRow.parentNode.insertBefore(row, shareRow);
+}
+
+// ==================== 통계 카운터 (Abacus) ====================
+const STATS_NAMESPACE = '4animal-test';
+const STATS_CAT_MAP = {
+  'quiz_state_일반': 'general',
+  'quiz_state_직장': 'work',
+  'quiz_state_연인': 'love',
+  'quiz_state_가족': 'family',
+  'quiz_state_친구': 'friend'
+};
+const STATS_ANIMAL_MAP = { '사': 'sa', '카': 'ka', '양': 'yang', '부': 'bu' };
+
+function getStatsTodayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function statsHit(key) {
+  try {
+    fetch(`https://abacus.jasoncameron.dev/hit/${STATS_NAMESPACE}/${key}`, { method: 'GET', mode: 'cors' }).catch(() => {});
+  } catch(e) {}
+}
+
+let statsRecorded = false;
+function recordResultStats(topAnimal) {
+  // URL 복원으로 진입한 경우는 카운트 안 함
+  if (location.search.includes('r=')) return;
+  if (statsRecorded) return;
+  statsRecorded = true;
+  const cat = STATS_CAT_MAP[SESSION_KEY];
+  const animal = STATS_ANIMAL_MAP[topAnimal];
+  if (!cat || !animal) return;
+  const today = getStatsTodayKey();
+  statsHit(`total-${cat}`);
+  statsHit(`today-${today}-${cat}`);
+  statsHit(`total-${cat}-${animal}`);
+  statsHit(`today-${today}-${cat}-${animal}`);
 }
