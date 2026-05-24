@@ -294,19 +294,15 @@ function releaseFocusTrap() {
 
 // 결과 화면에 다운로드 버튼 동적 추가
 function injectShareImgButtons() {
-  // 기존 동적 버튼 제거 (재실행 시 중복 방지)
-  document.querySelectorAll('.share-row-img').forEach(el => el.remove());
-
+  // 상단 share-row-top 아래에만 카드 다운로드 단독 버튼 추가 (하단은 injectResultRecommendBtn에서 친구추천과 함께 처리)
+  document.querySelectorAll('.share-row-img-top').forEach(el => el.remove());
   const topShareRow = document.querySelector('.share-row-top');
-  const bottomShareRow = document.querySelector('.result-body .share-row:not(.share-row-top)');
-
-  [topShareRow, bottomShareRow].forEach(parent => {
-    if (!parent) return;
-    const row = document.createElement('div');
-    row.className = 'share-row-img';
-    row.innerHTML = `<button class="btn-share-img" onclick="downloadShareCard()">🖼️ 결과 카드 다운로드</button>`;
-    parent.insertAdjacentElement('afterend', row);
-  });
+  if (!topShareRow) return;
+  const row = document.createElement('div');
+  row.className = 'share-row-img-top';
+  row.style.cssText = 'padding: 0 20px 16px;';
+  row.innerHTML = `<button class="btn-share-img" onclick="downloadShareCard()">🖼️ 결과 카드 다운로드</button>`;
+  topShareRow.insertAdjacentElement('afterend', row);
 }
 
 // 검사 추천 링크 복사 (카테고리 URL만, 본인 결과 없이)
@@ -343,15 +339,16 @@ function injectIntroShareBtn() {
   intro.appendChild(btn);
 }
 
-// 결과 화면에 추천 버튼 동적 삽입
+// 결과 화면 하단에 친구추천 + 카드다운로드를 가로 50/50으로 동적 삽입
 function injectResultRecommendBtn() {
-  if (document.querySelector('.btn-recommend-result')) return;
+  // 기존 동적 행 제거 (재실행 시 중복 방지)
+  document.querySelectorAll('.share-row-actions, .share-row-recommend').forEach(el => el.remove());
   const shareRow = document.querySelector('.result-body .share-row:not(.share-row-top)');
   if (!shareRow) return;
   const row = document.createElement('div');
-  row.className = 'share-row-recommend';
-  row.innerHTML = '<button class="btn-recommend-result" type="button" onclick="shareTestLink()">📨 이 검사 친구에게도 추천하기</button>';
-  shareRow.parentNode.insertBefore(row, shareRow);
+  row.className = 'share-row share-row-actions';
+  row.innerHTML = '<button class="btn-recommend-result" type="button" onclick="shareTestLink()">📨 친구에게 추천</button><button class="btn-share-img" type="button" onclick="downloadShareCard()">🖼️ 결과 카드</button>';
+  shareRow.insertAdjacentElement('afterend', row);
 }
 
 // ==================== 통계 카운터 (Abacus) ====================
