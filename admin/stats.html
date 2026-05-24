@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📊 검사 통계 — 4동물 유형검사</title>
+<style>
+  body { font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif; background: #F4F7FB; margin: 0; padding: 24px 16px; min-height: 100vh; color: #333; }
+  .container { max-width: 800px; margin: 0 auto; }
+  .header { background: white; border-radius: 14px; padding: 24px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+  .header h1 { margin: 0 0 6px; color: #1F3864; font-size: 1.4rem; }
+  .header .meta { color: #888; font-size: 0.88rem; }
+  .actions { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+  .btn { padding: 10px 18px; border: none; border-radius: 8px; font-family: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+  .btn-primary { background: #1F3864; color: white; }
+  .btn-primary:hover { background: #2E75B6; }
+  .btn-secondary { background: white; color: #1F3864; border: 1.5px solid #D0DCF0; }
+  .btn-secondary:hover { background: #F0F4FB; }
+  .summary { background: white; border-radius: 14px; padding: 20px 24px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .summary-item { text-align: center; }
+  .summary-label { font-size: 0.85rem; color: #888; margin-bottom: 6px; font-weight: 500; }
+  .summary-value { font-size: 2rem; font-weight: 900; color: #1F3864; }
+  .stats-grid { display: flex; flex-direction: column; gap: 16px; }
+  .stats-card { background: white; border-radius: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; }
+  .card-header { padding: 16px 20px; display: flex; align-items: center; gap: 10px; border-top: 4px solid var(--cat-color); }
+  .cat-emoji { font-size: 1.6rem; }
+  .cat-name { font-weight: 700; color: #1F3864; font-size: 1.05rem; flex: 1; }
+  .card-totals { display: grid; grid-template-columns: 1fr 1fr; padding: 0 20px 16px; gap: 16px; }
+  .total-item { text-align: center; padding: 10px; background: #F8F9FF; border-radius: 10px; }
+  .total-label { font-size: 0.78rem; color: #888; margin-bottom: 4px; font-weight: 600; }
+  .total-value { font-size: 1.5rem; font-weight: 900; color: var(--cat-color); }
+  .animal-stats { background: #FAFBFF; padding: 14px 20px; }
+  .animal-stats-title { font-size: 0.8rem; color: #888; font-weight: 700; margin-bottom: 10px; letter-spacing: 0.04em; }
+  .animal-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 0.88rem; }
+  .animal-row:last-child { margin-bottom: 0; }
+  .animal-label { width: 88px; flex-shrink: 0; color: #555; font-weight: 500; }
+  .animal-bar-wrap { flex: 1; background: #E0E7F0; border-radius: 4px; height: 8px; overflow: hidden; }
+  .animal-bar { display: block; height: 100%; border-radius: 4px; transition: width 0.5s; }
+  .animal-count { width: 110px; text-align: right; flex-shrink: 0; color: #555; font-weight: 500; font-size: 0.83rem; }
+  .animal-count .pct { color: #888; font-size: 0.78rem; }
+  .loading { text-align: center; padding: 40px; color: #888; }
+  .error { background: #FFF0F0; border: 1.5px solid #FFD0D0; border-radius: 10px; padding: 14px; color: #C00000; text-align: center; }
+  @media (max-width: 500px) {
+    .summary { grid-template-columns: 1fr; }
+    .animal-label { width: 70px; font-size: 0.82rem; }
+    .animal-count { width: 95px; font-size: 0.78rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>📊 검사 통계</h1>
+    <div class="meta" id="meta">로딩 중...</div>
+  </div>
+  <div class="actions">
+    <button class="btn btn-primary" onclick="loadStats()">🔄 새로고침</button>
+    <a href="index.html" class="btn btn-secondary" style="text-decoration:none;display:inline-block">← 관리자 페이지로</a>
+  </div>
+  <div class="summary" id="summary"><div class="loading">📊 데이터 불러오는 중...</div></div>
+  <div class="stats-grid" id="stats-grid"></div>
+</div>
+<script>
+const NAMESPACE = '4animal-test';
+const CATEGORIES = [
+  { key: 'general', label: '일반 유형', emoji: '🌟', color: '#1F3864' },
+  { key: 'work', label: '직장 유형', emoji: '💼', color: '#006064' },
+  { key: 'love', label: '연인 유형', emoji: '💕', color: '#C00000' },
+  { key: 'family', label: '가족 유형', emoji: '🏠', color: '#2E8B2E' },
+  { key: 'friend', label: '친구 유형', emoji: '🤝', color: '#E07B20' }
+];
+const ANIMALS = [
+  { key: 'sa', label: '사자형', emoji: '🦁', color: '#C00000' },
+  { key: 'ka', label: '카멜레온형', emoji: '🦎', color: '#1B6CA8' },
+  { key: 'yang', label: '양형', emoji: '🐑', color: '#2E8B2E' },
+  { key: 'bu', label: '부엉이형', emoji: '🦉', color: '#E07B20' }
+];
+function getTodayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+}
+async function getStat(key) {
+  try {
+    const res = await fetch(`https://abacus.jasoncameron.dev/get/${NAMESPACE}/${key}`);
+    if (!res.ok) return 0;
+    const data = await res.json();
+    return data.value || 0;
+  } catch(e) { return 0; }
+}
+async function loadStats() {
+  document.getElementById('meta').textContent = '데이터 불러오는 중...';
+  document.getElementById('summary').innerHTML = '<div class="loading">📊 데이터 불러오는 중...</div>';
+  document.getElementById('stats-grid').innerHTML = '';
+  const today = getTodayKey();
+  const promises = [];
+  for (const cat of CATEGORIES) {
+    promises.push(getStat(`total-${cat.key}`).then(v => [`total-${cat.key}`, v]));
+    promises.push(getStat(`today-${today}-${cat.key}`).then(v => [`today-${cat.key}`, v]));
+    for (const a of ANIMALS) {
+      promises.push(getStat(`total-${cat.key}-${a.key}`).then(v => [`total-${cat.key}-${a.key}`, v]));
+      promises.push(getStat(`today-${today}-${cat.key}-${a.key}`).then(v => [`today-${cat.key}-${a.key}`, v]));
+    }
+  }
+  const results = await Promise.all(promises);
+  const data = Object.fromEntries(results);
+  renderStats(data);
+}
+function renderStats(data) {
+  document.getElementById('meta').textContent = new Date().toLocaleString('ko-KR') + ' 기준 · 30초마다 자동 새로고침';
+  let todayTotal = 0, totalTotal = 0;
+  for (const cat of CATEGORIES) {
+    todayTotal += data[`today-${cat.key}`] || 0;
+    totalTotal += data[`total-${cat.key}`] || 0;
+  }
+  document.getElementById('summary').innerHTML = `
+    <div class="summary-item">
+      <div class="summary-label">📅 오늘 총 검사 완료</div>
+      <div class="summary-value">${todayTotal.toLocaleString()}</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-label">📈 전체 누적</div>
+      <div class="summary-value">${totalTotal.toLocaleString()}</div>
+    </div>
+  `;
+  const grid = document.getElementById('stats-grid');
+  grid.innerHTML = '';
+  for (const cat of CATEGORIES) {
+    const catTotal = data[`total-${cat.key}`] || 0;
+    const catToday = data[`today-${cat.key}`] || 0;
+    const animalRows = ANIMALS.map(a => {
+      const total = data[`total-${cat.key}-${a.key}`] || 0;
+      const today = data[`today-${cat.key}-${a.key}`] || 0;
+      const pct = catTotal > 0 ? Math.round(total / catTotal * 100) : 0;
+      return { ...a, total, today, pct };
+    });
+    const card = document.createElement('div');
+    card.className = 'stats-card';
+    card.style.setProperty('--cat-color', cat.color);
+    card.innerHTML = `
+      <div class="card-header"><span class="cat-emoji">${cat.emoji}</span><span class="cat-name">${cat.label} 유형검사</span></div>
+      <div class="card-totals">
+        <div class="total-item"><div class="total-label">오늘</div><div class="total-value">${catToday}</div></div>
+        <div class="total-item"><div class="total-label">전체 누적</div><div class="total-value">${catTotal}</div></div>
+      </div>
+      <div class="animal-stats">
+        <div class="animal-stats-title">동물 유형 분포 (오늘 / 누적)</div>
+        ${animalRows.map(a => `
+          <div class="animal-row">
+            <span class="animal-label">${a.emoji} ${a.label}</span>
+            <span class="animal-bar-wrap"><span class="animal-bar" style="width:${a.pct}%;background:${a.color}"></span></span>
+            <span class="animal-count">${a.today} / ${a.total} <span class="pct">(${a.pct}%)</span></span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    grid.appendChild(card);
+  }
+}
+loadStats();
+setInterval(loadStats, 30000);
+</script>
+</body>
+</html>
