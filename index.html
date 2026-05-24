@@ -8,11 +8,18 @@
 <meta property="og:title" content="4동물 유형검사 — 나는 어떤 동물일까?">
 <meta property="og:description" content="20개 질문으로 알아보는 나의 동물 유형. 일상·직장·연인·가족·친구 5가지 상황별로 다른 나를 발견해보세요.">
 <meta property="og:image" content="https://kweonjk.github.io/4animal-test/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="4동물 유형검사 — 5가지 상황별 동물 성격 검사">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:site_name" content="4동물 유형검사">
 <meta property="og:url" content="https://kweonjk.github.io/4animal-test/">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="4동물 유형검사 — 나는 어떤 동물일까?">
 <meta name="twitter:description" content="20개 질문으로 알아보는 나의 동물 유형.">
 <meta name="twitter:image" content="https://kweonjk.github.io/4animal-test/og-image.png">
+<meta name="twitter:image:alt" content="4동물 유형검사 — 5가지 상황별 동물 성격 검사">
 <link rel="icon" href='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦁</text></svg>'>
 <title>4동물 유형검사</title>
 <style>
@@ -146,6 +153,10 @@
     .cat-emoji { font-size: 1.9rem; width: 40px; }
     .cat-btn { padding: 8px 12px; font-size: 0.82rem; }
   }
+  .cat-card { position: relative; }
+  .cat-share-btn { position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.9); border: 1.5px solid #E0E7F0; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; z-index: 2; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .cat-share-btn:hover { background: var(--accent, #1F3864); color: white; border-color: var(--accent, #1F3864); transform: scale(1.08); }
+  .cat-share-btn:focus-visible { outline: 3px solid #4A90E2; outline-offset: 2px; }
 </style>
 </head>
 <body>
@@ -161,6 +172,7 @@
   <div class="cards-section">
 
     <a class="cat-card" href="일반.html">
+      <button class="cat-share-btn" onclick="event.preventDefault(); event.stopPropagation(); shareCategoryUrl('일반.html');" aria-label="일반 유형검사 링크 복사">🔗</button>
       <div class="cat-card-inner" style="--accent: #1F3864;">
         <div class="cat-emoji">🌟</div>
         <div class="cat-info">
@@ -173,6 +185,7 @@
     </a>
 
     <a class="cat-card" href="직장.html">
+      <button class="cat-share-btn" onclick="event.preventDefault(); event.stopPropagation(); shareCategoryUrl('직장.html');" aria-label="직장 유형검사 링크 복사">🔗</button>
       <div class="cat-card-inner" style="--accent: #2E75B6;">
         <div class="cat-emoji">💼</div>
         <div class="cat-info">
@@ -185,6 +198,7 @@
     </a>
 
     <a class="cat-card" href="연인.html">
+      <button class="cat-share-btn" onclick="event.preventDefault(); event.stopPropagation(); shareCategoryUrl('연인.html');" aria-label="연인 유형검사 링크 복사">🔗</button>
       <div class="cat-card-inner" style="--accent: #C00000;">
         <div class="cat-emoji">💕</div>
         <div class="cat-info">
@@ -197,6 +211,7 @@
     </a>
 
     <a class="cat-card" href="가족.html">
+      <button class="cat-share-btn" onclick="event.preventDefault(); event.stopPropagation(); shareCategoryUrl('가족.html');" aria-label="가족 유형검사 링크 복사">🔗</button>
       <div class="cat-card-inner" style="--accent: #2E8B2E;">
         <div class="cat-emoji">🏠</div>
         <div class="cat-info">
@@ -209,6 +224,7 @@
     </a>
 
     <a class="cat-card" href="친구.html">
+      <button class="cat-share-btn" onclick="event.preventDefault(); event.stopPropagation(); shareCategoryUrl('친구.html');" aria-label="친구 유형검사 링크 복사">🔗</button>
       <div class="cat-card-inner" style="--accent: #E07B20;">
         <div class="cat-emoji">🤝</div>
         <div class="cat-info">
@@ -227,5 +243,39 @@
   </div>
 
 </main>
+<script>
+function shareCategoryUrl(filename) {
+  const baseUrl = location.origin + location.pathname.replace(/index\.html$/, '').replace(/[^/]+$/, '');
+  const fullUrl = baseUrl + filename;
+  const fallback = () => {
+    const ta = document.createElement('textarea');
+    ta.value = fullUrl;
+    ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showSimpleToast();
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(fullUrl).then(showSimpleToast).catch(fallback);
+  } else {
+    fallback();
+  }
+}
+function showSimpleToast() {
+  let toast = document.getElementById('simple-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'simple-toast';
+    toast.setAttribute('role', 'status');
+    toast.setAttribute('aria-live', 'polite');
+    toast.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#1F3864;color:white;padding:12px 28px;border-radius:30px;font-size:0.95rem;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,0.2);opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = '🔗 검사 링크가 복사됐어요! 친구에게 공유해보세요';
+  toast.style.opacity = '1';
+  setTimeout(() => { toast.style.opacity = '0'; }, 2500);
+}
+</script>
 </body>
 </html>

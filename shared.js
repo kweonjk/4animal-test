@@ -94,6 +94,7 @@ function showResult(scores) { clearSession(); const total = Object.values(scores
     document.getElementById('other-section').insertAdjacentHTML('beforebegin', compatHtml);
   }
   injectShareImgButtons();
+  injectResultRecommendBtn();
   showScreen('screen-result'); }
 function retryTest() { current = 0; answers = Array.from({length: questions.length}, () => []); currentTop = ''; currentScores = {}; clearSession(); history.pushState(null, '', location.pathname); showScreen('screen-intro'); }
 function copyResultLink() { const url = location.href; const updateBtns = () => { showToast('✅ 링크가 복사됐어요!'); ['btn-share-link', 'btn-share-link-top'].forEach(id => { const btn = document.getElementById(id); if (btn) { btn.textContent = '✅ 복사됨!'; setTimeout(() => { btn.textContent = '🔗 링크 복사'; }, 2500); } }); }; navigator.clipboard.writeText(url).then(updateBtns).catch(() => { const ta = document.createElement('textarea'); ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); updateBtns(); }); }
@@ -140,6 +141,7 @@ window.addEventListener('DOMContentLoaded', () => {
     document.body.classList.add('admin-mode');
   }
   loadAdConfig();
+  injectIntroShareBtn();
   const params = new URLSearchParams(location.search);
   const encoded = params.get('r');
   if (encoded) { const data = decodeResult(encoded); if (data && data.n && data.t && data.s) { userName = data.n; currentTop = data.t; currentScores = data.s; showResult(data.s); return; } }
@@ -304,4 +306,49 @@ function injectShareImgButtons() {
     row.innerHTML = `<button class="btn-share-img" onclick="downloadShareCard()">🖼️ 결과 카드 다운로드</button>`;
     parent.insertAdjacentElement('afterend', row);
   });
+}
+
+// 검사 추천 링크 복사 (카테고리 URL만, 본인 결과 없이)
+function shareTestLink() {
+  const cleanUrl = location.origin + location.pathname;
+  const fallback = (msg) => {
+    const ta = document.createElement('textarea');
+    ta.value = cleanUrl;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast(msg);
+  };
+  const onSuccess = () => showToast('🔗 검사 링크가 복사됐어요! 친구에게 공유해보세요');
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(cleanUrl).then(onSuccess).catch(() => fallback('🔗 링크가 복사됐어요!'));
+  } else {
+    fallback('🔗 링크가 복사됐어요!');
+  }
+}
+
+// 인트로 화면에 추천 버튼 동적 삽입
+function injectIntroShareBtn() {
+  const intro = document.querySelector('.intro-body');
+  if (!intro || intro.querySelector('.btn-recommend-intro')) return;
+  const btn = document.createElement('button');
+  btn.className = 'btn-recommend-intro';
+  btn.type = 'button';
+  btn.textContent = '🔗 친구에게 이 검사 추천하기';
+  btn.onclick = shareTestLink;
+  intro.appendChild(btn);
+}
+
+// 결과 화면에 추천 버튼 동적 삽입
+function injectResultRecommendBtn() {
+  if (document.querySelector('.btn-recommend-result')) return;
+  const shareRow = document.querySelector('.result-body .share-row:not(.share-row-top)');
+  if (!shareRow) return;
+  const row = document.createElement('div');
+  row.className = 'share-row-recommend';
+  row.innerHTML = '<button class="btn-recommend-result" type="button" onclick="shareTestLink()">📨 이 검사 친구에게도 추천하기</button>';
+  shareRow.parentNode.insertBefore(row, shareRow);
 }

@@ -312,3 +312,10 @@ input:focus-visible,
   .score-grid { gap: 8px; }
   .wait-number { font-size: 5rem; }
 }
+
+/* 검사 추천 버튼 */
+.btn-recommend-intro { width: 100%; padding: 12px; margin-top: 12px; border: 2px dashed #D0DCF0; border-radius: 10px; background: white; color: #555; font-family: inherit; font-size: 0.92rem; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+.btn-recommend-intro:hover { background: #F0F4FB; border-color: var(--cat-primary); color: var(--cat-primary); }
+.share-row-recommend { margin-bottom: 12px; }
+.btn-recommend-result { width: 100%; padding: 13px; border-radius: 10px; font-family: inherit; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all .15s; background: linear-gradient(135deg, #6A1B9A, #9C27B0); color: white; border: none; }
+.btn-recommend-result:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(106,27,154,0.3); }
