@@ -123,6 +123,24 @@
     color: #666;
     line-height: 1.5;
   }
+  .cat-meta {
+    font-size: 0.78rem;
+    color: #888;
+    margin-top: 6px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .cat-meta .meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .cat-meta .dot {
+    color: #CCC;
+  }
   .cat-btn {
     flex-shrink: 0;
     color: white;
@@ -146,33 +164,12 @@
     box-shadow: var(--shadow);
     padding: 16px 24px;
   }
-  .cat-actions { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
-  .cat-share-btn {
-    color: var(--accent, #1F3864);
-    background: white;
-    border: 1.5px solid var(--accent, #1F3864);
-    border-radius: 8px;
-    padding: 7px 14px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    font-family: inherit;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.15s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-  }
-  .cat-share-btn:hover { background: var(--accent, #1F3864); color: white; }
-  .cat-share-btn:focus-visible { outline: 3px solid #4A90E2; outline-offset: 2px; }
   @media (max-width: 500px) {
     .hub-banner { padding: 36px 20px 28px; }
     .hub-banner h1 { font-size: 1.5rem; }
     .cat-card-inner { padding: 16px; gap: 12px; }
     .cat-emoji { font-size: 1.9rem; width: 40px; }
     .cat-btn { padding: 8px 12px; font-size: 0.82rem; }
-    .cat-share-btn { padding: 6px 10px; font-size: 0.75rem; }
   }
 </style>
 </head>
@@ -195,11 +192,9 @@
           <div class="cat-label">전반적인 성격 유형 검사</div>
           <div class="cat-name">일반 유형검사</div>
           <div class="cat-desc">일상에서의 나는 어떤 동물 유형일까?</div>
+          <div class="cat-meta"><span class="meta-item">📝 20문항</span><span class="dot">·</span><span class="meta-item">⏱️ 약 3~5분</span></div>
         </div>
-        <div class="cat-actions">
-          <div class="cat-btn" style="background: #1F3864;">검사 시작 →</div>
-          <button class="cat-share-btn" onclick="event.preventDefault(); event.stopPropagation(); shareCategoryUrl('일반.html');" aria-label="일반 유형검사 링크 복사">🔗 공유</button>
-        </div>
+        <div class="cat-btn" style="background: #1F3864;">검사 시작 →</div>
       </div>
     </a>
 
@@ -210,11 +205,9 @@
           <div class="cat-label">직장 유형 검사</div>
           <div class="cat-name">직장 유형검사</div>
           <div class="cat-desc">직장에서의 나는 어떤 동물 유형일까?</div>
+          <div class="cat-meta"><span class="meta-item">📝 20문항</span><span class="dot">·</span><span class="meta-item">⏱️ 약 3~5분</span></div>
         </div>
-        <div class="cat-actions">
-          <div class="cat-btn" style="background: #2E75B6;">검사 시작 →</div>
-          <button class="cat-share-btn" onclick="event.preventDefault(); event.stopPropagation(); shareCategoryUrl('직장.html');" aria-label="직장 유형검사 링크 복사">🔗 공유</button>
-        </div>
+        <div class="cat-btn" style="background: #2E75B6;">검사 시작 →</div>
       </div>
     </a>
 
@@ -225,11 +218,9 @@
           <div class="cat-label">연인 유형 검사</div>
           <div class="cat-name">연인 유형검사</div>
           <div class="cat-desc">연인 관계에서의 나는 어떤 동물 유형일까?</div>
+          <div class="cat-meta"><span class="meta-item">📝 20문항</span><span class="dot">·</span><span class="meta-item">⏱️ 약 3~5분</span></div>
         </div>
-        <div class="cat-actions">
-          <div class="cat-btn" style="background: #C00000;">검사 시작 →</div>
-          <button class="cat-share-btn" onclick="event.preventDefault(); event.stopPropagation(); shareCategoryUrl('연인.html');" aria-label="연인 유형검사 링크 복사">🔗 공유</button>
-        </div>
+        <div class="cat-btn" style="background: #C00000;">검사 시작 →</div>
       </div>
     </a>
 
@@ -240,11 +231,9 @@
           <div class="cat-label">가족 유형 검사</div>
           <div class="cat-name">가족 유형검사</div>
           <div class="cat-desc">가족 안에서의 나는 어떤 동물 유형일까?</div>
+          <div class="cat-meta"><span class="meta-item">📝 20문항</span><span class="dot">·</span><span class="meta-item">⏱️ 약 3~5분</span></div>
         </div>
-        <div class="cat-actions">
-          <div class="cat-btn" style="background: #2E8B2E;">검사 시작 →</div>
-          <button class="cat-share-btn" onclick="event.preventDefault(); event.stopPropagation(); shareCategoryUrl('가족.html');" aria-label="가족 유형검사 링크 복사">🔗 공유</button>
-        </div>
+        <div class="cat-btn" style="background: #2E8B2E;">검사 시작 →</div>
       </div>
     </a>
 
@@ -255,11 +244,9 @@
           <div class="cat-label">친구 유형 검사</div>
           <div class="cat-name">친구 유형검사</div>
           <div class="cat-desc">친구 관계에서의 나는 어떤 동물 유형일까?</div>
+          <div class="cat-meta"><span class="meta-item">📝 20문항</span><span class="dot">·</span><span class="meta-item">⏱️ 약 3~5분</span></div>
         </div>
-        <div class="cat-actions">
-          <div class="cat-btn" style="background: #E07B20;">검사 시작 →</div>
-          <button class="cat-share-btn" onclick="event.preventDefault(); event.stopPropagation(); shareCategoryUrl('친구.html');" aria-label="친구 유형검사 링크 복사">🔗 공유</button>
-        </div>
+        <div class="cat-btn" style="background: #E07B20;">검사 시작 →</div>
       </div>
     </a>
 
@@ -270,39 +257,5 @@
   </div>
 
 </main>
-<script>
-function shareCategoryUrl(filename) {
-  const baseUrl = location.origin + location.pathname.replace(/index\.html$/, '').replace(/[^/]+$/, '');
-  const fullUrl = baseUrl + filename;
-  const fallback = () => {
-    const ta = document.createElement('textarea');
-    ta.value = fullUrl;
-    ta.style.position = 'fixed'; ta.style.opacity = '0';
-    document.body.appendChild(ta); ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    showSimpleToast();
-  };
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(fullUrl).then(showSimpleToast).catch(fallback);
-  } else {
-    fallback();
-  }
-}
-function showSimpleToast() {
-  let toast = document.getElementById('simple-toast');
-  if (!toast) {
-    toast = document.createElement('div');
-    toast.id = 'simple-toast';
-    toast.setAttribute('role', 'status');
-    toast.setAttribute('aria-live', 'polite');
-    toast.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#1F3864;color:white;padding:12px 28px;border-radius:30px;font-size:0.95rem;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,0.2);opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;';
-    document.body.appendChild(toast);
-  }
-  toast.textContent = '🔗 검사 링크가 복사됐어요! 친구에게 공유해보세요';
-  toast.style.opacity = '1';
-  setTimeout(() => { toast.style.opacity = '0'; }, 2500);
-}
-</script>
 </body>
 </html>
