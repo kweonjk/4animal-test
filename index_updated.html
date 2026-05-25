@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="20개 질문으로 알아보는 나의 동물 유형. 카멜레온/사자/양/부엉이 — 일반·직장·연인·가족·친구 5가지 상황별 검사.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="4동물 유형검사 — 나는 어떤 동물일까?">
+<meta property="og:description" content="20개 질문으로 알아보는 나의 동물 유형. 일상·직장·연인·가족·친구 5가지 상황별로 다른 나를 발견해보세요.">
+<meta property="og:image" content="https://4animal.kr/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="4동물 유형검사 — 5가지 상황별 동물 성격 검사">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:site_name" content="4동물 유형검사">
+<meta property="og:url" content="https://4animal.kr/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="4동물 유형검사 — 나는 어떤 동물일까?">
+<meta name="twitter:description" content="20개 질문으로 알아보는 나의 동물 유형.">
+<meta name="twitter:image" content="https://4animal.kr/og-image.png">
+<meta name="twitter:image:alt" content="4동물 유형검사 — 5가지 상황별 동물 성격 검사">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦁</text></svg>'>
+<title>4동물 유형검사</title>
+<style>
+  :root {
+    --primary: #1F3864;
+    --radius: 14px;
+    --shadow: 0 4px 20px rgba(0,0,0,0.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+    background: #F4F7FB;
+    color: #333;
+    min-height: 100vh;
+  }
+  .wrapper {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 24px 16px 48px;
+  }
+  .hub-banner {
+    background: linear-gradient(135deg, #1F3864 0%, #2E75B6 100%);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 48px 32px 40px;
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .hub-banner .animals {
+    font-size: 2.6rem;
+    margin-bottom: 12px;
+    letter-spacing: 4px;
+  }
+  .hub-banner h1 {
+    color: white;
+    font-size: 1.8rem;
+    font-weight: 700;
+    line-height: 1.4;
+    margin-bottom: 8px;
+  }
+  .hub-banner .subtitle {
+    color: #BED4F0;
+    font-size: 1rem;
+    margin-bottom: 8px;
+  }
+  .hub-banner .desc {
+    color: #9BB8DC;
+    font-size: 0.88rem;
+    line-height: 1.6;
+  }
+  .cards-section {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  .cat-card {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .cat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.14);
+  }
+  .cat-card-inner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 22px;
+    border-top: 4px solid var(--accent, #1F3864);
+  }
+  .cat-emoji {
+    font-size: 2.2rem;
+    flex-shrink: 0;
+    width: 48px;
+    text-align: center;
+  }
+  .cat-info {
+    flex: 1;
+  }
+  .cat-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 3px;
+  }
+  .cat-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1F3864;
+    margin-bottom: 4px;
+  }
+  .cat-desc {
+    font-size: 0.88rem;
+    color: #666;
+    line-height: 1.5;
+  }
+  .cat-meta {
+    font-size: 0.78rem;
+    color: #888;
+    margin-top: 6px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .cat-meta .meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .cat-meta .dot {
+    color: #CCC;
+  }
+  .cat-btn {
+    flex-shrink: 0;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 16px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .footer-note {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #555;
+    line-height: 1.7;
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 16px 24px;
+  }
+  @media (max-width: 500px) {
+    .hub-banner { padding: 36px 20px 28px; }
+    .hub-banner h1 { font-size: 1.5rem; }
+    .cat-card-inner { padding: 16px; gap: 12px; }
+    .cat-emoji { font-size: 1.9rem; width: 40px; }
+    .cat-btn { padding: 8px 12px; font-size: 0.82rem; }
+  }
+</style>
+</head>
+<body>
+
+<main class="wrapper">
+
+  <div class="hub-banner">
+    <div class="animals" aria-label="카멜레온, 사자, 양, 부엉이 4가지 동물 유형">🦎🦁🐑🦉</div>
+    <h1>4동물 유형검사</h1>
+    <div class="subtitle">나는 어떤 동물 유형일까?</div>
+    <div class="desc">직장·연인·가족·친구 — 상황별로 알아보는 나의 동물 유형</div>
+  </div>
+
+  <div class="cards-section">
+
+    <a class="cat-card" href="general.html">
+      <div class="cat-card-inner" style="--accent: #1F3864;">
+        <div class="cat-emoji">🌟</div>
+        <div class="cat-info">
+          <div class="cat-label">전반적인 성격 유형 검사</div>
+          <div class="cat-name">일반 유형검사</div>
+          <div class="cat-desc">일상에서의 나는 어떤 동물 유형일까?</div>
+          <div class="cat-meta"><span class="meta-item">📝 20문항</span><span class="dot">·</span><span class="meta-item">⏱️ 약 3~5분</span></div>
+        </div>
+        <div class="cat-btn" style="background: #1F3864;">검사 시작 →</div>
+      </div>
+    </a>
+
+    <a class="cat-card" href="work.html">
+      <div class="cat-card-inner" style="--accent: #C00000;">
+        <div class="cat-emoji">💼</div>
+        <div class="cat-info">
+          <div class="cat-label">직장 유형 검사</div>
+          <div class="cat-name">직장 유형검사</div>
+          <div class="cat-desc">직장에서의 나는 어떤 동물 유형일까?</div>
+          <div class="cat-meta"><span class="meta-item">📝 20문항</span><span class="dot">·</span><span class="meta-item">⏱️ 약 3~5분</span></div>
+        </div>
+        <div class="cat-btn" style="background: #C00000;">검사 시작 →</div>
+      </div>
+    </a>
+
+    <a class="cat-card" href="love.html">
+      <div class="cat-card-inner" style="--accent: #1A00FF;">
+        <div class="cat-emoji">💕</div>
+        <div class="cat-info">
+          <div class="cat-label">연인 유형 검사</div>
+          <div class="cat-name">연인 유형검사</div>
+          <div class="cat-desc">연인 관계에서의 나는 어떤 동물 유형일까?</div>
+          <div class="cat-meta"><span class="meta-item">📝 20문항</span><span class="dot">·</span><span class="meta-item">⏱️ 약 3~5분</span></div>
+        </div>
+        <div class="cat-btn" style="background: #1A00FF;">검사 시작 →</div>
+      </div>
+    </a>
+
+    <a class="cat-card" href="family.html">
+      <div class="cat-card-inner" style="--accent: #2D8A5E;">
+        <div class="cat-emoji">🏠</div>
+        <div class="cat-info">
+          <div class="cat-label">가족 유형 검사</div>
+          <div class="cat-name">가족 유형검사</div>
+          <div class="cat-desc">가족 안에서의 나는 어떤 동물 유형일까?</div>
+          <div class="cat-meta"><span class="meta-item">📝 20문항</span><span class="dot">·</span><span class="meta-item">⏱️ 약 3~5분</span></div>
+        </div>
+        <div class="cat-btn" style="background: #2D8A5E;">검사 시작 →</div>
+      </div>
+    </a>
+
+    <a class="cat-card" href="friend.html">
+      <div class="cat-card-inner" style="--accent: #C89B00;">
+        <div class="cat-emoji">🤝</div>
+        <div class="cat-info">
+          <div class="cat-label">친구 유형 검사</div>
+          <div class="cat-name">친구 유형검사</div>
+          <div class="cat-desc">친구 관계에서의 나는 어떤 동물 유형일까?</div>
+          <div class="cat-meta"><span class="meta-item">📝 20문항</span><span class="dot">·</span><span class="meta-item">⏱️ 약 3~5분</span></div>
+        </div>
+        <div class="cat-btn" style="background: #C89B00;">검사 시작 →</div>
+      </div>
+    </a>
+
+  </div>
+
+  <div class="footer-note">
+    각 유형은 🦎카멜레온 · 🦁사자 · 🐑양 · 🦉부엉이 중 하나로 분석됩니다
+  </div>
+
+</main>
+
+</body>
+</html>
