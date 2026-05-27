@@ -49,6 +49,34 @@ const COMPATIBILITY = {
 
 function saveSession(extra) { try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(Object.assign({ current, answers, userName }, extra))); } catch(e) {} }
 function clearSession() { try { sessionStorage.removeItem(SESSION_KEY); } catch(e) {} }
+// ── 결과 완료 상태 3분 보관 (localStorage, 탭 종료 후에도 살아남음) ──
+const COMPLETED_KEY = '4animal_completed';
+const COMPLETED_WINDOW_MS = 3 * 60 * 1000; // 3분
+function savePersistedCompleted() {
+  try {
+    localStorage.setItem(COMPLETED_KEY, JSON.stringify({
+      pathname: location.pathname,
+      userName: userName,
+      scores: pendingScores,
+      savedAt: Date.now()
+    }));
+  } catch(e) {}
+}
+function clearPersistedCompleted() {
+  try { localStorage.removeItem(COMPLETED_KEY); } catch(e) {}
+}
+function loadPersistedCompleted() {
+  try {
+    const raw = localStorage.getItem(COMPLETED_KEY);
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    if (!data || !data.scores || (Date.now() - data.savedAt) > COMPLETED_WINDOW_MS) {
+      clearPersistedCompleted();
+      return null;
+    }
+    return data;
+  } catch(e) { return null; }
+}
 function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo(0, 0); }
 function startTest() { const nameVal = document.getElementById('user-name').value.trim(); if (!nameVal) { const errEl = document.getElementById('name-error'); errEl.style.display = 'block'; document.getElementById('user-name').focus(); return; } userName = nameVal; saveSession(); showScreen('screen-question'); renderQ(); }
 function renderQ() { const q = questions[current]; const total = questions.length; const sel = answers[current]; document.getElementById('q-counter').textContent = `${current+1} / ${total}`; document.getElementById('q-num-bar').textContent = `Q${String(current+1).padStart(2,'0')}`; document.getElementById('q-text').textContent = q.q; document.getElementById('progress-fill').style.width = `${((current+1)/total)*100}%`; const opts = document.getElementById('options'); opts.innerHTML = ''; q.opts.forEach((txt, i) => { const btn = document.createElement('button'); const isSelected = sel.includes(i); const isDimmed = !isSelected && sel.length >= 2; btn.className = 'option-btn' + (isSelected ? ' selected' : '') + (isDimmed ? ' dimmed' : ''); btn.innerHTML = `<span class="option-label">${['A','B','C','D'][i]}</span><span>${txt}</span>`; btn.onclick = () => selectOpt(i); btn.setAttribute('aria-pressed', isSelected ? 'true' : 'false'); if (isDimmed) btn.setAttribute('aria-disabled', 'true'); opts.appendChild(btn); }); updateSelCount(); document.getElementById('btn-prev').style.visibility = current === 0 ? 'hidden' : 'visible'; document.getElementById('btn-next').style.display = current < total-1 ? 'block' : 'none'; document.getElementById('btn-next').disabled = sel.length === 0; document.getElementById('btn-submit').style.display = current === total-1 ? 'block' : 'none'; document.getElementById('btn-submit').disabled = sel.length === 0; }
@@ -57,7 +85,7 @@ function selectOpt(i) { const sel = answers[current]; const idx = sel.indexOf(i)
 function nextQ() { if (answers[current].length === 0) return; current++; saveSession(); renderQ(); }
 function prevQ() { if (current > 0) { current--; saveSession(); renderQ(); } }
 function submitTest() { if (answers[current].length === 0) return; const scores = { '카':0, '사':0, '양':0, '부':0 }; answers.forEach((sel, i) => { sel.forEach(ans => { scores[SCORE_MAP[i][ans]] += 0.5; }); }); pendingScores = scores; showAd(); }
-function showAd() { document.getElementById('ad-content').style.display = ''; document.getElementById('wait-screen').classList.remove('active'); const adImg = document.getElementById('ad-img'); const adWrap = document.getElementById('ad-image-wrap'); if (AD_CONFIG.image) { adImg.src = AD_CONFIG.image; adWrap.style.display = ''; adWrap.onclick = adLinkClick; } else { adWrap.style.display = 'none'; } document.getElementById('ad-title').textContent = AD_CONFIG.title; document.getElementById('ad-btn-text').textContent = AD_CONFIG.btnText; adTimer = null; saveSession({ screen: 'ad', scores: pendingScores }); showScreen('screen-ad'); }
+function showAd() { savePersistedCompleted(); document.getElementById('ad-content').style.display = ''; document.getElementById('wait-screen').classList.remove('active'); const adImg = document.getElementById('ad-img'); const adWrap = document.getElementById('ad-image-wrap'); if (AD_CONFIG.image) { adImg.src = AD_CONFIG.image; adWrap.style.display = ''; adWrap.onclick = adLinkClick; } else { adWrap.style.display = 'none'; } document.getElementById('ad-title').textContent = AD_CONFIG.title; document.getElementById('ad-btn-text').textContent = AD_CONFIG.btnText; adTimer = null; saveSession({ screen: 'ad', scores: pendingScores }); showScreen('screen-ad'); }
 function adLinkClick() { saveSession({ screen: 'ad', scores: pendingScores, adClicked: true }); window.open(AD_CONFIG.link, '_blank', 'noopener,noreferrer'); document.getElementById('ad-content').style.display = 'none'; const waitScreen = document.getElementById('wait-screen'); waitScreen.classList.add('active'); const WAIT = 10; let remain = WAIT; document.getElementById('wait-number').textContent = remain; document.getElementById('wait-progress').style.width = '100%'; adTimer = setInterval(() => { remain--; document.getElementById('wait-number').textContent = remain; document.getElementById('wait-progress').style.width = `${(remain / WAIT) * 100}%`; const waitEl = document.getElementById('wait-screen'); if (waitEl) { waitEl.setAttribute('aria-valuenow', remain); waitEl.setAttribute('aria-valuetext', `결과 표시까지 ${remain}초 남음`); } if (remain <= 0) { clearInterval(adTimer); adTimer = null; waitScreen.classList.remove('active'); showResult(pendingScores); } }, 1000); }
 function encodeResult(name, top, scores) { const data = { n: name, t: top, s: scores }; return btoa(unescape(encodeURIComponent(JSON.stringify(data)))); }
 function decodeResult(encoded) { try { return JSON.parse(decodeURIComponent(escape(atob(encoded)))); } catch(e) { return null; } }
@@ -97,7 +125,7 @@ function showResult(scores) { clearSession(); const total = Object.values(scores
   injectResultRecommendBtn();
   recordResultStats(top);
   showScreen('screen-result'); }
-function retryTest() { current = 0; answers = Array.from({length: questions.length}, () => []); currentTop = ''; currentScores = {}; clearSession(); history.pushState(null, '', location.pathname); showScreen('screen-intro'); }
+function retryTest() { current = 0; answers = Array.from({length: questions.length}, () => []); currentTop = ''; currentScores = {}; clearSession(); clearPersistedCompleted(); history.pushState(null, '', location.pathname); showScreen('screen-intro'); }
 function copyResultLink() { const url = location.href; const updateBtns = () => { showToast('✅ 링크가 복사됐어요!'); ['btn-share-link', 'btn-share-link-top'].forEach(id => { const btn = document.getElementById(id); if (btn) { btn.textContent = '✅ 복사됨!'; setTimeout(() => { btn.textContent = '🔗 링크 복사'; }, 2500); } }); }; navigator.clipboard.writeText(url).then(updateBtns).catch(() => { const ta = document.createElement('textarea'); ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); updateBtns(); }); }
 function sendEmail() { document.getElementById('email-input').value = ''; document.getElementById('modal-status').textContent = ''; document.getElementById('btn-modal-send').disabled = false; document.getElementById('btn-modal-send').textContent = '📨 보내기'; document.getElementById('email-modal').classList.add('open'); setTimeout(() => document.getElementById('email-input').focus(), 100); trapFocus(document.getElementById('email-modal')); }
 function closeEmailModal() { releaseFocusTrap(); document.getElementById('email-modal').classList.remove('open'); }
@@ -146,10 +174,28 @@ window.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(location.search);
   const encoded = params.get('r');
   if (encoded) { const data = decodeResult(encoded); if (data && data.n && data.t && data.s) { userName = data.n; currentTop = data.t; currentScores = data.s; showResult(data.s); return; } }
+  // 1차: 같은 탭에서 새로고침 (sessionStorage) — 기존 동작 유지
+  let restored = false;
   try {
     const saved = sessionStorage.getItem(SESSION_KEY);
-    if (saved) { const state = JSON.parse(saved); if (!state) return; userName = state.userName || '익명'; document.getElementById('user-name').value = userName; if (state.screen === 'ad' && state.scores) { current = state.current; answers = state.answers || Array.from({length: questions.length}, () => []); pendingScores = state.scores; if (state.adClicked) { showResult(pendingScores); } else { showAd(); } return; } if (typeof state.current === 'number' && Array.isArray(state.answers)) { current = state.current; answers = state.answers; showScreen('screen-question'); renderQ(); } }
+    if (saved) { const state = JSON.parse(saved); if (state) { userName = state.userName || '익명'; document.getElementById('user-name').value = userName; if (state.screen === 'ad' && state.scores) { current = state.current; answers = state.answers || Array.from({length: questions.length}, () => []); pendingScores = state.scores; if (state.adClicked) { showResult(pendingScores); } else { showAd(); } restored = true; } else if (typeof state.current === 'number' && Array.isArray(state.answers)) { current = state.current; answers = state.answers; showScreen('screen-question'); renderQ(); restored = true; } } }
   } catch(e) {}
+  if (restored) return;
+  // 2차: X로 닫고 재진입 (localStorage 3분 윈도우) — 광고/카운트다운 재실행
+  const persisted = loadPersistedCompleted();
+  if (persisted && questions) {
+    if (location.pathname !== persisted.pathname) {
+      // 다른 카테고리에서 진입했으면 원래 카테고리로 보냄 (그쪽에서 동일 로직이 다시 발동)
+      location.replace(persisted.pathname);
+      return;
+    }
+    userName = persisted.userName || '익명';
+    const nameInput = document.getElementById('user-name');
+    if (nameInput) nameInput.value = userName;
+    pendingScores = persisted.scores;
+    showAd();
+    return;
+  }
 });
 
 // html2canvas lazy load
