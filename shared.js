@@ -2,6 +2,7 @@ let questions, SCORE_MAP, RESULTS, CATEGORY_LABEL, SESSION_KEY;
 let current = 0, answers = [], userName = '', currentTop = '', currentScores = {};
 let pendingScores = null, adTimer = null;
 let uploadedImageBase64 = null;
+let enteredViaResultLink = false;  // 페이지 진입 시 ?r= 공유 링크였는지 (통계 제외 판정용)
 const AD_CONFIG = {
   image:   'https://thumbnail.coupangcdn.com/thumbnails/remote/492x492ex/image/vendor_inventory/9000/bdebac18f2de858ad4eb360b8e195ab0e50d69cee429dfb9d734dda81ffe.jpg',
   link:    'https://link.coupang.com/a/dZh5anXH7Q',
@@ -173,7 +174,7 @@ window.addEventListener('DOMContentLoaded', () => {
   injectIntroShareBtn();
   const params = new URLSearchParams(location.search);
   const encoded = params.get('r');
-  if (encoded) { const data = decodeResult(encoded); if (data && data.n && data.t && data.s) { userName = data.n; currentTop = data.t; currentScores = data.s; showResult(data.s); return; } }
+  if (encoded) { const data = decodeResult(encoded); if (data && data.n && data.t && data.s) { enteredViaResultLink = true; userName = data.n; currentTop = data.t; currentScores = data.s; showResult(data.s); return; } }
   // 1차: 같은 탭에서 새로고침 (sessionStorage) — 기존 동작 유지
   let restored = false;
   try {
@@ -420,8 +421,8 @@ function statsHit(key) {
 
 let statsRecorded = false;
 function recordResultStats(topAnimal) {
-  // URL 복원으로 진입한 경우는 카운트 안 함
-  if (location.search.includes('r=')) return;
+  // 남이 공유한 결과 링크(?r=)로 "진입"한 경우만 카운트 제외 (정상 완료는 카운트)
+  if (enteredViaResultLink) return;
   if (statsRecorded) return;
   statsRecorded = true;
   const cat = STATS_CAT_MAP[SESSION_KEY];
